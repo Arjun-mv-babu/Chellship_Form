@@ -1,0 +1,86 @@
+// const puppeteer = require('puppeteer');
+const fs = require('fs');
+const path = require('path');
+const moment = require('moment');
+
+const generatePDF = async (export_data) => {
+    try {
+        const templatePath = path.join(__dirname, '../template/template.html');
+        let html = fs.readFileSync(templatePath, 'utf8');
+
+        const applicant = export_data || {};
+
+        console.log("This is Data:", applicant);
+
+        const content = `
+        <h2>Personal particulars</h2>
+        <label><b>INDOS No. </b>${applicant.indos_no || 'N/A'}</label>
+        <table>
+            <tr>
+                <td>Name (as per passport)</td>
+                <td>${applicant.last_name || ''}</td>
+                <td>${applicant.first_name || ''}</td>
+                <td>${applicant.middle_name || ''}</td>
+            </tr>
+            <tr>
+                <td>Date of Birth</td>
+                <td>${applicant.date_of_birth || ''}</td>
+                <td>Age</td>
+                <td>${applicant.age || ''}</td>
+            </tr>
+        </table>`;
+
+        const education_content = applicant.education_backgrounds ? applicant.education_backgrounds.map(education => `
+        <table>
+            <tr>
+                <th>Name: School / College</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Percentage Marks Scored</th>
+                <th>Position / Degree / Diploma</th>
+            </tr>
+            <tr>
+                <td>${education.school_name || ''}</td>
+                <td>${education.from_year || ''}</td>
+                <td>${education.to_year || ''}</td>
+                <td>${education.percentage || ''}</td>
+                <td>${education.degree || ''}</td>
+            </tr>
+        </table>`).join('') : '';
+
+        html = html.replace('<!-- Dynamic content will be inserted here -->', content + education_content);
+
+        // Ensure output directory exists
+        const outputDir = path.join(__dirname, '../files/output');
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
+
+        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'load' });
+
+        const reportName = `${applicant.first_name || 'Unknown'}${applicant.middle_name || 'Unknown'}${applicant.last_name || 'Unknown'}.pdf`;
+        const pdfPath = path.join(outputDir, reportName);
+
+        await page.pdf({
+            path: pdfPath,
+            format: 'A3',
+            printBackground: true,
+            margin: {
+                top: '0.5cm',
+                bottom: '0.5cm',
+                left: '0.5cm',
+                right: '0.5cm'
+            }
+        });
+
+        console.log(`PDF generated successfully at: ${pdfPath}`);
+        await browser.close();
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+    }
+};
+
+module.exports = { generatePDF };
