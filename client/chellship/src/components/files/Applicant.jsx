@@ -919,6 +919,7 @@ return (
 
                                 <div className='p-1'>
                                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
+                                        {/* Single', 'Married', 'Divorced', 'Separated', 'Widowed */}
                                         Marital Status : 
                                     </label>
                                     <label>
@@ -930,12 +931,12 @@ return (
                                         <span className="ml-2">Married</span>
                                     </label>
                                     <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Divourced' checked={ApplicantsDetails.marital_status === 'Divourced'} />
-                                        <span className="ml-2">Divourced</span>
+                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Divorced' checked={ApplicantsDetails.marital_status === 'Divorced'} />
+                                        <span className="ml-2">Divorced</span>
                                     </label>
                                     <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Seperated' checked={ApplicantsDetails.marital_status === 'Seperated'} />
-                                        <span className="ml-2">Seperated</span>
+                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Separated' checked={ApplicantsDetails.marital_status === 'Separated'} />
+                                        <span className="ml-2">Separated</span>
                                     </label>
                                     <label>
                                         <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Widowed' checked={ApplicantsDetails.marital_status === 'Widowed'} />
@@ -1081,6 +1082,7 @@ return (
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
                                                     value={family.family_member} 
                                                     onChange={(e) => handleFamilyChange(index, "family_member", e.target.value)}
+                                                    <option value="">Select Family Member</option>
                                                     <option value="Wife">Wife</option>
                                                     <option value="Child-1">Child - 1</option>
                                                     <option value="Child-2">Child - 2</option>
@@ -1110,6 +1112,7 @@ return (
                                                     onChange={(e) => handleFamilyChange(index, "sex", e.target.value)}
                                                     value={family.sex}
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                                                    <option value="">Select Sex</option>
                                                     <option value="Male">Male</option>
                                                     <option value="Female">Female</option>
                                                 </select>

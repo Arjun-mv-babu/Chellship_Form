@@ -119,7 +119,7 @@ const createApplicants = async (req, res) => {
 
         
         
-        // Certificate------------------------------
+        // Certificate------------------------------ >
         const certificate = requestBody.certificate ? JSON.parse(requestBody.certificate) : [];
         
         const certificateData = certificate.map(certificate => ({
@@ -135,7 +135,7 @@ const createApplicants = async (req, res) => {
 
         const certificates = await Certificate.bulkCreate(certificateData);
 
-        // HKCertificate------------------------------>
+        // HKCertificate------------------------------ >
 
         const hkcertificate = requestBody.hkcertificate ? JSON.parse(requestBody.hkcertificate) : [];
 
@@ -176,7 +176,7 @@ const createApplicants = async (req, res) => {
         
         const familiarapplications = await Certificate.bulkCreate(familiarapplicationData);
         
-        // Medical------------------------------
+        // Medical------------------------------ >
         
         const medicalData = [{
             applicant_id: applicant.applicant_id,
@@ -194,7 +194,7 @@ const createApplicants = async (req, res) => {
         
         const medical = await Medical.bulkCreate(medicalData);
         
-        // Identity Documents ------------------------------
+        // Identity Documents ------------------------------ >
         const documents = requestBody.documents ? JSON.parse(requestBody.documents) : [];
 
         const IdentityDocumentsData = documents.map(document => ({
@@ -218,7 +218,7 @@ const createApplicants = async (req, res) => {
             //     throw error;
             // });
             
-        // General------------------------------
+        // General------------------------------ >
         
         const generalData = [{
             applicant_id: applicant.applicant_id,
@@ -226,7 +226,6 @@ const createApplicants = async (req, res) => {
             court_inquiry: requestBody.court_inquiry ? requestBody.court_inquiry : null,
             certificate_suspended: requestBody.certificate_suspended ? requestBody.certificate_suspended : null,
             explain_court: requestBody.explain_court ? requestBody.explain_court : null,
-
             future_vacancies: requestBody.future_vacancies ? requestBody.future_vacancies : null,
             signature_path: signaturePath,
             declaration_date: requestBody.declaration_date ? requestBody.declaration_date : null,

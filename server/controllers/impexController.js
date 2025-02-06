@@ -9,7 +9,6 @@ const Medical = db.medical
 const Certificate = db.certificate
 const Documents = db.identity_documents
 
-
 const exportData = async (req, res) => {
     try {
         const { applicant_id } = req.params; 

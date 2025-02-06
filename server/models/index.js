@@ -38,7 +38,7 @@ db.identity_documents = require('./IdentityDocumentsModel.js')(sequelize,Sequeli
 db.applicants.hasMany(db.certificate, { foreignKey: 'applicant_id' });
 db.certificate.belongsTo(db.applicants, { foreignKey: 'applicant_id' });
 
-db.applicants.hasOne(db.family_particulars, { foreignKey: 'applicant_id' });
+db.applicants.hasMany(db.family_particulars, { foreignKey: 'applicant_id' });
 db.family_particulars.belongsTo(db.applicants, { foreignKey: 'applicant_id' });
 
 db.applicants.hasMany(db.education_background, { foreignKey: 'applicant_id' });
@@ -47,7 +47,7 @@ db.education_background.belongsTo(db.applicants, { foreignKey: 'applicant_id' })
 db.applicants.hasMany(db.experience, { foreignKey: 'applicant_id' });
 db.experience.belongsTo(db.applicants, { foreignKey: 'applicant_id' });
 
-db.applicants.hasOne(db.general, { foreignKey: 'applicant_id' });
+db.applicants.hasMany(db.general, { foreignKey: 'applicant_id' });
 db.general.belongsTo(db.applicants, { foreignKey: 'applicant_id' });
 
 db.applicants.hasOne(db.medical, { foreignKey: 'applicant_id' });
