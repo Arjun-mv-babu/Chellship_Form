@@ -3,10 +3,13 @@ const db = require('../models/index');
 const Applicant = db.applicants;
 const Family = db.family_particulars;
 const Education = db.education_background
+const PreSeaEducation = db.pre_sea_education_background
 const Experience = db.experience
 const General = db.general
 const Medical = db.medical
 const Certificate = db.certificate
+const HongKongCertificate = db.hong_kong_certificate
+const CourseCertificate = db.course_certificate
 const Documents = db.identity_documents
 
 const exportData = async (req, res) => {
@@ -24,6 +27,9 @@ const exportData = async (req, res) => {
                     model: Education,
                 },
                 {
+                    model: PreSeaEducation,
+                },
+                {
                     model: Experience,
                 },
                 {
@@ -34,6 +40,12 @@ const exportData = async (req, res) => {
                 },
                 {
                     model: Certificate,
+                },
+                {
+                    model: HongKongCertificate,
+                },
+                {
+                    model: CourseCertificate,
                 },
                 {
                     model: Documents,

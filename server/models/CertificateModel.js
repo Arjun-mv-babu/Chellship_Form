@@ -35,54 +35,6 @@ const certificates = (sequelize,Sequelize)=>{
             highest_certificate_to_date:{
                 type:Sequelize.DATEONLY,
             },
-
-            hong_kong_certificate:{
-                type:Sequelize.STRING(100),
-            },
-            hong_kong_certificate_number:{
-                type:Sequelize.STRING(100),
-            },
-            hong_kong_certificate_from_date:{
-                type:Sequelize.STRING(100),
-            },
-            hong_kong_certificate_place_issued:{
-                type:Sequelize.STRING(100),
-            },
-            hong_kong_certificate_to_date:{
-                type:Sequelize.DATEONLY,
-            },
-
-            attended_course:{
-                type:Sequelize.STRING(100),
-            },
-            attended_course_institute:{
-                type:Sequelize.STRING(100),
-            },
-            attended_course_certificate_number:{
-                type:Sequelize.STRING(100),
-            },
-            attended_course_from_date:{
-                type:Sequelize.DATEONLY,
-            },
-            attended_course_to_date:{
-                type:Sequelize.DATEONLY,
-            },
-
-            familiar_applications: {
-                type: Sequelize.ENUM('Yes', 'No'),
-            },
-            PMS: {
-                type: Sequelize.ENUM('Yes', 'No'),
-            },
-            AMOS4W: {
-                type: Sequelize.ENUM('Yes', 'No'),
-            },
-            ISPS: {
-                type: Sequelize.ENUM('Yes', 'No'),
-            },
-            SSO: {
-                type: Sequelize.ENUM('Yes', 'No'),
-            },
         },
     );
     return certificates;

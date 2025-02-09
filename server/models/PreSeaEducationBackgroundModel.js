@@ -1,8 +1,8 @@
 
-const education_background = (sequelize,Sequelize)=>{
-    const education_background = sequelize.define('education_background',
+const pre_sea_education = (sequelize,Sequelize)=>{
+    const pre_sea_education = sequelize.define('pre_sea_education',
         {
-            education_id:{
+            pre_sea_education_id:{
                 type:Sequelize.INTEGER,
                 primaryKey:true,
                 autoIncrement:true,
@@ -14,25 +14,28 @@ const education_background = (sequelize,Sequelize)=>{
                     key: 'applicant_id'
                 },
             },
-            school_name: {
+            institute_name: {
                 type: Sequelize.STRING(255),
             },
-            from_date: {
+            pre_sea_from_date: {
                 type: Sequelize.DATEONLY,
             },
-            to_date: {
+            pre_sea_to_date: {
                 type: Sequelize.DATEONLY,
             },
-            percentage:{
-                type:Sequelize.DECIMAL(5,2),
-            },
-            position_degree_diploma:{
+            course:{
                 type:Sequelize.STRING(100),
             },
+            class_obtained:{
+                type:Sequelize.STRING(100),
+            },
+            name_of_workshop:{
+                type:Sequelize.STRING(100),
+            }
         }
     );
-    return education_background;
+    return pre_sea_education;
 };
 
 
-module.exports = education_background
+module.exports = pre_sea_education

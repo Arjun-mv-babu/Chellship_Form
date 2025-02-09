@@ -2,7 +2,10 @@ const db = require('../models/index');
 const Applicant = db.applicants;
 const FamilyParticulars = db.family_particulars;
 const EducationBackground = db.education_background;
+const PreSeaEducationBackground = db.pre_sea_education_background;
 const Certificate = db.certificate;
+const HongKongCertificate = db.hong_kong_certificate;
+const CourseCertificate = db.course_certificate;
 const Medical = db.medical;
 const General = db.general;
 const Experience = db.experience;
@@ -51,6 +54,8 @@ const createApplicants = async (req, res) => {
             present_tel: requestBody.present_tel ? requestBody.present_tel : null,
             present_mobile: requestBody.present_mobile ? requestBody.present_mobile : null,
             present_email: requestBody.present_email ? requestBody.present_email : null,
+
+            // visa_rejection: requestBody.visa_rejection ? requestBody.visa_rejection : null,
         };
         
         const applicant = await Applicant.create(applicantData);
@@ -115,7 +120,7 @@ const createApplicants = async (req, res) => {
             name_of_workshop: preseaeducation.name_of_workshop || null 
         }))
 
-        const pre_sea_education_background = await EducationBackground.bulkCreate(PreSeaData);          
+        const pre_sea_education_background = await PreSeaEducationBackground.bulkCreate(PreSeaData);          
 
         
         
@@ -147,7 +152,7 @@ const createApplicants = async (req, res) => {
             hong_kong_certificate_place_issued: hkcertificate.hong_kong_certificate_place_issued || null,
             hong_kong_certificate_to_date: hkcertificate.hong_kong_certificate_to_date || null,
         }))
-        const hongkongcertificates = await Certificate.bulkCreate(hongkongcertificateData);
+        const hongkongcertificates = await HongKongCertificate.bulkCreate(hongkongcertificateData);
 
         // HKCertificate------------------------------ >
 
@@ -161,20 +166,7 @@ const createApplicants = async (req, res) => {
             attended_course_from_date: course.attended_course_from_date || null,
             attended_course_to_date: course.attended_course_to_date || null,
         }))
-        const courses = await Certificate.bulkCreate(courseData);
-
-        // HKCertificate------------------------------ >
-
-        const familiarapplicationData = [{
-            applicant_id: applicant.applicant_id,
-            familiar_applications: requestBody.familiar_applications ? requestBody.familiar_applications : null,
-            PMS: requestBody.PMS ? requestBody.PMS : null,
-            AMOS4W: requestBody.AMOS4W ? requestBody.AMOS4W : null,
-            ISPS: requestBody.ISPS ? requestBody.ISPS : null,
-            SSO: requestBody.SSO ? requestBody.SSO : null                
-        }];
-        
-        const familiarapplications = await Certificate.bulkCreate(familiarapplicationData);
+        const courses = await CourseCertificate.bulkCreate(courseData);
         
         // Medical------------------------------ >
         
@@ -205,7 +197,6 @@ const createApplicants = async (req, res) => {
             document_from_date: document.document_from_date || null,
             document_to_date: document.document_to_date || null,
             document_Place_issued: document.document_Place_issued || null,
-            // visa_rejected: document.visa_rejected || null, // Uncomment if needed
         }));
         
         const identity_documents = await IdentityDocuments.bulkCreate(IdentityDocumentsData)
@@ -229,6 +220,13 @@ const createApplicants = async (req, res) => {
             future_vacancies: requestBody.future_vacancies ? requestBody.future_vacancies : null,
             signature_path: signaturePath,
             declaration_date: requestBody.declaration_date ? requestBody.declaration_date : null,
+            visa_rejection: requestBody.visa_rejection || null,
+            familiar_applications: requestBody.familiar_applications ? requestBody.familiar_applications : null,
+            PMS: requestBody.PMS ? requestBody.PMS : null,
+            AMOS4W: requestBody.AMOS4W ? requestBody.AMOS4W : null,
+            ISPS: requestBody.ISPS ? requestBody.ISPS : null,
+            SSO: requestBody.SSO ? requestBody.SSO : null,
+            explain_familiarity: requestBody.explain_familiarity ? requestBody.explain_familiarity : null,
         }];
         
         const general = await General.bulkCreate(generalData);
@@ -311,7 +309,6 @@ const createApplicants = async (req, res) => {
             certificates,
             hongkongcertificates,
             courses,
-            familiarapplications,
             medical,
             general,
             references,

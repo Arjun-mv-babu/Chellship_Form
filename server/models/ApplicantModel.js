@@ -77,7 +77,7 @@ const applicant = (sequelize,Sequelize)=>{
                 type: Sequelize.TEXT,
             },
             permanent_tel: {
-                type: Sequelize.STRING(20),
+            type: Sequelize.STRING(20),
             },
             permanent_mobile: {
                 type: Sequelize.STRING(20),

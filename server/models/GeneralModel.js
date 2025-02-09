@@ -34,8 +34,6 @@ const general = (sequelize,Sequelize)=>{
             past_company_telephone:{
                 type:Sequelize.STRING(50),
             },
-
-
             future_vacancies: {
                 type: Sequelize.ENUM('Yes', 'No'),
             },
@@ -44,6 +42,27 @@ const general = (sequelize,Sequelize)=>{
             },
             declaration_date:{
                 type:Sequelize.DATEONLY,
+            },
+            visa_rejection:{
+                type:Sequelize.ENUM('Yes', 'No'),
+            },
+            familiar_applications: {
+                type: Sequelize.ENUM('Yes', 'No'),
+            },
+            PMS: {
+                type: Sequelize.ENUM('Yes', 'No'),
+            },
+            AMOS4W: {
+                type: Sequelize.ENUM('Yes', 'No'),
+            },
+            ISPS: {
+                type: Sequelize.ENUM('Yes', 'No'),
+            },
+            SSO: {
+                type: Sequelize.ENUM('Yes', 'No'),
+            },
+            explain_familiarity: {
+                type: Sequelize.TEXT,
             },
         }
     );

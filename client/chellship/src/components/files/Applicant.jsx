@@ -90,6 +90,7 @@ const Applicant = () => {
         AMOS4W: "",
         ISPS: "",
         SSO: "",
+        explain_familiarity:"",
 
         signed_off: "",
         surgery: "",
@@ -174,7 +175,7 @@ const Applicant = () => {
         // document_from_date: "",
         // document_to_date: "",
         // document_Place_issued: "",
-        // visa_rejected: ""
+        visa_rejection: ""
         
     });
 
@@ -600,6 +601,7 @@ const Applicant = () => {
         formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
         formData.append('ISPS', ApplicantsDetails.ISPS);
         formData.append('SSO', ApplicantsDetails.SSO);
+        formData.append('explain_familiarity', ApplicantsDetails.explain_familiarity);
         
         formData.append('signed_off', ApplicantsDetails.signed_off);
         formData.append('surgery', ApplicantsDetails.surgery);
@@ -619,7 +621,7 @@ const Applicant = () => {
         // formData.append('document_to_date', ApplicantsDetails.document_to_date);
         // formData.append('document_Place_issued', ApplicantsDetails.document_Place_issued);
 
-        // formData.append('visa_rejected', ApplicantsDetails.visa_rejected);
+        formData.append('visa_rejection', ApplicantsDetails.visa_rejection);
 
         formData.append('court_inquiry', ApplicantsDetails.court_inquiry);
         formData.append('certificate_suspended', ApplicantsDetails.certificate_suspended);
@@ -1068,27 +1070,26 @@ return (
                                     </div>
 
                                     <div className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
-                                    {family.map((family, index) => (
-                                        <div className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
-                                        <div key={index} className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            <div className="flex flex-col space-y-2 p-4">
-                                                <label htmlFor={`family_member${index}`} className="text-sm font-medium text-gray-900">
-                                                    Family Member:
-                                                </label>
-                                                <select
-                                                    id={`family_member${index}`}
-                                                    name="family_member"
-                                                    type="text"
-                                                    className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
-                                                    value={family.family_member} 
-                                                    onChange={(e) => handleFamilyChange(index, "family_member", e.target.value)}
-                                                    <option value="">Select Family Member</option>
-                                                    <option value="Wife">Wife</option>
-                                                    <option value="Child-1">Child - 1</option>
-                                                    <option value="Child-2">Child - 2</option>
-                                                    <option value="Child-3">Child - 3</option>
-                                                </select>
-                                            </div>
+                                        {family.map((family, index) => (
+                                            <div key={index} className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
+                                                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                    <div className="flex flex-col space-y-2 p-4">
+                                                        <label htmlFor={`family_member${index}`} className="text-sm font-medium text-gray-900">
+                                                            Family Member:
+                                                        </label>
+                                                        <select
+                                                            id={`family_member${index}`}
+                                                            name="family_member"
+                                                            value={family.family_member}  
+                                                            onChange={(e) => handleFamilyChange(index, "family_member", e.target.value)} 
+                                                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                                                            <option value="">Select Family Member</option>
+                                                            <option value="Wife">Wife</option>
+                                                            <option value="Child-1">Child - 1</option>
+                                                            <option value="Child-2">Child - 2</option>
+                                                            <option value="Child-3">Child - 3</option>
+                                                        </select>
+                                                    </div>
 
                                             <div className="flex flex-col space-y-2 p-4">
                                                 <label htmlFor={`family_member_name${index}`} className="text-sm font-medium text-gray-900">
@@ -1541,10 +1542,9 @@ return (
         + Add Another Document
     </button>
 </div>
-</div>
 
-        {/* <div className='grid grid-cols-2'>
-            <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
+<div className='grid grid-cols-2'>
+            <label className='text-sm font-medium text-gray-900 m-3' htmlFor="visa_rejection">
                 Have you ever been rejected for any Visa Applied for? 
             </label>
             <div>
@@ -1552,32 +1552,24 @@ return (
                     <input 
                         type="radio" 
                         name="visa_rejection" 
-                        onChange={handleDocumentChange}
+                        onChange={handleApplicantChange}
                         value="Yes"
-                        checked={doc.visa_rejection === "Yes"}
-                    />
+                        checked={ApplicantsDetails.visa_rejection === 'Yes'}/>
                     <span className="ml-2">Yes</span>
                 </label> &nbsp;
                 <label>
                     <input 
                         type="radio" 
                         name="visa_rejection" 
-                        onChange={handleDocumentChange} 
+                        onChange={handleApplicantChange}
                         value="No"
-                        checked={doc.visa_rejection === "No"}
-                    />
+                        checked={ApplicantsDetails.visa_rejection === 'No'}/>
                     <span className="ml-2">No</span>
                 </label>
             </div>
-        </div> */}
+</div>
 
-
-
-
-
-
-
-
+</div>
 
 
     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
@@ -1675,12 +1667,16 @@ return (
             <label htmlFor={`hong_kong_certificate${index}`} className="text-sm font-medium text-gray-900">
                 Certificate / License :
             </label>
-            <input id={`hong_kong_certificate${index}`} name="hong_kong_certificate" type="text" 
+            <select id={`hong_kong_certificate${index}`} name="hong_kong_certificate" type="text" 
                 value={hkcertificate.hong_kong_certificate} 
                 onChange={(e) => handleHKCertificateChange(index, "hong_kong_certificate", e.target.value)}
                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm 
                 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
-                focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option value="Select Certificate">Select Certificate</option>
+                <option value="Hong Kong License">Hong Kong License</option>
+                <option value="Authority To Operate(ATP)">Authority To Operate(ATP)</option>
+            </select>
         </div>
 
         <div className='flex flex-col  p-2'>
@@ -1756,12 +1752,32 @@ return (
         <label htmlFor={`attended_course${index}`} className="text-sm font-medium text-gray-900">
             Course : 
         </label>
-        <input id={`attended_course${index}`} name="attended_course" type="text" 
+        <select
+            id={`attended_course${index}`} name="attended_course" type="text" 
             value={course.attended_course} 
             onChange={(e) => handleCourseChange(index, "attended_course", e.target.value)} 
             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm 
             ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
-            focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+            focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+            <option value="Elementary First Aid">Elementary First Aid</option>
+            <option value="Medical First Aid">Medical First Aid</option>
+            <option value="Ship Master's Medicare">Ship Master's Medicare</option>
+            <option value="Personal Survival Techniques">Personal Survival Techniques</option>
+            <option value="PSC - RB">PSC - RB</option>
+            <option value="Fire Fighting & Fire Prevention">Fire Fighting & Fire Prevention</option>
+            <option value="Advance Fire Fighting">Advance Fire Fighting</option>
+            <option value="PSSR">PSSR</option>
+            <option value="ARPA">ARPA</option>
+            <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option>
+            <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option>
+            <option value="ECDIS">ECDIS</option>
+            <option value="GMDSS">GMDSS</option>
+            <option value="STCW Endorsement">STCW Endorsement</option>
+            <option value="ISO / ISM Auditor Course">ISO / ISM Auditor Course</option>
+            <option value="Bridge Team Management">Bridge Team Management</option>
+            <option value="Bridge Resource Management">Bridge Resource Management</option>
+            <option value="AMOS-4W Course">AMOS-4W Course</option>
+        </select>
     </div>
 
     <div className='flex flex-col  p-2'>
@@ -1908,7 +1924,6 @@ return (
                     </div>
                 </div>
 
-
                 <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
                         SSO course (Maritime Administration Approved): 
@@ -1916,17 +1931,32 @@ return (
                     <div>
                         <label>
                             <input type="radio" name='SSO'
-                             onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.SSO === 'Yes'}  
-                             /> 
+                             onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.SSO === 'Yes'}  /> 
                                 <span className="ml-2">Yes</span>
                         </label> &nbsp;
                         <label>
                             <input type="radio" name='SSO' 
-                            onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.SSO === 'No'}  
-                            /> 
+                            onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.SSO === 'No'}  /> 
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
+                    {(ApplicantsDetails.familiar_applications === 'Yes' ||
+                        ApplicantsDetails.PMS === 'Yes' ||
+                        ApplicantsDetails.AMOS4W === 'Yes' ||
+                        ApplicantsDetails.ISPS === 'Yes' || 
+                        ApplicantsDetails.SSO === 'Yes') && (
+                        <div className="m-2">
+                            <label htmlFor="explain_familiarity" className="text-sm font-medium text-gray-900">
+                            If the answer is "Yes" to any of the above, please provide details: 
+                            </label>
+                            <textarea 
+                            id="explain_familiarity" 
+                            name="explain_familiarity" 
+                            value={ApplicantsDetails.explain_familiarity}
+                            onChange={handleApplicantChange} 
+                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+                        </div>
+                    )}
                 </div>
             </div>
 
