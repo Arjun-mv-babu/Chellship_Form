@@ -57,12 +57,15 @@ const exportData = async (req, res) => {
             return res.status(400).json({ message: "Data not found", success: false });
         }        
 
-        await generatePDF(export_data);
+        const pdfPath = await generatePDF(export_data);
 
-        res.status(200).json({
-            message: "Successfully exported", 
-            success: true,
-            data: export_data
+        res.download(pdfPath, (err) => {
+            if (err) {
+                console.error('Error sending PDF:', err);
+                res.status(500).json({ message: "Error occurred while sending PDF" });
+            } else {
+                console.log('PDF sent successfully');
+            }
         });
 
     } catch (err) {

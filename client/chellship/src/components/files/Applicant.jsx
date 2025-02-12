@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Applicant = () => {
 
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [ApplicantsDetails, setApplicantsDetails] = useState({
         position_applied_for: "",
@@ -694,6 +694,9 @@ const Applicant = () => {
 
         .then((response) => {
             alert('Applicants details saved');
+            console.log("response:",response);
+            
+            navigate('/complete', { state: { applicant_id: response.data.applicant.applicant_id } });
             })
             .catch((error) => {
                 console.error('Error adding Applicants:', error);
@@ -705,9 +708,9 @@ const Applicant = () => {
 
 return (
     <>
-        <h1 className='text-center text-3xl m-3'>APPLICATION FORM</h1>
+        <h1 className='text-center text-3xl m-3'><b>APPLICATION FORM</b></h1>
         <form onSubmit={handleSubmit}>
-            <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
+            <div className='flex min-h-full flex-col justify-center lg:px-8 py-3'>
                 <div className='border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                     <div className='grid grid-cols-2'>
                         <div className='flexbox items-center p-4'>
@@ -1224,8 +1227,8 @@ return (
 
 
 
-                <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-                    <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
+                <div className='flex min-h-full flex-col justify-center lg:px-8'>
+                    <div className='flex min-h-full flex-col justify-center lg:px-8'>
                         <h4 className='bold text-center'>
                             <b>Educational Background - prior Pre-Sea Training</b>
                         </h4>
@@ -1759,6 +1762,7 @@ return (
             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm 
             ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
             focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+            <option value="">Select Course</option>
             <option value="Elementary First Aid">Elementary First Aid</option>
             <option value="Medical First Aid">Medical First Aid</option>
             <option value="Ship Master's Medicare">Ship Master's Medicare</option>
@@ -2149,7 +2153,7 @@ return (
 
 
 
-        <div className='flex min-h-full flex-col justify-center lg:px-3/4 py-12'>
+        <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
                     <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
                     <h4 className='bold text-center'><b>General</b></h4>
                         <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
@@ -2298,7 +2302,7 @@ return (
             </div>
 
             {/* Declaration */}
-            <div className='flex min-h-full flex-col justify-center lg:px-3/4 py-12'>
+            <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
                 <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
                     <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                     <div className='flex min-h-full flex-col justify-center lg:px-4 py-6 bold lg:px-3/4 '>
@@ -2325,18 +2329,18 @@ return (
                     </div>
 
                     <div className='grid grid-cols-2'>
-                        <div className='flexbox items-center p-2'>
+                        {/* <div className='flexbox items-center p-2'>
                             <label htmlFor="signature" className="text-sm font-medium text-gray-900">
                                 Signature : 
                             </label>
                             <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                        </div>
+                        </div> */}
 
                         <div className='flexbox items-center p-2'>
                             <label htmlFor="declaration_date" className="text-sm font-medium text-gray-900">
                                 Declaration Date : 
                             </label>
-                            <input id="declaration_date" name="declaration_date" type="date" value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            <input id="declaration_date" name="declaration_date" type="date" value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   className="block w-32 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
                     </div>
                     </div>
@@ -2725,11 +2729,14 @@ return (
 
                 
             </div>
-            <button
-                type="submit"
-                className="text-center m-4 p-4 text-center px-4 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500">
-                Save & Continue
-            </button>
+            <div className="flex justify-center">
+                <button
+                    type="submit"
+                    className="m-4 p-4 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500">
+                    Submit
+                </button>
+            </div>
+
         </form>
 
     </>

@@ -12,27 +12,36 @@ const generatePDF = async (export_data) => {
         const applicant = export_data ? export_data : {};
 
         console.log("This is applicant:", applicant);
-        // console.log("This is family_particulars:", applicant.family_particulars);
+
+        const imagePath = applicant.photo_path ? path.join(__dirname, '../', applicant.photo_path) : null;
+        const imageBase64 = imagePath ? fs.readFileSync(imagePath, { encoding: 'base64' }) : null;
+        const imageSrc = imageBase64 ? `data:image/jpeg;base64,${imageBase64}` : '';
+
+        const signaturePath = applicant.generals.length > 0 && applicant.generals[0].signature_path 
+            ? path.join(__dirname, '../', applicant.generals[0].signature_path) 
+            : null;
+        const signatureBase64 = signaturePath ? fs.readFileSync(signaturePath, { encoding: 'base64' }) : null;
+        const signatureSrc = signatureBase64 ? `data:image/jpeg;base64,${signatureBase64}` : '';
+        
 
 const emergency_family_TableRows = applicant.family_particulars.slice(0,1).map(family => `
     <tr>
         <td rowspan="5" style="vertical-align:top;" width="100">Next of Kin</td>
-        <td width="100">Name</td>
+        <th width="100">Name</th>
         <td width="200">${family.emergency_name}</td>
-        <td width="100">Relationship</td>
+        <th width="100">Relationship</th>
         <td colspan="2">${family.emergency_relationship}</td>
-        
     </tr>
     <tr>
-        <td>Address</td>
+        <th>Address</th>
         <td colspan="4">${family.emergency_address}</td>
         
         
     </tr>
     <tr>
-        <td>Telephone No.</td>
+        <th>Telephone No.</th>
         <td>${family.emergency_tel}</td>
-        <td>Email</td>
+        <th>Email</th>
         <td colspan="2">${family.emergency_email}</td>
         
     </tr>
@@ -62,24 +71,24 @@ const education_Table_Rows = applicant.education_backgrounds.map(education => `
 
 const pre_sea_education_Table_Rows = applicant.pre_sea_educations.map(education => `
 <tr>
-   <td width="170">Pre-Sea Training Institute</td>
+   <th width="170">Pre-Sea Training Institute</th>
    <td colspan="3">${education.institute_name}</td>
 </tr>
 <tr>
-   <td>Date commenced</td>
+   <th>Date commenced</th>
    <td width="150">${education.pre_sea_from_date}</td>
-   <td width="150">Date Completed</td>
+   <th width="150">Date Completed</th>
    <td>${education.pre_sea_to_date}</td>
 </tr>
 <tr>
-   <td>Degree Diploma Certificate</td>
+   <th>Degree Diploma Certificate</th>
    <td>${education.course}</td>
-   <td>Class Obtained</td>
+   <th>Class Obtained</th>
    <td>${education.class_obtained}</</td>
    
 </tr>
  <tr>
-   <td>Name of Workshop</td>
+   <th>Name of Workshop</th>
    <td>${education.name_of_workshop}</td>   
 </tr>
 <tr>
@@ -99,7 +108,6 @@ const documents_Table_Rows = applicant.identity_documents.map(documents => `
 </tr>
 `).join("");
 
-// ?????
 const visa_general_Table_Rows = applicant.generals.slice(0,1).map(visa => `
    <td>${visa.visa_rejection}</td>
 `).join("");
@@ -140,7 +148,6 @@ const course_certificate_Table_Rows = applicant.course_certificates.map(certific
 </tr>
  `).join("");
 
-// ?????
 const familiar_apps_Table_Rows = applicant.generals.slice(0,1).map(general => `
     <tr>
         <td >Application Familier (Word, Excel, etc.)</td>
@@ -173,7 +180,6 @@ const familiar_apps_Table_Rows = applicant.generals.slice(0,1).map(general => `
 
  `).join("");
 
-// ?????
 const accident_general_Table_Rows = applicant.generals.slice(0,1).map(general => `
 <tr>
    <td width="500" >Have you ever been involved in a court of enquiry or maritime accident?</td>
@@ -191,7 +197,6 @@ const accident_general_Table_Rows = applicant.generals.slice(0,1).map(general =>
 </table>
  `).join("");
 
-// ?????
 const company_general_Table_Rows = applicant.generals.slice(1).map(general => `
     <tr>
         <td>${general.past_company}</td>
@@ -200,20 +205,97 @@ const company_general_Table_Rows = applicant.generals.slice(1).map(general => `
 	</tr>
  `).join("");
 
-// ?????
 const future_vacancies = applicant.generals.slice(0,1).map(general => `
     <p>If immediate employment not available do you wish to be considered for future vacancies - ${general.future_vacancies} </p>
  `).join("");
 
-// ?????
 const declaration_general_Table_Rows = applicant.generals.slice(0,1).map(general => `
 <tr>
-    <td style="border:none;">&nbsp;</td>
-    <td style="border:none;border-bottom:1px solid #000;">${general.signature_path}</td>
-    <td style="border:none;"></td>
-    <td style="border:none;border-bottom:1px solid #000;">${general.declaration_date}</td>
-    <td style="border:none;">&nbsp;</td>
-</tr> `).join("");
+    <td style="border:none;text-align:left;">${general.declaration_date}</td>
+</tr>
+ `).join("");
+
+const first_sea_service_Table_Rows = applicant.experiences.slice(1).map(experience => `
+  <tr>
+    <td>${experience.company_name}</td>
+    <td>${experience.vessel_name}</td>
+    <td>${experience.rank}</td>
+    <td>${experience.previous_from_date}</td>
+    <td>${experience.previous_to_date}</td>
+    <td>${experience.period_months}</td>
+    <td>${experience.period_days}</td>
+    <td>${experience.vessel_type}</td>
+  </tr>
+ `).join("");
+
+const second_sea_service_Table_Rows = applicant.experiences.slice(1).map(experience => `
+  <tr>
+    <td>${experience.company_name}</td>
+    <td>${experience.engine_type}</td>
+    <td>${experience.ums}</td>
+    <td>${experience.bhp}</td>
+    <td>${experience.grt}</td>
+    <td>${experience.year_built}</td>
+    <td>${experience.drydock_done}</td>
+    <td>${experience.reason_for_leaving}</td>
+  </tr>
+ `).join("");
+
+const rank_experience_Table_Rows = applicant.experiences.slice(0,1).map(experience => `
+  <tr>
+    <th>MASTER</th>
+    <td>${experience.master}</td>
+    <th>CHIEF ENGINEER</th>
+    <td>${experience.chief_officer}</td>
+    <th>ELECTRICAL OFFICER</th>
+    <td>${experience.second_officer}</td>
+  </tr>
+  <tr>
+    <th>CHIEF OFFICER</th>
+    <td>${experience.third_officer}</td>
+    <th>2ND ENGINEER</th>
+    <td>${experience.deck_cadet}</td>
+  </tr>
+  <tr>
+    <th>2ND OFFICER</th>
+    <td>${experience.bosun}</td>
+    <th>3RD ENGINEER</th>
+    <td>${experience.ab}</td>
+  </tr>
+  <tr>
+    <th>3RD OFFICER</th>
+    <td>${experience.os}</td>
+    <th>4th ENGINEER</td>
+    <td>${experience.chief_engineer}</td>
+  </tr>
+  <tr>
+    <th>DECK CADET</th>
+    <td>${experience.second_officer}</td>
+    <th>5th ENGINEER</td>
+    <td>${experience.second_engineer}</td>
+  </tr>
+ </table>
+ <br>
+ <table>
+  <tr>
+    <th>BOSUN</th>
+    <td>${experience.third_engineer}</td>
+    <th>AB</th>
+    <td>${experience.fourth_engineer}</td>
+    <th>OS</th>
+    <td>${experience.fifth_engineer}</td>
+    <th>FITTER</th>
+    <td>${experience.fitter}</td>
+    <th>OILER</th>
+    <td>${experience.oiler}</td>
+    <th>WPR</th>
+    <td>${experience.wpr}</td>
+    <th>CH COOK</th>
+    <td>${experience.ch_cook}</td>
+    <th>MESSMAN</th>
+    <td>${experience.messman}</td>
+  </tr>
+ `).join("");
 
 const content=`
 <table style="margin-bottom:20px; border:none;">
@@ -223,7 +305,7 @@ const content=`
     </td>
     <td style="border:none;" ><h2>Application Form</h2></td>
     <td width="100" height="100" style="text-align:center;">
-        Affix passport size photo here.
+        <img src="${imageSrc}" style="max-width:100px; max-height:100px;" />
     </td>
     
 </tr>
@@ -231,16 +313,16 @@ const content=`
 
 <table style="margin-bottom:20px;">
 <tr>
-    <td width="25%"><strong>Position Applied for</strong></td>
+    <th width="25%"><strong>Position Applied for</strong></th>
     <td width="25%">${applicant.position_applied_for}</td>
-    <td width="25%"><strong>Date Available to Join</strong></td>
-    <td width="25%">${applicant.position_applied_for}</td>
+    <th width="25%"><strong>Date Available to Join</strong></th>
+    <td width="25%">${applicant.date_available}</td>
 </tr>
 </table>
 <table>
 
 <tr>
-    <td width="250" ><strong>How were you introduced to Chellaram Shipping?</strong></td>
+    <th width="250" ><strong>How were you introduced to Chellaram Shipping?</strong></th>
     <td >
     ${applicant.introduction}<br>
     ${applicant.others_explain}
@@ -252,7 +334,7 @@ const content=`
 <h3>Personal Particulars</h3>
 <table style="margin-bottom:20px;">
 <tr>
-    <td width="300"><strong>INDOS No.</strong></td>
+    <th width="300"><strong>INDOS No.</strong></th>
     <td >${applicant.indos_no}</td>
     <td style="border:none;" ></td>
 </tr>
@@ -261,52 +343,52 @@ const content=`
 <table>
 
 <tbody><tr>
-    <td><strong>Name (as per passport)</strong></td>
-    <td><strong>Last:</strong>${applicant.last_name}</td>
-    <td colspan="2"><strong>First:</strong>${applicant.first_name}</td>
-    <td colspan="2"><strong>Middle:</strong>${applicant.middle_name}</td>
+    <th><strong>Name (as per passport)</strong></th>
+    <td><strong>Last: </strong>${applicant.last_name}</td>
+    <td colspan="2"><strong>First: </strong>${applicant.first_name}</td>
+    <td colspan="2"><strong>Middle: </strong>${applicant.middle_name}</td>
 </tr>
 <tr>
-    <td width="160">Date of Birth</td>
+    <th width="160">Date of Birth</th>
     <td width="100">${applicant.date_of_birth}</td>
-    <td width="200">Age</td>
+    <th width="200">Age</th>
     <td width="100">${applicant.age}</td>
-    <td width="100">Place of Birth</td>
+    <th width="100">Place of Birth</th>
     <td width="100">${applicant.place_of_birth}</td>
 </tr>
 <tr>
-    <td>Height</td>
+    <th>Height</th>
     <td>${applicant.height}</td>
-    <td>Weight</td>
+    <th>Weight</th>
     <td colspan="3">${applicant.weight}</td>
 </tr>
 <tr>
-    <td>Nationality</td>
+    <th>Nationality</th>
     <td>${applicant.nationality}</td>
-    <td>Religion</td>
+    <th>Religion</th>
     <td colspan="3">${applicant.religion}</td>
 </tr>
 <tr>
-    <td  rowspan="2">Mother Tongue</td>
+    <th  rowspan="2">Mother Tongue</th>
     <td  rowspan="2">${applicant.mother_tongue}</td>
-    <td>
+    <th>
         Spoken Languages 
-    </td>
+    </th>
     <td  rowspan="1" colspan="3">${applicant.spoken_languages}</td>
 </tr>
 <tr>
-    <td>Written Languages</td>
+    <th>Written Languages</th>
     <td  rowspan="1" colspan="3">${applicant.written_languages}</td>
 </tr>
 <tr>
-    <td>Native Place</td>
+    <th>Native Place</th>
     <td colspan="2">${applicant.native_place}</td>
-    <td colspan="2" >Currently Resident</td>
+    <th colspan="2" >Currently Resident</th>
     <td width="100">${applicant.current_resident}</td>
 </tr>
 
 <tr>
-    <td>Marital Status</td>
+    <th>Marital Status</th>
     <td colspan="5">
         <table>
             <tr>
@@ -324,7 +406,7 @@ const content=`
 <table>
 <tbody>
 <tr>
-    <td colspan="1" style="border-bottom:1px solid #fff;" >Permanent Address</td>
+    <th colspan="1" style="border-bottom:1px solid #fff;" >Permanent Address</th>
     <td rowspan="2"  colspan="9">${applicant.permanent_address}</td>
 </tr>
 <tr>
@@ -333,16 +415,16 @@ const content=`
 </tr>
 
 <tr>
-    <td width="150">Tel No.</td>
+    <th width="150">Tel No.</th>
     <td colspan="2">${applicant.permanent_tel}</td>
-    <td width="50">Mobile</td>
+    <th width="50">Mobile</th>
     <td>${applicant.permanent_mobile}</td>
-    <td width="50">Email</td>
+    <th width="50">Email</th>
     <td colspan="2">${applicant.permanent_email}</td>
     
 </tr>
 <tr>
-    <td colspan="1" style="border-bottom:1px solid #fff;" >Present Address</td>
+    <th colspan="1" style="border-bottom:1px solid #fff;" >Present Address</th>
     <td rowspan="2"  colspan="9">${applicant.present_address}</td>
 </tr>
 <tr>
@@ -350,11 +432,11 @@ const content=`
     
 </tr>
 <tr>
-    <td width="150">Tel No.</td>
+    <th width="150">Tel No.</th>
     <td colspan="2">${applicant.present_tel}</td>
-    <td width="50">Mobile</td>
+    <th width="50">Mobile</th>
     <td>${applicant.present_mobile}</td>
-    <td width="50">Email</td>
+    <th width="50">Email</th>
     <td colspan="2">${applicant.present_email}</td>
     
 </tr>
@@ -373,12 +455,12 @@ const content=`
 <tbody>
     <tr>
         <td width="75"></td>
-        <td width="150">Name</td>
-        <td width="50">Sex</td>
-        <td width="150">D.O.B., P.O.B.</td>
-        <td width="70">PP No.</td>
-        <td width="70">ECNR</td>
-        <td width="150">Date Place Issued</td>
+        <th width="150">Name</th>
+        <th width="50">Sex</th>
+        <th width="150">D.O.B., P.O.B.</th>
+        <th width="70">PP No.</th>
+        <th width="70">ECNR</th>
+        <th width="150">Date Place Issued</th>
     </tr>
     ${family_Table_Rows}
 </tbody>
@@ -411,12 +493,12 @@ const content=`
 
 <table style="margin-bottom:20px;">
     <tr>
-        <td width="100">Documents</td>
-        <td >Country</td>
-        <td >Number</td>
-        <td >Issue Date</td>
-        <td >Expiry Date</td>
-        <td >Place of Issue</td>
+        <th width="100">Documents</th>
+        <th >Country</th>
+        <th >Number</th>
+        <th >Issue Date</th>
+        <th >Expiry Date</th>
+        <th >Place of Issue</th>
     </tr>
     ${documents_Table_Rows}
 </table>
@@ -435,13 +517,13 @@ const content=`
 <p>State details of highest certificate of competency held</p>
 <table>
     <tr>
-        <td >Certificate</td>
-        <td >Grade </td>
-        <td >Issuing Country</td>
-        <td >Certificate No.</td>
-        <td >Date Issued </td>
-        <td >Place Issued</td>
-        <td >Valid Until</td>
+        <th >Certificate</th>
+        <th >Grade </th>
+        <th >Issuing Country</th>
+        <th >Certificate No.</th>
+        <th >Date Issued </th>
+        <th >Place Issued</th>
+        <th >Valid Until</th>
     </tr>
     ${certificate_Table_Rows}
 </table>
@@ -450,11 +532,11 @@ const content=`
 <p>Certificate of competency & ATO Issued by HongKong</p>
 <table>
     <tr>
-        <td >Certificate Licence</td>
-        <td >Certificate No. </td>
-        <td >Date of Issue</td>
-        <td >Place of Issue</td>
-        <td >Valid Until</td>
+        <th >Certificate Licence</th>
+        <th >Certificate No. </th>
+        <th >Date of Issue</th>
+        <th >Place of Issue</th>
+        <th >Valid Until</th>
     </tr>
     ${course_certificate_Table_Rows}
 </table>
@@ -462,11 +544,11 @@ const content=`
 <h3>Courses Attended & Certificate Obtained</h3>
 <table>
     <tr>
-        <td >Course</td>
-        <td >Institute/ Place </td>
-        <td >Certificate No.</td>
-        <td >Date Issued</td>
-        <td >Valid Until</td>
+        <th >Course</th>
+        <th >Institute/ Place </th>
+        <th >Certificate No.</th>
+        <th >Date Issued</th>
+        <th >Valid Until</th>
     </tr>
     ${hkcertificate_Table_Rows}
 </table>
@@ -493,9 +575,9 @@ const content=`
 <p>State details of the Superindent / Manager of your current or immediate past employers as below: </p>
 <table>
     <tr>
-        <td  >Name of Company</td>
-		<td  >Superindent / Manager's Name and Designation</td>
-		<td  >Telephone</td>
+        <th  >Name of Company</th>
+		<th  >Superindent / Manager's Name and Designation</th>
+		<th  >Telephone</th>
 		   
 	</tr>
     ${company_general_Table_Rows}
@@ -512,20 +594,111 @@ ${future_vacancies}
 
 <table style="margin-top:80px;">
 <tbody>
-
-    ${declaration_general_Table_Rows}
 <tr>
-    <td style="border:none;">&nbsp;</td>
-    <td style="border:none; text-align:center;" width="200">Signature</td>
-    <td style="border:none;"></td>
-    <td style="border:none; text-align:center;" width="200.">Date</td>
-    <td style="border:none;">&nbsp;</td>
+    <td style="border:none; text-align:left;" width="200.">Date</td>
 </tr>
+    ${declaration_general_Table_Rows}
 
 
-</tbody></table>`
+</tbody></table>
     
+   
+<br>
+<br>
+<br>
 
+
+ <h3>Sea Experience </h3>
+ <p>Enter from descending order , ie.<b>latest ship first</b></p>
+ 
+ 
+ 
+ <p>Use abbreviations:</p>
+ 
+ <table style="margin-top:10px;">
+     <tbody>
+     
+        <tr>
+             <td style="border:none;">CG - General Cargo</td>
+             <td style="border:none;">MP - Multi-Purpose</td>
+             <td style="border:none;">CN – Container</td>
+             <td style="border:none;">RF - Refrigerated</td>
+             <td style="border:none;">RR- RO/RO</td>
+             <td style="border:none;">HL - Heavy Unit</td>
+            
+         </tr>
+         <tr>
+             <td style="border:none; border-top:1px solid #333;">LS- Lash type</td>
+             <td style="border:none; border-top:1px solid #333;">PS - Passenger</td>
+             <td style="border:none; border-top:1px solid #333;">DR - Dredger</td>
+             <td style="border:none; border-top:1px solid #333;">LV- Livestock</td>
+             <td style="border:none; border-top:1px solid #333;">BC - Bulk Carrier</td>
+             <td style="border:none; border-top:1px solid #333;">OBO - Ore/Bulk/Oil</td>
+            
+         </tr>
+         <tr>
+             <td style="border:none; border-top:1px solid #333;">TN – Tankers</td>
+             <td style="border:none; border-top:1px solid #333;">PD -Product</td>
+             <td style="border:none; border-top:1px solid #333;">GS - LPG/LNG</td>
+             <td style="border:none; border-top:1px solid #333;">CH - Chemical Tanker</td>
+             <td style="border:none; border-top:1px solid #333;">OS - Off-shore</td>
+             <td style="border:none; border-top:1px solid #333;">PCC - Pure Car Carrier</td>
+            
+         </tr>
+         
+        
+         
+     </tbody>
+ </table>
+ 
+ 
+ 
+ 
+
+ <h3>RECORD OF PREVIOUS SEA SERVICE </h3>
+
+ <table>
+   <tr>
+        <th>COMPANY</th>
+        <th>VESSEL</th>
+        <th>RANK</th>
+        <th>
+        FROM
+        </th>
+        <th>
+        TO
+        </th>
+        <th>
+        PERIOD
+        M
+        </th>
+        <th>
+        PERIOD
+        D
+        </th>
+        <th>VESSEL TYPE</th>
+  </tr>
+    ${first_sea_service_Table_Rows}
+ </table>
+<br>
+ <table>
+  <tr>
+    <th>COMPANY</th>
+    <th>ENGINE TYPE</th>
+    <th>UMS / NON - UMS</th>
+    <th>BHP</th>
+    <th>GRT</th>
+    <th>YEAR BUILT</th>
+    <th>DRYDOCK DONE</th>
+    <th>REASONS FOR LEAVING COMPANY</th>
+  </tr>
+    ${second_sea_service_Table_Rows}
+ </table>
+
+ <h3>TOTAL RANK EXPERIENCE IN MONTHS:</h3>
+ <table>
+    ${rank_experience_Table_Rows}
+ </table>`
 
         html = html.replace('<!-- Dynamic content will be inserted here -->', content );
 
@@ -537,7 +710,7 @@ ${future_vacancies}
         await page.setContent(html, { waitUntil: 'load' });
 
         // const reportName = `report_${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`;
-        const reportName = `${applicant.first_name || 'Unknown'}${applicant.middle_name || 'Unknown'}${applicant.last_name || 'Unknown'}.pdf`;
+        const reportName = `${applicant.first_name || 'Unknown'}.pdf`;
         const pdfPath = path.join(__dirname, `../files/output/${reportName}`);
 
         await page.pdf({
@@ -554,6 +727,8 @@ ${future_vacancies}
 
         console.log(`PDF generated successfully at: ${pdfPath}`);
         await browser.close();
+
+        return pdfPath;
 
     } catch (error) {
         console.log('Error generating PDF:', error);

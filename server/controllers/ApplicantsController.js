@@ -244,32 +244,6 @@ const createApplicants = async (req, res) => {
 
         const references = await General.bulkCreate(PastgeneralData);
 
-        // service ------------------------------
-        
-        const service = requestBody.service ? JSON.parse(requestBody.service) : [];
-
-        const serviceData = service.map(service => ({
-            applicant_id: applicant.applicant_id,
-            experience_id: service.experience_id || null,
-            company_name: service.company_name || null,
-            vessel_name: service.vessel_name || null,
-            rank: service.rank || null,
-            previous_from_date: service.previous_from_date  || null,
-            previous_to_date: service.previous_to_date  || null,
-            period_months: service.period_months  || null,
-            period_days: service.period_days  || null,
-            vessel_type: service.vessel_type  || null,
-            engine_type: service.engine_type  || null,
-            ums: service.ums  || null,
-            bhp: service.bhp  || null,
-            grt: service.grt  || null,
-            year_built: service.year_built  || null,
-            drydock_done: service.drydock_done  || null,
-            reason_for_leaving: service.reason_for_leaving  || null,
-        }))
-
-        const services = await Experience.bulkCreate(serviceData);
-
         // Experience ------------------------------
 
         const experienceData = [{
@@ -295,6 +269,32 @@ const createApplicants = async (req, res) => {
         }];
         
         const experience = await Experience.bulkCreate(experienceData);
+
+        // service ------------------------------
+        
+        const service = requestBody.service ? JSON.parse(requestBody.service) : [];
+
+        const serviceData = service.map(service => ({
+            applicant_id: applicant.applicant_id,
+            experience_id: service.experience_id || null,
+            company_name: service.company_name || null,
+            vessel_name: service.vessel_name || null,
+            rank: service.rank || null,
+            previous_from_date: service.previous_from_date  || null,
+            previous_to_date: service.previous_to_date  || null,
+            period_months: service.period_months  || null,
+            period_days: service.period_days  || null,
+            vessel_type: service.vessel_type  || null,
+            engine_type: service.engine_type  || null,
+            ums: service.ums  || null,
+            bhp: service.bhp  || null,
+            grt: service.grt  || null,
+            year_built: service.year_built  || null,
+            drydock_done: service.drydock_done  || null,
+            reason_for_leaving: service.reason_for_leaving  || null,
+        }))
+
+        const services = await Experience.bulkCreate(serviceData);
         
         
 
