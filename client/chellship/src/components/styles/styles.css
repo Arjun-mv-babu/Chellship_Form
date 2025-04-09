@@ -1,0 +1,269 @@
+.application-form,
+.sea-experience{
+    font-family: Montserrat;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+.declaration-container label,
+.experience-container  label,
+.sea-service-container label,
+.reference-container label,
+.general-container label,
+.medical-container  label,
+.literacy-container label,
+.certificate-card label,
+.hongkong-card label,
+.competency-container label,
+.documents-container label,
+.presea-container label,
+.education-container label,
+.info-container label,
+.family-container label,
+.personal-container label{
+    font-family: 'Montserrat';
+    font-size: 12px;
+    letter-spacing: .5px;
+}
+
+.reference-container label{
+    display:inline-flex;
+    min-height:50px;
+    align-items:flex-end;
+}
+
+.info-container .flexbox.items-center.p-4,
+.family-container .flexbox.items-center.p-4 {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.info-container .flexbox.items-center.p-4:nth-child(1),
+.family-container .flexbox.items-center.p-4:nth-child(1) {
+    padding-right: 10px;
+}
+.info-container .flexbox.items-center.p-4:nth-child(2),
+.family-container .flexbox.items-center.p-4:nth-child(2) {
+    padding-left: 10px;
+}
+
+.declaration-container input,
+.experience-container input,
+.sea-service-container  input,
+.sea-service-container  textarea,
+.reference-container input,
+.medical-container  input,
+.certificate-card input,
+.certificate-card select,
+.hongkong-card input,
+.hongkong-card select,
+.competency-container input,
+.documents-card input,
+.documents-card select,
+.presea-container  input,
+.education-container input,
+.family-multiple-container input,
+.family-multiple-container select,
+.info-container input,
+.personal-container input,
+.family-container input,
+.family-container textarea,
+.personal-container textarea{
+    border: 1px solid #dadada;
+    border-radius: 0px;
+    box-shadow: none;
+    padding: 9px;
+    margin-top: 5px;
+}
+.sea-service-container textarea,
+.personal-container textarea,
+.family-container textarea{
+    min-height:120px;
+}
+
+.info-container ul.w-full {
+    border-radius: 0px !important;
+    padding: 13px;
+    margin-top: 11px;
+}
+
+.rank-experience,
+.sea-service,
+.references, 
+.general,
+.medical-history,
+.computer-literacy,
+.course-certificate,
+.hongkong-certificate,
+.certificate-competency,
+.identity-documents ,
+.pre-sea-training ,
+.personal-particulars, 
+.family-particulars,
+.education-container{
+    font-family: 'Montserrat';
+    font-weight: 300;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+
+.personal-container b,
+.education-background {
+    font-family: 'Montserrat';
+    font-weight: 300;
+}
+
+.sea-service-container  button,
+.reference-container button,
+.certificate-container button,
+.hongkong-container button,
+.competency-container button,
+.documents-container button,
+.presea-container .presea-add-button,
+.personal-container .use-camera-button,
+.education-add-button,
+.family-add-button{
+    background:#f08c23;
+    border-radius:0px;
+    font-family:Montserrat;
+    padding-left:30px;
+    padding-right:30px;
+    min-height:40px;
+    font-size:16px;
+}
+
+.sea-service-container button:hover,
+.reference-container button:hover,
+.certificate-container button:hover,
+.hongkong-container button:hover,
+.documents-container button:hover,
+.presea-container .presea-add-button:hover,
+.personal-container .use-camera-button:hover,
+.education-add-button:hover,
+.family-add-button:hover{
+    background:#ff8300;
+}
+
+
+
+
+
+.family-multiple-container {
+    margin: 0px;
+    border-radius: 0px;
+    border: none;
+    box-shadow: 0 0 20px color(srgb 0 0 0 / 0.1);
+    margin-top: 26px;
+}
+
+.sea-service-card,
+.reference-card,
+.certificate-card,
+.hongkong-card,
+.family-multiple-container .family-member-card, 
+.education-card,
+.competency-card{
+    border: none;
+    border-bottom: 1px solid #9E9E9E;
+    box-shadow: none;
+    border-radius: 0px;
+    padding-bottom: 34px;
+    margin-bottom: 30px;
+}
+
+
+
+.education-background {
+    margin-bottom: 20px;
+}
+
+.education-container {
+    box-shadow: none;
+}
+
+ 
+
+
+.presea-card,
+.documents-card{
+    margin: 0;
+    margin-top: 30px;
+    padding: 30px;
+    border: none;
+    box-shadow: 0 0 20px color(srgb 0 0 0 / 0.14);
+}
+
+.presea-container,
+.documents-container{
+    box-shadow: none;
+}
+
+
+
+
+
+.certificate-container,
+.hongkong-container,
+.documents-container,
+.competency-container {
+    padding: 40px;
+    padding-top: 30px;
+    box-shadow: none;
+}
+.hongkong-container{
+    padding:30px
+}
+
+
+
+
+
+.sea-experience-info {
+    background: color(srgb 0.13 0.59 0.95 / 0.16);
+    box-shadow: none;
+}
+
+.sea-experience-info .grid {
+    line-height: 40px;
+    color: #000;
+}
+
+
+
+.reference-container h4 {
+    font-weight: 400;
+    font-family: 'Montserrat';
+}
+
+
+
+
+
+.declaration-container .list-disc {
+    font-family: 'Montserrat';
+}
+
+form .col-span-2:last-child button {
+   background: #e88f2e;
+    border-radius: 0;
+    line-height: 40px;
+    min-width: 220px;
+    font-family: 'Montserrat';
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.goto-experience-section {
+    color: #000;
+    border: none;
+    background: #dadada;
+    padding: 10px 30px;
+}
+
+.goto-experience-section:hover {
+    text-decoration: none;
+    background: orange;
+}
+.info-container {
+    box-shadow: none;
+}

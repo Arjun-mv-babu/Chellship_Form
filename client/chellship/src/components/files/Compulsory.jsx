@@ -1,11 +1,11 @@
-import React from 'react'
+// import React from 'react'
 
-const Compulsory = () => {
-  return (
-    <>
-        <span style={{"color": "red"}}>*</span>
-    </>
-  )
-}
+// const Compulsory = () => {
+//   return (
+//     <>
+//         <span style={{"color": "red"}}>*</span>
+//     </>
+//   )
+// }
 
-export default Compulsory
+// export default Compulsory

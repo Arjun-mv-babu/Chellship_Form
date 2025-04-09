@@ -4,16 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import {HeroUIProvider} from "@heroui/react";
+import { RouteConstant } from './routes/RouteConstant';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <HeroUIProvider>
+    <BrowserRouter basename={RouteConstant.ROOT}>
+    {/* <BrowserRouter> */}
         <App />
-      </HeroUIProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

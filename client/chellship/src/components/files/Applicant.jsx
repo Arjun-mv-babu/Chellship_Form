@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Header from './Header';
+import Footer from './Footer';
+import { useRef } from "react";
+import '../styles/styles.css';
 
 const Applicant = () => {
 
     const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const seaExperienceRef = useRef(null);
+
+    const scrollToSeaExperience = () => {
+        seaExperienceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
 
     const [ApplicantsDetails, setApplicantsDetails] = useState({
         position_applied_for: "",
@@ -20,6 +32,7 @@ const Applicant = () => {
         place_of_birth: "",
         height: "",
         weight: "",
+        bmi: "",
         nationality: "",
         religion: "",
         mother_tongue: "",
@@ -32,10 +45,12 @@ const Applicant = () => {
         permanent_tel:"",
         permanent_mobile:"",
         permanent_email:"",
+        permanent_airport:"",
         present_address:"",
         present_tel:"",
         present_mobile:"",
         present_email:"",
+        present_airport:"",
 
         emergency_name: "",  
         emergency_relationship: "",  
@@ -90,7 +105,7 @@ const Applicant = () => {
         AMOS4W: "",
         ISPS: "",
         SSO: "",
-        explain_familiarity:"",
+        // explain_familiarity:"",
 
         signed_off: "",
         surgery: "",
@@ -163,6 +178,7 @@ const Applicant = () => {
         third_engineer: "",
         fourth_engineer: "",
         fifth_engineer: "",
+        electrical_officer: "",
         fitter: "",
         oiler: "",
         wpr: "",
@@ -488,236 +504,318 @@ const Applicant = () => {
         // ----------------------------- >
 
     const [photo, setPhoto] = useState(null);
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+    const [cameraOn, setCameraOn] = useState(false);
     const [signature, setSignature] = useState(null);
+    const [photoFile, setPhotoFile] = useState(null);
+
+    // Start Camera
+    const startCamera = () => {
+        setCameraOn(true);
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+            })
+            .catch((err) => console.error("Error accessing camera: ", err));
+    };
+
+    // Capture Photo
+    const capturePhoto = () => {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+
+        if (video && canvas) {
+
+            context.translate(canvas.width, 0);
+            context.scale(-1, 1);
+
+            // Draw the video frame onto the canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Reset the canvas transformation
+            context.setTransform(1, 0, 0, 1, 0, 0);
+
+            const dataUrl = canvas.toDataURL("image/png");
+            setPhoto(dataUrl);
+
+            // Convert base64 to file
+            fetch(dataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], "photo.png", { type: "image/png" });
+                    setPhotoFile(file);
+                });
+
+            // Stop camera
+            const stream = video.srcObject;
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+            setCameraOn(false);
+        }
+    };
+
+    
 
     const handleApplicantChange = (e) => {
         const { name, value } = e.target;
-        
-        setApplicantsDetails((prevDetails) => ({
-        ...prevDetails,
-        [name]: value,
+    
+        let updatedDetails = { ...ApplicantsDetails, [name]: value };
+    
+        // Auto-clear explain_medical fields when certain fields are "No"
+        if (
+            (name === 'signed_off' && value === 'No') ||
+            (name === 'surgery' && value === 'No') ||
+            (name === 'illness' && value === 'No') ||
+            (name === 'regular_medicine' && value === 'No') ||
+            (name === 'health_disability_problems' && value === 'No') ||
+            (name === 'alcohol' && value === 'No') ||
+            (name === 'smoke' && value === 'No')
+        ) {
+            updatedDetails.explain_medical = "";
+        }
+    
+        // Auto-clear explain_court fields when certain fields are "No"
+        if (
+            (name === 'court_inquiry' && value === 'No') ||
+            (name === 'certificate_suspended' && value === 'No')
+        ) {
+            updatedDetails.explain_court = "";
+        }
+    
+        // Auto-calculate age from date_of_birth
+        if (name === "date_of_birth") {
+            const birthDate = new Date(value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+    
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+    
+            updatedDetails.age = age;
+        }
 
-        }));
+            // Auto-calculate BMI from height and weight
+        const height = parseFloat(name === 'height' ? value : updatedDetails.height);
+        const weight = parseFloat(name === 'weight' ? value : updatedDetails.weight);
+
+        if (!isNaN(height) && height > 0 && !isNaN(weight)) {
+            const bmi = weight / ((height / 100) ** 2);
+            updatedDetails.bmi = bmi.toFixed(2);
+        }
+    
+        setApplicantsDetails(updatedDetails);
     };
-
-
+    
     const handleFileChange = (e) => {
-        const { name, files } = e.target;
-        if (name === 'photo') {
-            setPhoto(files[0]);
-        }
-        if (name === 'signature') {
-            setSignature(files[0]);
+        const { files } = e.target;
+        if (files.length > 0) {
+            setPhotoFile(files[0]);
+
+            // Preview Image
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPhoto(reader.result);
+            };
+            reader.readAsDataURL(files[0]);
         }
     };
 
-    const handleSubmit = (e) => {
+
+    // const handleUpload = async () => {
+    //     if (!photoFile) return alert("No photo selected!");
+
+    //     const formData = new FormData();
+    //     formData.append('photo', photoFile);
+
+    //     try {
+    //         const response = await axios.post("http://localhost:3001/applicants/create", formData, {
+    //             headers: { 'Content-Type': 'multipart/form-data' }
+    //         });
+    //         console.log("Upload Success:", response.data);
+    //         alert("Photo uploaded successfully!");
+    //     } catch (error) {
+    //         console.error("Upload Error:", error);
+    //     }
+    // };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!window.confirm('Are you sure to continue ?')) {
+
+        if (isSubmitting) return;
+    
+        if (!window.confirm('Are you sure to submit?')) {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('position_applied_for', ApplicantsDetails.position_applied_for);
-        formData.append('date_available', ApplicantsDetails.date_available);
-        formData.append('introduction', ApplicantsDetails.introduction);
-        formData.append('others_explain', ApplicantsDetails.others_explain || "No additional details" );
-        formData.append('indos_no', ApplicantsDetails.indos_no);
-        formData.append('last_name', ApplicantsDetails.last_name);
-        formData.append('first_name', ApplicantsDetails.first_name);
-        formData.append('middle_name', ApplicantsDetails.middle_name);
-        formData.append('date_of_birth', ApplicantsDetails.date_of_birth);
-        formData.append('age', ApplicantsDetails.age);
-        formData.append('place_of_birth', ApplicantsDetails.place_of_birth);
-        formData.append('height', ApplicantsDetails.height);
-        formData.append('weight', ApplicantsDetails.weight);
-        formData.append('nationality', ApplicantsDetails.nationality);
-        formData.append('religion', ApplicantsDetails.religion);
-        formData.append('mother_tongue', ApplicantsDetails.mother_tongue);
-        formData.append('spoken_languages', ApplicantsDetails.spoken_languages);
-        formData.append('written_languages', ApplicantsDetails.written_languages);
-        formData.append('native_place', ApplicantsDetails.native_place);
-        formData.append('current_resident', ApplicantsDetails.current_resident);
-        formData.append('marital_status', ApplicantsDetails.marital_status);
-        formData.append('permanent_address', ApplicantsDetails.permanent_address);
-        formData.append('permanent_tel', ApplicantsDetails.permanent_tel);
-        formData.append('permanent_mobile', ApplicantsDetails.permanent_mobile);
-        formData.append('permanent_email', ApplicantsDetails.permanent_email);
-        formData.append('present_address', ApplicantsDetails.present_address);
-        formData.append('present_tel', ApplicantsDetails.present_tel);
-        formData.append('present_mobile', ApplicantsDetails.present_mobile);
-        formData.append('present_email', ApplicantsDetails.present_email);
+        setIsSubmitting(true);
 
-        formData.append('emergency_name', ApplicantsDetails.emergency_name);
-        formData.append('emergency_relationship', ApplicantsDetails.emergency_relationship);
-        formData.append('emergency_address', ApplicantsDetails.emergency_address);
-        formData.append('emergency_tel', ApplicantsDetails.emergency_tel);
-        formData.append('emergency_email', ApplicantsDetails.emergency_email);
+        try {
+            const formData = new FormData();
+    
+            formData.append('position_applied_for', ApplicantsDetails.position_applied_for);
+            formData.append('date_available', ApplicantsDetails.date_available);
+            formData.append('introduction', ApplicantsDetails.introduction);
+            formData.append('others_explain', ApplicantsDetails.others_explain || "No additional details");
+            formData.append('indos_no', ApplicantsDetails.indos_no);
+            formData.append('last_name', ApplicantsDetails.last_name);
+            formData.append('first_name', ApplicantsDetails.first_name);
+            formData.append('middle_name', ApplicantsDetails.middle_name);
+            formData.append('date_of_birth', ApplicantsDetails.date_of_birth);
+            formData.append('age', ApplicantsDetails.age);
+            formData.append('place_of_birth', ApplicantsDetails.place_of_birth);
+            formData.append('height', ApplicantsDetails.height);
+            formData.append('weight', ApplicantsDetails.weight);
+            formData.append('bmi', ApplicantsDetails.bmi);
+            formData.append('nationality', ApplicantsDetails.nationality);
+            formData.append('religion', ApplicantsDetails.religion);
+            formData.append('mother_tongue', ApplicantsDetails.mother_tongue);
+            formData.append('spoken_languages', ApplicantsDetails.spoken_languages);
+            formData.append('written_languages', ApplicantsDetails.written_languages);
+            formData.append('native_place', ApplicantsDetails.native_place);
+            formData.append('current_resident', ApplicantsDetails.current_resident);
+            formData.append('marital_status', ApplicantsDetails.marital_status);
+            formData.append('permanent_address', ApplicantsDetails.permanent_address);
+            formData.append('permanent_tel', ApplicantsDetails.permanent_tel);
+            formData.append('permanent_mobile', ApplicantsDetails.permanent_mobile);
+            formData.append('permanent_email', ApplicantsDetails.permanent_email);
+            formData.append('permanent_airport', ApplicantsDetails.permanent_airport);
+            formData.append('present_address', ApplicantsDetails.present_address);
+            formData.append('present_tel', ApplicantsDetails.present_tel);
+            formData.append('present_mobile', ApplicantsDetails.present_mobile);
+            formData.append('present_email', ApplicantsDetails.present_email);
+            formData.append('present_airport', ApplicantsDetails.present_airport);
+    
+            formData.append('emergency_name', ApplicantsDetails.emergency_name);
+            formData.append('emergency_relationship', ApplicantsDetails.emergency_relationship);
+            formData.append('emergency_address', ApplicantsDetails.emergency_address);
+            formData.append('emergency_tel', ApplicantsDetails.emergency_tel);
+            formData.append('emergency_email', ApplicantsDetails.emergency_email);
+    
+            formData.append('familiar_applications', ApplicantsDetails.familiar_applications);
+            formData.append('PMS', ApplicantsDetails.PMS);
+            formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
+            formData.append('ISPS', ApplicantsDetails.ISPS);
+            formData.append('SSO', ApplicantsDetails.SSO);
+            // formData.append('explain_familiarity', ApplicantsDetails.explain_familiarity);
+    
+            formData.append('signed_off', ApplicantsDetails.signed_off);
+            formData.append('surgery', ApplicantsDetails.surgery);
+            formData.append('illness', ApplicantsDetails.illness);
+            formData.append('regular_medicine', ApplicantsDetails.regular_medicine);
+            formData.append('what_medicine', ApplicantsDetails.what_medicine);
+            formData.append('carry_medicine', ApplicantsDetails.carry_medicine);
+            formData.append('health_disability_problems', ApplicantsDetails.health_disability_problems);
+            formData.append('explain_medical', ApplicantsDetails.explain_medical);
+            formData.append('yellow_date', ApplicantsDetails.yellow_date);
+            formData.append('yellow_place', ApplicantsDetails.yellow_place);
+    
+            formData.append('visa_rejection', ApplicantsDetails.visa_rejection);
+            formData.append('court_inquiry', ApplicantsDetails.court_inquiry);
+            formData.append('certificate_suspended', ApplicantsDetails.certificate_suspended);
+            formData.append('explain_court', ApplicantsDetails.explain_court);
+    
+            formData.append('future_vacancies', ApplicantsDetails.future_vacancies);
+            formData.append('declaration_date', ApplicantsDetails.declaration_date);
+    
+            formData.append('master', ApplicantsDetails.master);
+            formData.append('chief_officer', ApplicantsDetails.chief_officer);
+            formData.append('second_officer', ApplicantsDetails.second_officer);
+            formData.append('third_officer', ApplicantsDetails.third_officer);
+            formData.append('deck_cadet', ApplicantsDetails.deck_cadet);
+            formData.append('bosun', ApplicantsDetails.bosun);
+            formData.append('ab', ApplicantsDetails.ab);
+            formData.append('os', ApplicantsDetails.os);
+            formData.append('chief_engineer', ApplicantsDetails.chief_engineer);
+            formData.append('second_engineer', ApplicantsDetails.second_engineer);
+            formData.append('third_engineer', ApplicantsDetails.third_engineer);
+            formData.append('fourth_engineer', ApplicantsDetails.fourth_engineer);
+            formData.append('fifth_engineer', ApplicantsDetails.fifth_engineer);
+            formData.append('electrical_officer', ApplicantsDetails.electrical_officer);
+            formData.append('fitter', ApplicantsDetails.fitter);
+            formData.append('oiler', ApplicantsDetails.oiler);
+            formData.append('wpr', ApplicantsDetails.wpr);
+            formData.append('ch_cook', ApplicantsDetails.ch_cook);
+            formData.append('messman', ApplicantsDetails.messman);
+    
+            // Append JSON objects
+            formData.append("documents", JSON.stringify(documents));
+            formData.append("education", JSON.stringify(education));
+            formData.append("preseaeducation", JSON.stringify(preseaeducation));
+            formData.append("service", JSON.stringify(service));
+            formData.append("certificate", JSON.stringify(certificate));
+            formData.append("hkcertificate", JSON.stringify(hkcertificate));
+            formData.append("course", JSON.stringify(course));
+            formData.append("family", JSON.stringify(family));
+            formData.append("reference", JSON.stringify(reference));
+    
+            // Append files
+            if (photo) formData.append('photo', photo);
+            if (signature) formData.append('signature', signature);
+            if (photoFile) formData.append('photo', photoFile);
 
-        // formData.append('family_member', ApplicantsDetails.family_member);
-        // formData.append('family_member_name', ApplicantsDetails.family_member_name);
-        // formData.append('sex', ApplicantsDetails.sex);
-        // formData.append('family_date_of_birth', ApplicantsDetails.family_date_of_birth);
-        // formData.append('passport_number', ApplicantsDetails.passport_number);
-        // formData.append('ECNR', ApplicantsDetails.ECNR);
-        // formData.append('date_issued', ApplicantsDetails.date_issued);
-        // formData.append('place_issued', ApplicantsDetails.place_issued);
+            // formData.append('photo', photoFile);
+                //     const formData = new FormData();
+                //     formData.append('photo', photoFile);
 
-        // formData.append('school_name', ApplicantsDetails.school_name );
-        // formData.append('from_date', ApplicantsDetails.from_date );
-        // formData.append('to_date', ApplicantsDetails.to_date );
-        // formData.append('percentage', ApplicantsDetails.percentage );
-        // formData.append('position_degree_diploma', ApplicantsDetails.position_degree_diploma );
-
-        // formData.append('institute_name', ApplicantsDetails.institute_name );
-        // formData.append('pre_sea_from_date', ApplicantsDetails.pre_sea_from_date );
-        // formData.append('pre_sea_to_date', ApplicantsDetails.pre_sea_to_date );
-        // formData.append('course', ApplicantsDetails.course );
-        // formData.append('class_obtained', ApplicantsDetails.class_obtained );
-        // formData.append('name_of_workshop', ApplicantsDetails.name_of_workshop );
-
-        // formData.append('highest_certificate', ApplicantsDetails.highest_certificate);
-        // formData.append('highest_certificate_grade', ApplicantsDetails.highest_certificate_grade);
-        // formData.append('highest_certificate_issue_country', ApplicantsDetails.highest_certificate_issue_country);
-        // formData.append('highest_certificate_number', ApplicantsDetails.highest_certificate_number);
-        // formData.append('highest_certificate_from_date', ApplicantsDetails.highest_certificate_from_date);
-        // formData.append('highest_certificate_place_issued', ApplicantsDetails.highest_certificate_place_issued);
-        // formData.append('highest_certificate_to_date', ApplicantsDetails.highest_certificate_to_date);
-
-        // formData.append('hong_kong_certificate', ApplicantsDetails.hong_kong_certificate);
-        // formData.append('hong_kong_certificate_number', ApplicantsDetails.hong_kong_certificate_number);
-        // formData.append('hong_kong_certificate_from_date', ApplicantsDetails.hong_kong_certificate_from_date);
-        // formData.append('hong_kong_certificate_place_issued', ApplicantsDetails.hong_kong_certificate_place_issued);
-        // formData.append('hong_kong_certificate_to_date', ApplicantsDetails.hong_kong_certificate_to_date);
-
-        // formData.append('attended_course', ApplicantsDetails.attended_course);
-        // formData.append('attended_course_institute', ApplicantsDetails.attended_course_institute);
-        // formData.append('attended_course_certificate_number', ApplicantsDetails.attended_course_certificate_number);
-        // formData.append('attended_course_from_date', ApplicantsDetails.attended_course_from_date);
-        // formData.append('attended_course_to_date', ApplicantsDetails.attended_course_to_date);
-
-        formData.append('familiar_applications', ApplicantsDetails.familiar_applications);
-        formData.append('PMS', ApplicantsDetails.PMS);
-        formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
-        formData.append('ISPS', ApplicantsDetails.ISPS);
-        formData.append('SSO', ApplicantsDetails.SSO);
-        formData.append('explain_familiarity', ApplicantsDetails.explain_familiarity);
-        
-        formData.append('signed_off', ApplicantsDetails.signed_off);
-        formData.append('surgery', ApplicantsDetails.surgery);
-        formData.append('illness', ApplicantsDetails.illness);
-        formData.append('regular_medicine', ApplicantsDetails.regular_medicine);
-        formData.append('what_medicine', ApplicantsDetails.what_medicine);
-        formData.append('carry_medicine', ApplicantsDetails.carry_medicine);
-        formData.append('health_disability_problems', ApplicantsDetails.health_disability_problems);
-        formData.append('explain_medical', ApplicantsDetails.explain_medical);
-        formData.append('yellow_date', ApplicantsDetails.yellow_date);
-        formData.append('yellow_place', ApplicantsDetails.yellow_place);
-
-        // formData.append('document_type', ApplicantsDetails.document_type);
-        // formData.append('document_country', ApplicantsDetails.document_country);
-        // formData.append('document_number', ApplicantsDetails.document_number);
-        // formData.append('document_from_date', ApplicantsDetails.document_from_date);
-        // formData.append('document_to_date', ApplicantsDetails.document_to_date);
-        // formData.append('document_Place_issued', ApplicantsDetails.document_Place_issued);
-
-        formData.append('visa_rejection', ApplicantsDetails.visa_rejection);
-
-        formData.append('court_inquiry', ApplicantsDetails.court_inquiry);
-        formData.append('certificate_suspended', ApplicantsDetails.certificate_suspended);
-        formData.append('explain_court', ApplicantsDetails.explain_court);
-
-        // formData.append('past_company', ApplicantsDetails.past_company);
-        // formData.append('past_company_manager_name_designation', ApplicantsDetails.past_company_manager_name_designation);
-        // formData.append('past_company_telephone', ApplicantsDetails.past_company_telephone);
-
-        formData.append('future_vacancies', ApplicantsDetails.future_vacancies);
-        formData.append('declaration_date', ApplicantsDetails.declaration_date);
-        
-        // formData.append('company_name', ApplicantsDetails.company_name);
-        // formData.append('vessel_name', ApplicantsDetails.vessel_name);
-        // formData.append('rank', ApplicantsDetails.rank);
-        // formData.append('previous_from_date', ApplicantsDetails.previous_from_date);
-        // formData.append('previous_to_date', ApplicantsDetails.previous_to_date);
-        // formData.append('period_months', ApplicantsDetails.period_months);
-        // formData.append('period_days', ApplicantsDetails.period_days);
-        // formData.append('vessel_type', ApplicantsDetails.vessel_type);
-        // formData.append('engine_type', ApplicantsDetails.engine_type);
-        // formData.append('ums', ApplicantsDetails.ums);
-        // formData.append('bhp', ApplicantsDetails.bhp);
-        // formData.append('grt', ApplicantsDetails.grt);
-        // formData.append('year_built', ApplicantsDetails.year_built);
-        // formData.append('drydock_done', ApplicantsDetails.drydock_done);
-        // formData.append('reason_for_leaving', ApplicantsDetails.reason_for_leaving);
-
-        formData.append('master', ApplicantsDetails.master);
-        formData.append('chief_officer', ApplicantsDetails.chief_officer);
-        formData.append('second_officer', ApplicantsDetails.second_officer);
-        formData.append('third_officer', ApplicantsDetails.third_officer);
-        formData.append('deck_cadet', ApplicantsDetails.deck_cadet);
-        formData.append('bosun', ApplicantsDetails.bosun);
-        formData.append('ab', ApplicantsDetails.ab);
-        formData.append('os', ApplicantsDetails.os);
-        formData.append('chief_engineer', ApplicantsDetails.chief_engineer);
-        formData.append('second_engineer', ApplicantsDetails.second_engineer);
-        formData.append('third_engineer', ApplicantsDetails.third_engineer);
-        formData.append('fourth_engineer', ApplicantsDetails.fourth_engineer);
-        formData.append('fifth_engineer', ApplicantsDetails.fifth_engineer);
-        formData.append('fitter', ApplicantsDetails.fitter);
-        formData.append('oiler', ApplicantsDetails.oiler);
-        formData.append('wpr', ApplicantsDetails.wpr);
-        formData.append('ch_cook', ApplicantsDetails.ch_cook);
-        formData.append('messman', ApplicantsDetails.messman);
-
-        // formData.append('document_type', ApplicantsDetails.document_type);
-        // formData.append('document_country', ApplicantsDetails.document_country);
-        // formData.append('document_number', ApplicantsDetails.document_number);
-        // formData.append('document_from_date', ApplicantsDetails.document_from_date);
-        // formData.append('document_to_date', ApplicantsDetails.document_to_date);
-        // formData.append('document_Place_issued', ApplicantsDetails.document_Place_issued);
-        // formData.append('visa_rejected', ApplicantsDetails.visa_rejected);
-        
-        formData.append("documents", JSON.stringify(documents));
-        formData.append("education", JSON.stringify(education));
-        formData.append("preseaeducation", JSON.stringify(preseaeducation));
-        formData.append("service", JSON.stringify(service));
-        formData.append("certificate", JSON.stringify(certificate));
-        formData.append("hkcertificate", JSON.stringify(hkcertificate));
-        formData.append("course", JSON.stringify(course));
-        formData.append("family", JSON.stringify(family));
-        formData.append("reference", JSON.stringify(reference));
-
-        if (photo) formData.append('photo', photo);
-        if (signature) formData.append('signature', signature);
-
-        axios.post('http://localhost:3001/applicants/create', formData)
-
-        .then((response) => {
-            alert('Applicants details saved');
-            console.log("response:",response);
-            
-            navigate('/complete', { state: { applicant_id: response.data.applicant.applicant_id } });
-            })
-            .catch((error) => {
-                console.error('Error adding Applicants:', error);
-                alert('Failed to add Applicants. Please check the console for errors.');
+            console.log("This is Response:", formData);
+    
+            // const response = await axios.post(`http://localhost:3001/applicants/create`, formData,{
+            const response = await axios.post(`https://njs.solminds.com/chellship/api/applicants/create`, formData,{
+                headers: { 
+                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data' 
+                },
+                maxRedirects: 0
             });
+            console.log("Full Response Data:", response.data);
+            alert('Applicant details submitted successfully!');
+    
+            const applicant_id = response.data.applicant.applicant_id;
+            console.log("responsedata",response)
+            if (applicant_id) {
+                // await axios.get(`http://localhost:3001/impex/export/${applicant_id}`);
+                await axios.get(`https://njs.solminds.com/chellship/api/impex/export/${applicant_id}`);
+                navigate('/complete', { state: { applicant_id } });
+            } else {
+                console.error('Error: Missing applicant_id in response');
+                alert('Failed to retrieve applicant ID.');
+                setIsSubmitting(false);
+            }
+    
+        } catch (error) {
+            console.error('Error adding Applicant:', error);
+            alert('Error submitting form.');
+            setIsSubmitting(false);
+        }
     };
+    
 
 
 
 return (
     <>
-        <h1 className='text-center text-3xl m-3'><b>APPLICATION FORM</b></h1>
+        {/* <Header/> */}
+        <div className="flex justify-end px-8">
+            <button type="button" onClick={scrollToSeaExperience} className="goto-experience-section text-blue-600 hover:underline">
+                Go to SEA EXPERIENCE section
+            </button>
+        </div>
+        <h1 className='application-form text-center text-3xl m-3 py-5'><b>APPLICATION FORM</b></h1>
         <form onSubmit={handleSubmit}>
             <div className='flex min-h-full flex-col justify-center lg:px-8 py-3'>
-                <div className='border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                <div className='info-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                     <div className='grid grid-cols-2'>
                         <div className='flexbox items-center p-4'>
                             <label htmlFor="position_applied_for" className="text-sm font-medium text-gray-900">
                                 Position Applied for : 
                             </label>
-                            <input id="position_applied_for" name="position_applied_for" value={ApplicantsDetails.position_applied_for} type="text" onChange={handleApplicantChange} className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            <input id="position_applied_for" name="position_applied_for" value={ApplicantsDetails.position_applied_for} type="text" onChange={handleApplicantChange} required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
 
                         <div className='flexbox items-center p-4'>
@@ -727,7 +825,6 @@ return (
                             <input id="date_available" value={ApplicantsDetails.date_available} onChange={handleApplicantChange} name="date_available" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
                     </div>
-
                     <div>
                         <div className=''>
                                 <label htmlFor="introduction" className="text-sm font-medium text-gray-900">
@@ -787,46 +884,43 @@ return (
 
             
 
-            <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-                <h4 className='bold text-center'><b>Personal Particulars</b></h4>
-                <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                        <div>
-                                <div className='flexbox items-center'>
-                                    <label htmlFor="indos_no" className="text-sm font-medium text-gray-900">
-                                        INDOS No : 
-                                    </label>
-                                    <input id="indos_no" value={ApplicantsDetails.indos_no} onChange={handleApplicantChange} name="indos_no" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                    
-                                </div><br />
-
-                                Name (as per passport) : <br />
-                                <div className='grid grid-cols-3'>
-                                    <div className='flexbox items-center p-2'>
-                                        <label htmlFor="last_name" className="text-sm font-medium text-gray-900">
-                                            Last : 
+                <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
+                    <h4 className='personal-particulars bold text-center'><b>Personal Particulars</b></h4>
+                    <div className='personal-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                            <div>
+                                    <div className='flexbox items-center'>
+                                        <label htmlFor="indos_no" className="text-sm font-medium text-gray-900">
+                                            INDOS No : 
                                         </label>
-                                        <input id="last_name" value={ApplicantsDetails.last_name} onChange={handleApplicantChange} name="last_name" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        <input id="indos_no" value={ApplicantsDetails.indos_no} onChange={handleApplicantChange} name="indos_no" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                                         
+                                    </div><br />
+
+                                    Name (as per passport) : <br />
+                                    <div className='grid grid-cols-1 sm:grid-cols-3 gap-2'>
+                                        <div className='flexbox items-center p-2'>
+                                            <label htmlFor="last_name" className="text-sm font-medium text-gray-900">
+                                                Last : 
+                                            </label>
+                                            <input id="last_name" value={ApplicantsDetails.last_name} onChange={handleApplicantChange} name="last_name" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        </div>
+
+                                        <div className='flexbox items-center p-2'>
+                                            <label htmlFor="first_name" className="text-sm font-medium text-gray-900">
+                                                First : 
+                                            </label>
+                                            <input id="first_name" value={ApplicantsDetails.first_name} onChange={handleApplicantChange} name="first_name" type="text" required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        </div>
+
+                                        <div className='flexbox items-center p-2'>
+                                            <label htmlFor="middle_name" className="text-sm font-medium text-gray-900">
+                                                Middle :
+                                            </label>
+                                            <input id="middle_name" value={ApplicantsDetails.middle_name} onChange={handleApplicantChange} name="middle_name" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        </div>
                                     </div>
 
-                                    <div className='flexbox items-center p-2'>
-                                        <label htmlFor="first_name" className="text-sm font-medium text-gray-900">
-                                            First : 
-                                        </label>
-                                        <input id="first_name" value={ApplicantsDetails.first_name} onChange={handleApplicantChange} name="first_name" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                        
-                                    </div>
-
-                                    <div className='flexbox items-center p-2'>
-                                        <label htmlFor="middle_name" className="text-sm font-medium text-gray-900">
-                                            Middle :
-                                        </label>
-                                        <input id="middle_name" value={ApplicantsDetails.middle_name} onChange={handleApplicantChange} name="middle_name" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                        
-                                    </div>
-                                </div>
-
-                                <div className='grid grid-cols-3'>
+                                <div className='grid sm:grid-cols-3 grid-cols-1'>
                                     <div className='flexbox items-center p-2'>
                                         <label htmlFor="date_of_birth" className="text-sm font-medium text-gray-900">
                                             Date of Birth : 
@@ -838,7 +932,7 @@ return (
                                         <label htmlFor="age" className="text-sm font-medium text-gray-900">
                                             Age : 
                                         </label>
-                                        <input id="age" value={ApplicantsDetails.age} onChange={handleApplicantChange} name="age" type="number" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        <input id="age" readOnly value={ApplicantsDetails.age} onChange={handleApplicantChange} name="age" type="number" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                                     </div>
 
                                     <div className='flexbox items-center p-2'>
@@ -849,19 +943,26 @@ return (
                                     </div>
                                 </div>
 
-                                <div className='grid grid-cols-2'>
+                                <div className='grid grid-cols-3'>
                                     <div className='flexbox items-center p-2'>
                                         <label htmlFor="height" className="text-sm font-medium text-gray-900">
-                                            Height : 
+                                            Height (cm) : 
                                         </label>
                                         <input id="height" value={ApplicantsDetails.height} onChange={handleApplicantChange} name="height" type="number" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                                     </div>
 
                                     <div className='flexbox items-center p-2'>
                                         <label htmlFor="weight" className="text-sm font-medium text-gray-900">
-                                            Weight : 
+                                            Weight (kg) : 
                                         </label>
                                         <input id="weight" value={ApplicantsDetails.weight} onChange={handleApplicantChange} name="weight" type="number" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                    </div>
+
+                                    <div className='flexbox items-center p-2'>
+                                        <label htmlFor="bmi" className="text-sm font-medium text-gray-900">
+                                            BMI : 
+                                        </label>
+                                        <input id="bmi" readOnly value={ApplicantsDetails.bmi} onChange={handleApplicantChange} name="bmi" type="number" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                                     </div>
                                 </div>
 
@@ -881,7 +982,7 @@ return (
                                     </div>
                                 </div>
 
-                                <div className='grid grid-cols-2'>
+                                <div className='grid sm:grid-cols-2 grid-cols-1'>
                                     <div className='flexbox items-center p-2'>
                                         <label htmlFor="mother_tongue" className="text-sm font-medium text-gray-900">
                                             Mother Tongue :
@@ -922,32 +1023,34 @@ return (
                                     </div>
                                 </div>
 
-                                <div className='p-1'>
-                                    <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
-                                        {/* Single', 'Married', 'Divorced', 'Separated', 'Widowed */}
-                                        Marital Status : 
-                                    </label>
-                                    <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Single' checked={ApplicantsDetails.marital_status === 'Single'} /> 
-                                        <span className="ml-2">Single</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Married' checked={ApplicantsDetails.marital_status === 'Married'} />
-                                        <span className="ml-2">Married</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Divorced' checked={ApplicantsDetails.marital_status === 'Divorced'} />
-                                        <span className="ml-2">Divorced</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Separated' checked={ApplicantsDetails.marital_status === 'Separated'} />
-                                        <span className="ml-2">Separated</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" onChange={handleApplicantChange} name='marital_status' value='Widowed' checked={ApplicantsDetails.marital_status === 'Widowed'} />
-                                        <span className="ml-2">Widowed</span>
-                                    </label>
+                                <div className="p-1 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    <label className="text-sm font-medium text-gray-900 whitespace-nowrap">Marital Status:</label>
+                                    <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-4">
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Single" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Single"} />
+                                            <span>Single</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Married" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Married"} />
+                                            <span>Married</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Divorced" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Divorced"} />
+                                            <span>Divorced</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Separated" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Separated"} />
+                                            <span>Separated</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Widowed" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Widowed"} />
+                                            <span>Widowed</span>
+                                        </label>
+                                    </div>
                                 </div>
+
+
+
                         </div>
 
                         <div className='p-3'>
@@ -957,7 +1060,7 @@ return (
                             <textarea id="permanent_address" name="permanent_address" value={ApplicantsDetails.permanent_address} onChange={handleApplicantChange} className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
 
-                        <div className='grid grid-cols-3 p-1'>
+                        <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                             <div className='flexbox items-center p-2'>
                                     <label htmlFor="permanent_tel" className="text-sm font-medium text-gray-900">
                                         Tel No : 
@@ -969,7 +1072,7 @@ return (
                                 <label htmlFor="permanent_mobile" className="text-sm font-medium text-gray-900">
                                     Mobile : 
                                 </label>
-                                <input id="permanent_mobile" name="permanent_mobile" type="tel"  value={ApplicantsDetails.permanent_mobile} onChange={handleApplicantChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                <input id="permanent_mobile" name="permanent_mobile" type="tel"  value={ApplicantsDetails.permanent_mobile} onChange={handleApplicantChange} required  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
 
                             <div className='flexbox items-center p-2'>
@@ -980,6 +1083,14 @@ return (
                             </div>
                         </div>
 
+                        <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
+                            <div className='flexbox items-center p-2 col-span-2'>
+                                <label htmlFor="permanent_airport" className="text-sm font-medium text-gray-900">
+                                    Nearest Airport : 
+                                </label>
+                                <input id="permanent_airport" name="permanent_airport" type="mail"  value={ApplicantsDetails.permanent_airport} onChange={handleApplicantChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
+                        </div>
 
                         <div className='p-3'>
                         <label htmlFor="present_address" className="text-sm font-medium text-gray-900">
@@ -988,7 +1099,7 @@ return (
                         <textarea id="present_address" name="present_address" type="text" value={ApplicantsDetails.present_address} onChange={handleApplicantChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                     </div>
 
-                    <div className='grid grid-cols-3 p-1'>
+                    <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                         <div className='flexbox items-center p-2'>
                             <label htmlFor="present_tel" className="text-sm font-medium text-gray-900">
                                 Tel No :
@@ -1011,27 +1122,78 @@ return (
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-3 p-1'>
-                        <div className='flexbox items-center p-2'>
-                            <label htmlFor="photo" className="text-sm font-medium text-gray-900">
-                                Photo : 
+                    <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
+                        <div className='flexbox items-center p-2 col-span-2'>
+                            <label htmlFor="present_airport" className="text-sm font-medium text-gray-900">
+                                Nearest Airport : 
                             </label>
-                            <input id="photo" name="photo" type="file" onChange={handleFileChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            <input id="present_airport" name="present_airport" type="mail"  value={ApplicantsDetails.present_airport} onChange={handleApplicantChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
                     </div>
 
+
+{/* Photo Capture Section */}
+<div className="p-4">
+    {/* Instruction */}
+    <p className="text-center text-gray-700 mb-2">
+        <b>Select a photo from your device or take one using the camera.</b>
+    </p>
+
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-1">
+        {/* File Upload */}
+        <div className="flex flex-col">
+            <label htmlFor="photo" className="text-sm font-medium text-gray-900">
+                Upload Photo:
+            </label>
+            <input
+                id="photo"
+                name="photo"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="mt-2 block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+            />
+        </div>
+
+        {/* Camera Section */}
+        <div className="flex flex-col items-center">
+            {cameraOn ? (
+                <>
+                    <video ref={videoRef} autoPlay className="w-64 h-48 border transform -scale-x-100"></video> 
+                    <button onClick={capturePhoto} className="capture-camera-button mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+                        Capture Photo
+                    </button>
+                </>
+            ) : (
+                <button type="button" onClick={startCamera} className="use-camera-button mt-2 bg-green-500 text-white px-4 py-2 rounded">
+                    Use Camera
+                </button>
+            )}
+        </div>
+    </div>
+
+    {/* Preview Captured Image */}
+    {photo && (
+        <div className="mt-4">
+            <p className="text-center text-gray-700">Captured Photo Preview:</p>
+            <img src={photo} alt="Captured" className="w-64 h-48 border mx-auto" />
+        </div>
+    )}
+
+    <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
+</div>
                 </div><br />
             </div>
 
                 <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
                         <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-                            <h4 className='bold text-center'><b>Family Particulars</b></h4>
-                            <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                            <h4 className='family-particulars bold text-center'><b>Family Particulars</b></h4>
+                            <div className='family-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
 
                                 <div>
-                                    <div className='grid grid-cols-3'>
+                                    <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
                                         <div className='flexbox items-center p-4'>
-                                            <h5>Next of Kin :</h5>
+                                            <h5>Emergency Contact :</h5>
                                         </div>
                                         <div className='flexbox items-center p-4'>
                                             <label htmlFor="emergency_name" className="text-sm font-medium text-gray-900">
@@ -1072,10 +1234,10 @@ return (
                                         </div>
                                     </div>
 
-                                    <div className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
+                                    <div className='family-multiple-container border border-gray-300 m-3 rounded-md shadow-lg py-3'>
                                         {family.map((family, index) => (
-                                            <div key={index} className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
-                                                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            <div key={index} className='family-member-card border border-gray-300 m-3 rounded-md shadow-lg py-3'>
+                                                <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-4">
                                                     <div className="flex flex-col space-y-2 p-4">
                                                         <label htmlFor={`family_member${index}`} className="text-sm font-medium text-gray-900">
                                                             Family Member:
@@ -1209,8 +1371,8 @@ return (
                                             <button
                                                 type="button"
                                                 onClick={addFamily}
-                                                className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                                                + Add Another Document
+                                                className="family-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                                                + Add
                                             </button>
                                         </div>
                                     </div>
@@ -1229,12 +1391,12 @@ return (
 
                 <div className='flex min-h-full flex-col justify-center lg:px-8'>
                     <div className='flex min-h-full flex-col justify-center lg:px-8'>
-                        <h4 className='bold text-center'>
+                        <h4 className='education-background bold text-center'>
                             <b>Educational Background - prior Pre-Sea Training</b>
                         </h4>
-                        <div className='border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                        <div className='education-container border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                         {education.map((education, index) => (
-                            <div key={index} className='grid grid-cols-1 gap-4 border border-gray-300 rounded-md m-3 p-3'>
+                            <div key={index} className='education-card grid grid-cols-1 gap-4 border border-gray-300 rounded-md m-3 p-3'>
                                 <div className='flexbox items-center'>
                                     <label htmlFor={`school_name${index}`} className="text-sm font-medium text-gray-900">
                                         Name : School / College : 
@@ -1248,7 +1410,7 @@ return (
                                         className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" 
                                     />
                                 </div>
-                                <div className='grid grid-cols-2 gap-4'>
+                                <div className='grid grid-cols-1 sm:grid-cols-3  gap-4'>
                                     <div className='flexbox items-center'>
                                         <label htmlFor={`from_date${index}`} className="text-sm font-medium text-gray-900">
                                             From : 
@@ -1311,8 +1473,8 @@ return (
                                 <button
                                     type="button"
                                     onClick={addEducation}
-                                    className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                                    + Add Another Document
+                                    className="education-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                                    + Add
                                 </button>
                             </div>
 
@@ -1321,14 +1483,14 @@ return (
                 </div>
 
             <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-                <h4 className='bold text-center'><b>Pre-Sea Training</b></h4>
-                <div className='border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                <h4 className='pre-sea-training bold text-center'><b>Pre-Sea Training</b></h4>
+                <div className='presea-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
                         <p>Deck Officers - if no Pre Sea training done, then state the “Direct” cadet period. <br />
                         Engineer Officers - to additionally state the name of the workshop attended
                         </p>
                         {preseaeducation.map((preseaeducation, index) => (
-                            <div className='grid grid-cols-1 gap-4 m-3 border border-gray-300 rounded-md p-3 shadow-lg'>
+                            <div className='presea-card grid grid-cols-1 sm:grid-cols-3 gap-4 m-3 border border-gray-300 rounded-md p-3 shadow-lg'>
                                 <div className='flexbox items-center'>
                                     <label htmlFor={`institute_name${index}`} className="text-sm font-medium text-gray-900">
                                         Pre Sea Training Institute : 
@@ -1341,7 +1503,7 @@ return (
                                         onChange={(e) => handlePreSeaEducationChange(index, "institute_name", e.target.value)}
                                         className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
                                 </div>
-                                <div className='grid grid-cols-2 gap-4'>
+                                <div className='grid gap-4'>
                                     <div className='flexbox items-center'>
                                         <label htmlFor={`pre_sea_from_date${index}`} className="text-sm font-medium text-gray-900">
                                             Date Commenced : 
@@ -1369,7 +1531,7 @@ return (
                                         />
                                     </div>
                                 </div>
-                                <div className='grid grid-cols-2 gap-4'>
+                                <div className='grid gap-4'>
                                     <div className='flexbox items-center'>
                                         <label htmlFor={`course${index}`} className="text-sm font-medium text-gray-900">
                                             Degree / Diploma / Certificate : 
@@ -1398,7 +1560,7 @@ return (
                                         />
                                     </div>
                                 </div>
-                                <div className='flexbox items-center'>
+                                <div className='flexbox items-center col-span-1 sm:col-span-3 '>
                                     <label htmlFor={`name_of_workshop${index}`}className="text-sm font-medium text-gray-900">
                                         Name of Workshop : 
                                     </label>
@@ -1419,8 +1581,8 @@ return (
                                 <button
                                     type="button"
                                     onClick={addPreSeaEducation}
-                                    className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                                    + Add Another Document
+                                    className="presea-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                                    + Add
                                 </button>
                             </div>
                     </div>
@@ -1430,12 +1592,12 @@ return (
 
 
 {/* {documents.map((doc, index) => ( */}
-<h4 className="bold text-center">
+<h4 className="identity-documents bold text-center">
 <b>Personal Identity Documents Held</b>
 </h4>
-<div className="border border-gray-300 rounded-md shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6 m-3">
+<div className="documents-container border border-gray-300 rounded-md shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6 m-3">
     {documents.map((document, index) => (
-        <div key={index} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 border border-gray-300 m-3 rounded-md shadow-lg py-6">
+        <div key={index} className="documents-card grid sm:grid-cols-2 lg:grid-cols-3 gap-4 border border-gray-300 m-3 rounded-md shadow-lg py-6">
             {/* Document Type */}
             <div className="flex flex-col items-start p-2">
                 <label htmlFor={`document_type_${index}`} className="text-sm font-medium text-gray-900">
@@ -1541,8 +1703,8 @@ return (
     <button
         type="button"
         onClick={addDocument}
-        className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-        + Add Another Document
+        className="document-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+        + Add
     </button>
 </div>
 
@@ -1576,11 +1738,11 @@ return (
 
 
     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-            <h4 className='bold text-center'><b>Certificate of Competency</b></h4>
-            <div className='border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+            <h4 className='certificate-competency bold text-center'><b>Certificate of Competency (COC) / Certificate of Proficiency (COP) / Watchkeeping Certificate</b></h4>
+            <div className='competency-container border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                 <h4 className='bold'>State details of highest Certificate of Competency held</h4>
                 {certificate.map((certificate, index) => (
-                <div className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
+                <div className='competency-card border border-gray-300 m-3 rounded-md shadow-lg py-3'>
                 <div key={index} className='grid sm:grid-cols-3 lg:grid-cols-3 gap-4'>
                                 
                     <div className='flex flex-col p-2'>
@@ -1652,8 +1814,8 @@ return (
                     <button
                         type="button"
                         onClick={addCertificate}
-                        className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                        + Add Another Document
+                        className="certificate-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                        + Add
                     </button>
                 </div>
             </div>
@@ -1661,10 +1823,10 @@ return (
 
 
     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-    <h4 className='bold text-center'><b>Certificate of Competency & ATO issued by Hong Kong</b></h4>
-    <div className='border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6 '>
+    <h4 className='hongkong-certificate bold text-center'><b>Certificate of Equivalent Competency</b></h4>
+    <div className='hongkong-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6 '>
     {hkcertificate.map((hkcertificate, index) => (
-    <div className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
+    <div className='hongkong-card border border-gray-300 m-3 rounded-md shadow-lg py-3'>
     <div key={index} className='grid sm:grid-cols-3 lg:grid-cols-5 gap-4'>
         <div className='flex flex-col  p-2'>
             <label htmlFor={`hong_kong_certificate${index}`} className="text-sm font-medium text-gray-900">
@@ -1678,7 +1840,7 @@ return (
                 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                 <option value="Select Certificate">Select Certificate</option>
                 <option value="Hong Kong License">Hong Kong License</option>
-                <option value="Authority To Operate(ATP)">Authority To Operate(ATP)</option>
+                <option value="Authority To Operate(ATP)">Marshall Island Licence</option>
             </select>
         </div>
 
@@ -1736,8 +1898,8 @@ return (
             <button
                 type="button"
                 onClick={addHKCertificate}
-                className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                + Add Another Document
+                className="hongkong-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                + Add
             </button>
         </div>  
     </div>  
@@ -1745,10 +1907,10 @@ return (
 
 
 <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-    <h4 className='bold text-center'><b>Courses attended and Certificates obtained</b></h4>
-    <div className='border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+    <h4 className='course-certificate bold text-center'><b>Courses attended and Certificates obtained</b></h4>
+    <div className='certificate-container border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
     {course.map((course, index) => (
-    <div className='border border-gray-300 m-3 rounded-md shadow-lg py-3~'>
+    <div className='certificate-card border border-gray-300 m-3 rounded-md shadow-lg py-3~'>
     <div key={index} className='grid sm:grid-cols-3 lg:grid-cols-5 gap-4'>
     
     <div className='flex flex-col  p-2'>
@@ -1771,16 +1933,20 @@ return (
             <option value="Fire Fighting & Fire Prevention">Fire Fighting & Fire Prevention</option>
             <option value="Advance Fire Fighting">Advance Fire Fighting</option>
             <option value="PSSR">PSSR</option>
-            <option value="ARPA">ARPA</option>
-            <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option>
-            <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option>
+            {/* <option value="ARPA">ARPA</option> */}
+            {/* <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option> */}
+            {/* <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option> */}
             <option value="ECDIS">ECDIS</option>
-            <option value="GMDSS">GMDSS</option>
-            <option value="STCW Endorsement">STCW Endorsement</option>
-            <option value="ISO / ISM Auditor Course">ISO / ISM Auditor Course</option>
-            <option value="Bridge Team Management">Bridge Team Management</option>
-            <option value="Bridge Resource Management">Bridge Resource Management</option>
-            <option value="AMOS-4W Course">AMOS-4W Course</option>
+            {/* <option value="GMDSS">GMDSS</option> */}
+            <option value="GMDSS">GMDSS GOC</option>
+            {/* <option value="STCW Endorsement">STCW Endorsement</option> */}
+            <option value="STCW Endorsement">GMDSS Endorsement</option>
+            {/* <option value="ISO / ISM Auditor Course">ISO / ISM Auditor Course</option> */}
+            {/* <option value="Bridge Team Management">Bridge Team Management</option> */}
+            {/* <option value="Bridge Resource Management">Bridge Resource Management</option> */}
+            {/* <option value="AMOS-4W Course">AMOS-4W Course</option> */}
+            <option value="AMOS-4W Course">SSO</option>
+            <option value="AMOS-4W Course">STSDSD</option>
         </select>
     </div>
 
@@ -1838,22 +2004,21 @@ return (
         <button
             type="button"
             onClick={addCourse}
-            className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-            + Add Another Document
+            className="course-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+            + Add
         </button>
     </div>  
 </div>
 </div>
 
 
-        <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-            <h4 className='bold text-center'><b>Computer Literacy</b></h4>
-            <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                <div className='grid grid-cols-2'>
+            {/* <h4 className='computer-literacy bold text-center'><b>Computer Literacy</b></h4> */}
+            {/* <div className='literacy-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'> */}
+                {/* <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="PMS">
                         Applications familiar (Word, Excel, etc,): 
                     </label>
-                    <div>
+                    <div className='flex items-center'>
                         <label>
                             <input type="radio" name='familiar_applications'
                              onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.familiar_applications === 'Yes'} 
@@ -1867,13 +2032,13 @@ return (
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
-                </div>
+                </div> */}
                 
-                <div className='grid grid-cols-2'>
+                {/* <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="PMS">
                         Planned Maintenance System (PMS): 
                     </label>
-                    <div>
+                    <div className='flex items-center'>
                         <label>
                             <input type="radio" name='PMS'
                              onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.PMS === 'Yes'} 
@@ -1887,12 +2052,12 @@ return (
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
-                </div>
-                <div className='grid grid-cols-2'>
+                </div> */}
+                {/* <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
                         Training Undergone for AMOS4W: 
                     </label>
-                    <div>
+                    <div className='flex items-center'>
                         <label>
                             <input type="radio" name='AMOS4W'
                              onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.AMOS4W === 'Yes'}  
@@ -1906,13 +2071,13 @@ return (
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
-                </div>
+                </div> */}
 
-                <div className='grid grid-cols-2'>
+                {/* <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
                         ISPS course: 
                     </label>
-                    <div>
+                    <div className='flex items-center'>
                         <label>
                             <input type="radio" name='ISPS'
                              onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.ISPS === 'Yes'}  
@@ -1926,13 +2091,13 @@ return (
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
-                </div>
+                </div> */}
 
-                <div className='grid grid-cols-2'>
-                    <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
+                {/* <div className='grid grid-cols-2'> */}
+                    {/* <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
                         SSO course (Maritime Administration Approved): 
                     </label>
-                    <div>
+                    <div className='flex items-center'>
                         <label>
                             <input type="radio" name='SSO'
                              onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.SSO === 'Yes'}  /> 
@@ -1943,8 +2108,8 @@ return (
                             onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.SSO === 'No'}  /> 
                                 <span className="ml-2">No</span>
                         </label>
-                    </div>
-                    {(ApplicantsDetails.familiar_applications === 'Yes' ||
+                    </div> */}
+                    {/* {(ApplicantsDetails.familiar_applications === 'Yes' ||
                         ApplicantsDetails.PMS === 'Yes' ||
                         ApplicantsDetails.AMOS4W === 'Yes' ||
                         ApplicantsDetails.ISPS === 'Yes' || 
@@ -1960,18 +2125,18 @@ return (
                             onChange={handleApplicantChange} 
                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
                         </div>
-                    )}
-                </div>
-            </div>
-
+                    )} */}
+                {/* </div> */}
+            {/* </div> */}
+    <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
       <div className='flex min-h-full flex-col justify-center lg:px-3/4 py-12'>
-        <h4 className='bold text-center'><b>Medical History</b></h4>
-        <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+        <h4 className='medical-history bold text-center'><b>Medical History</b></h4>
+        <div className='medical-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
           <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
               Have you ever signed off from any ship on medical grounds? 
             </label>
-            <div>
+            <div className='flex items-center'>
               <label>
                 <input type="radio" name='signed_off' 
                 onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.signed_off === 'Yes'}   
@@ -1991,7 +2156,7 @@ return (
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
               Have you undergone any operation / surgery in the past? 
             </label>
-            <div>
+            <div className='flex items-center'>
               <label>
                 <input type="radio" name='surgery'
                   onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.surgery === 'Yes'}   
@@ -2011,7 +2176,7 @@ return (
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
               Are you suffering or suffered from any major illness? 
             </label>
-            <div>
+            <div className='flex items-center'>
               <label>
                 <input type="radio" name='illness'
                   onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.illness === 'Yes'}
@@ -2031,7 +2196,7 @@ return (
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
               Have you been taking any medicine regularly? 
             </label>
-            <div>
+            <div className='flex items-center'>
               <label>
                 <input type="radio" name='regular_medicine' 
                  onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.regular_medicine === 'Yes'} 
@@ -2077,7 +2242,7 @@ return (
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="health_disability_problems">
               Do you have any health or disability problems now? 
             </label>
-            <div>
+            <div className='flex items-center'>
               <label>
                 <input type="radio" name='health_disability_problems'  
                 onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.health_disability_problems === 'Yes'} 
@@ -2101,7 +2266,7 @@ return (
             ApplicantsDetails.health_disability_problems === 'Yes' || 
             ApplicantsDetails.alcohol === 'Yes' ||
               ApplicantsDetails.smoke === 'Yes') && (
-              <div className="m-2">
+              <div className="m-2 className='flex items-center'">
                 <label htmlFor="explain_medical" className="text-sm font-medium text-gray-900">
                   If the answer is "Yes" to any of the above, please provide details: 
                 </label>
@@ -2155,13 +2320,13 @@ return (
 
         <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
                     <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
-                    <h4 className='bold text-center'><b>General</b></h4>
-                        <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                    <h4 className='general bold text-center'><b>General</b></h4>
+                        <div className='general-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                                 <div className='grid grid-cols-2'>
                                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="court_inquiry">
                                         Have you ever been involved in a court of enquiry or maritime accident? 
                                     </label>
-                                    <div>
+                                    <div className='flex items-center'>
                                         <label>
                                             <input type="radio" name='court_inquiry'
                                              onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.court_inquiry === 'Yes'}   
@@ -2180,7 +2345,7 @@ return (
                                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="certificate_suspended">
                                         Have you ever had your Certificate of Competency suspended or revoked? 
                                     </label>
-                                    <div>
+                                    <div className='flex items-center'>
                                         <label>
                                             <input type="radio" name='certificate_suspended' 
                                             onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.certificate_suspended === 'Yes'}  
@@ -2239,12 +2404,12 @@ return (
 
                 {/* References */}
                 <div className='flex min-h-full flex-col justify-center lg:px-3/4 py-12'>
-                <h4 className='font-bold text-center mb-4'><b>References</b></h4>
-                <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                <h4 className='references font-bold text-center mb-4'><b>References</b></h4>
+                <div className='reference-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                     <h4 className='font-bold mb-4'>State details of the Superintendent / Manager of your current or immediate past employers as below :</h4>
 
                     {reference.map((reference, index) => (
-                    <div key={index} className='border border-gray-300 m-3 rounded-md shadow-lg py-3'>
+                    <div key={index} className='reference-card border border-gray-300 m-3 rounded-md shadow-lg py-3'>
                         <div className='grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
                             <div className='flex flex-col items-start p-2'>
                                 <label htmlFor={`past_company${index}`} className="text-sm font-medium text-gray-900">
@@ -2294,101 +2459,62 @@ return (
                         <button
                             type="button"
                             onClick={addReference}
-                            className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                            + Add Another Document
+                            className="reference-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                            + Add
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Declaration */}
-            <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
-                <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
-                    <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                    <div className='flex min-h-full flex-col justify-center lg:px-4 py-6 bold lg:px-3/4 '>
-                        <h4 className='bold m-2'><b>Declaration :</b></h4>
-                        <h4 className='bold'>I do hereby declare that all information furnished above is true to the best of my knowledge and belief.</h4>
-                        <h4 className='bold'>I further declare that prior to joining you, I will stand released from previous employment.</h4>
-                        <h4 className='bold'>I do hereby pledge that I have never abused any drugs in the past.</h4>
-                    </div>
-                        
-                    <div className='grid grid-cols-3'>
-                        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
-                            If immediate employment is not available do you wish to be considered for future vacancies? 
-                        </label>
-                        <div>
-                            <label>
-                                <input type="radio" onChange={handleApplicantChange} name='future_vacancies' value='Yes' checked={ApplicantsDetails.future_vacancies === 'Yes'}   /> 
-                                <span className="ml-2">Yes</span>
-                            </label> &nbsp;
-                            <label>
-                                <input type="radio" onChange={handleApplicantChange} name='future_vacancies' value='No' checked={ApplicantsDetails.future_vacancies === 'No'}  /> 
-                                <span className="ml-2">No</span>
-                            </label>
-                        </div>
-                    </div>
 
-                    <div className='grid grid-cols-2'>
-                        {/* <div className='flexbox items-center p-2'>
-                            <label htmlFor="signature" className="text-sm font-medium text-gray-900">
-                                Signature : 
-                            </label>
-                            <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                        </div> */}
 
-                        <div className='flexbox items-center p-2'>
-                            <label htmlFor="declaration_date" className="text-sm font-medium text-gray-900">
-                                Declaration Date : 
-                            </label>
-                            <input id="declaration_date" name="declaration_date" type="date" value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   className="block w-32 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                        </div>
-                    </div>
-                    </div>
+
+        {/*sea experience */}
+        <div ref={seaExperienceRef} className="flex min-h-full flex-col justify-center lg:px-8 py-12">
+            <h2 className="sea-experience text-2xl font-bold text-gray-800 text-center mb-6">
+                SEA EXPERIENCE
+            </h2>
+
+            <div className="sea-experience-info rounded-md shadow-lg bg-white sm:mx-auto sm:w-full lg:w-3/4 lg:px-8 py-8">
+                <p className="text-center text-gray-700 mb-4">
+                Enter from descending order, i.e., latest ship first
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 p-5 text-gray-700 text-sm">
+                <div>
+                    <p><b>GC</b> - General Cargo</p>
+                    <p><b>BC</b> - Bulk Carrier</p>
+                    <p><b>TN</b> - Tankers</p>
+                </div>
+                <div>
+                    <p><b>MP</b> - Multi-Purpose</p>
+                    <p><b>PS</b> - Passenger</p>
+                    <p><b>PD</b> - Product</p>
+                </div>
+                <div>
+                    <p><b>CN</b> - Container</p>
+                    <p><b>DR</b> - Dredger</p>
+                    <p><b>GS</b> - LPG/LNG</p>
+                </div>
+                <div>
+                    <p><b>OBO</b> - Ore/Bulk/Oil</p>
+                    <p><b>PCC</b> - Pure Car Carrier</p>
+                    <p><b>CH</b> - Chemical Tanker</p>
+                </div>
+                <div>
+                    <p><b>RR</b> - RO/RO</p>
+                    <p><b>HL</b> - Heavy Unit</p>
+                    <p><b>OS</b> - Off-shore</p>
+                </div>
                 </div>
             </div>
+        <br /><br />
 
-
-
-
-        {/* Pre-Sea Training */}
-        <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-            <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 lg:px-8 py-12'>
-            <h4><b>Sea-Experience</b></h4>
-            <p>Enter from descending order, i.e. latest ship first</p>
-            <div className='grid grid-cols-5 p-5'>
-                <div>
-                    <p>GC- General Cargo	</p>
-                    <p>BC - Bulk Carrier </p>
-                    <p>TN - Tankers</p>
-                </div>
-                <div>
-                    <p>MP - Multi-Purpose</p>
-                    <p>PS - Passenger</p>
-                    <p>PD -Product	</p>
-                </div>
-                <div>
-                    <p>CN - Container</p>
-                    <p>DR - Dredger</p>
-                    <p>GS - LPG/LNG</p>
-                </div>
-                <div>
-                    <p>OBO - Ore/Bulk/Oil</p>
-                    <p>PCC - Pure Car Carrier</p>
-                    <p>CH - Chemical Tanker</p>
-                </div>
-                <div>
-                    <p>RR- RO/RO</p>
-                    <p>HL - Heavy Unit</p>
-                    <p>OS - Off-shore</p>
-                </div>
-            </div>
-        </div><br /><br />
-
-        <h4 className='bold text-center'><b>RECORD OF PREVIOUS SEA SERVICE</b></h4>
-            <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-12'>
+        <h4 className='sea-service bold text-center'><b>RECORD OF PREVIOUS SEA SERVICE</b></h4>
+            <div className='sea-service-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-12'>
             {service.map((service, index) => (
-                <div key={index} className='border border-gray-300 m-3 rounded-md shadow-lg p-3'>
-                    <div className='grid grid-cols-3 p-1'>
+                <div key={index} className='sea-service-card border border-gray-300 m-3 rounded-md shadow-lg p-3'>
+                    <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                         <div className='flexbox items-center p-2'>
                             <label htmlFor={`company_name${index}`} className="text-sm font-medium text-gray-900">
                                 COMPANY :  
@@ -2434,7 +2560,7 @@ return (
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-3 p-1'>
+                    <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                             <div className='flexbox items-center p-2'>
                                 <label htmlFor={`period_months${index}`} className="text-sm font-medium text-gray-900">
                                     PERIOD MONTH :
@@ -2546,8 +2672,8 @@ return (
                     <button
                         type="button"
                         onClick={addService}
-                        className="bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-                        + Add Another Document
+                        className="service-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                        + Add
                     </button>
                 </div>
             </div>
@@ -2555,9 +2681,9 @@ return (
 
 
         <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-        <h4 className='bold text-center'><b>TOTAL RANK EXPERIENCE IN MONTHS :</b></h4>
-            <div className='border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                <div className='grid grid-cols-3 p-1'>
+        <h4 className='rank-experience bold text-center'><b>TOTAL RANK EXPERIENCE IN MONTHS :</b></h4>
+            <div className='experience-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                <div className='grid sm:grid-cols-3 grid-cols-2 p-1'>
                     <div className='flexbox items-center p-2'>
                                 <label htmlFor="master" className="text-sm font-medium text-gray-900">
                                     MASTER :
@@ -2569,7 +2695,7 @@ return (
 
                             <div className='flexbox items-center p-2'>
                                 <label htmlFor="chief_officer" className="text-sm font-medium text-gray-900">
-                                    CHEIF OFFICER :
+                                    CHIEF OFFICER :
                                 </label>
                                 <input id="chief_officer" name="chief_officer" type="number"
                                  value={ApplicantsDetails.chief_officer} onChange={handleApplicantChange} 
@@ -2603,10 +2729,10 @@ return (
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
                     </div>
-                    <div className='grid grid-cols-3 p-1'>
+                    <div className='grid sm:grid-cols-3 grid-cols-2 p-1'>
                         <div className='flexbox items-center p-2'>
                             <label htmlFor="chief_engineer" className="text-sm font-medium text-gray-900">
-                                CHEIF ENGINEER :
+                                CHIEF ENGINEER :
                             </label>
                             <input id="chief_engineer" name="chief_engineer" type="number" 
                             value={ApplicantsDetails.chief_engineer} onChange={handleApplicantChange} 
@@ -2645,6 +2771,15 @@ return (
                             </label>
                             <input id="fifth_engineer" name="fifth_engineer" type="number"
                              value={ApplicantsDetails.fifth_engineer} onChange={handleApplicantChange}
+                              className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div>
+
+                        <div className='flexbox items-center p-2'>
+                            <label htmlFor="electrical_officer" className="text-sm font-medium text-gray-900">
+                                ELECTRICAL OFFICER :
+                            </label>
+                            <input id="electrical_officer" name="electrical_officer" type="number"
+                             value={ApplicantsDetails.electrical_officer} onChange={handleApplicantChange}
                               className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
                     </div>
@@ -2729,16 +2864,71 @@ return (
 
                 
             </div>
-            <div className="flex justify-center">
+
+            {/* Declaration */}
+            <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
+                <div className='flex min-h-full flex-col justify-center lg:px-4 py-3'>
+                    <div className='declaration-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+                    <div className="flex min-h-full flex-col justify-center lg:px-8 py-6">
+                        <h4 className="declaration font-bold text-lg mb-2">Declaration:</h4>
+                        <ul className="list-disc list-inside space-y-2">
+                            <li>I do hereby declare that all information furnished above is true to the best of my knowledge and belief.</li>
+                            <li>I further declare that prior to joining you, I will stand released from previous employment.</li>
+                            <li>I do hereby pledge that I have never abused any drugs in the past.</li>
+                        </ul>
+                    </div>
+
+                        
+                    <div className='grid grid-cols-2'>
+                        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
+                            If immediate employment is not available do you wish to be considered for future vacancies? 
+                        </label>
+                        <div className='flex items-center'>
+                            <label className='flex items-center'>
+                                <input type="radio" onChange={handleApplicantChange} name='future_vacancies' value='Yes' checked={ApplicantsDetails.future_vacancies === 'Yes'}   /> 
+                                <span className="ml-2">Yes</span>
+                            </label> &nbsp;
+                            <label className='flex items-center'>
+                                <input type="radio" onChange={handleApplicantChange} name='future_vacancies' value='No' checked={ApplicantsDetails.future_vacancies === 'No'}  /> 
+                                <span className="ml-2">No</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className='grid grid-cols-2'>
+                        {/* <div className='flexbox items-center p-2'>
+                            <label htmlFor="signature" className="text-sm font-medium text-gray-900">
+                                Signature : 
+                            </label>
+                            <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div> */}
+
+                        <div className='flexbox items-center p-2'>
+                            <label htmlFor="declaration_date" className="text-sm font-medium text-gray-900">
+                                Declaration Date : 
+                            </label>
+                            <input id="declaration_date" name="declaration_date" type="date" value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   className="block w-32 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="col-span-2 flex justify-center">
                 <button
                     type="submit"
-                    className="m-4 p-4 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500">
-                    Submit
+                    disabled={isSubmitting}
+                    className={`m-4 w-40 px-8 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
+                    isSubmitting
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-500 hover:scale-105"}`}>
+                    {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
             </div>
 
-        </form>
 
+        </form>
+    {/* <Footer/> */}
     </>
   )
 }

@@ -1,16 +1,11 @@
 import './App.css';
 import { Route,Routes } from 'react-router-dom';
 import Applicant from './components/files/Applicant';
-import FamilyParticulars from './components/files/FamilyParticulars';
-import EducationBackground from './components/files/EducationBackground';
-import General from './components/files/General';
-import Experience from './components/files/Experience';
-import Medical from './components/files/Medical';
-import IdentityDocuments from './components/files/IdentityDocuments';
-import Certificate from './components/files/Certificate';
 import { RouteConstant } from './routes/RouteConstant';
-import Compulsory from './components/files/Compulsory';
 import Completed from './components/files/Completed';
+import Header from './components/files/Header';
+import Footer from './components/files/Footer';
+import Wage from './components/files/Wage';
 
 function App() {
   return (
@@ -18,6 +13,9 @@ function App() {
       <Routes>
         <Route path={RouteConstant.APPLICANT} element={<Applicant/>} />
         <Route path={RouteConstant.COMPLETE} element={<Completed/>} />
+        <Route path={RouteConstant.HEADER} element={<Header/>} />
+        <Route path={RouteConstant.FOOTER} element={<Footer/>} />
+        <Route path={RouteConstant.WAGE} element={<Wage/>} />
       </Routes>
     </>
   );
