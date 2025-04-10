@@ -49,6 +49,7 @@
 .experience-container input,
 .sea-service-container  input,
 .sea-service-container  textarea,
+.sea-service-container  select,
 .reference-container input,
 .medical-container  input,
 .certificate-card input,
@@ -122,6 +123,16 @@
 .personal-container .use-camera-button,
 .education-add-button,
 .family-add-button{
+    background:#f08c23;
+    border-radius:0px;
+    font-family:Montserrat;
+    padding-left:30px;
+    padding-right:30px;
+    min-height:40px;
+    font-size:16px;
+}
+
+.cancel-button{
     background:#f08c23;
     border-radius:0px;
     font-family:Montserrat;

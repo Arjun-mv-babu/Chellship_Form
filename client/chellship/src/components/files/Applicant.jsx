@@ -100,11 +100,11 @@ const Applicant = () => {
         // attended_course_from_date: "",
         // attended_course_to_date: "",
         
-        familiar_applications: "",
-        PMS: "",
-        AMOS4W: "",
-        ISPS: "",
-        SSO: "",
+        // familiar_applications: "",
+        // PMS: "",
+        // AMOS4W: "",
+        // ISPS: "",
+        // SSO: "",
         // explain_familiarity:"",
 
         signed_off: "",
@@ -114,6 +114,8 @@ const Applicant = () => {
         what_medicine: "",
         carry_medicine: "",
         health_disability_problems: "",
+        alcohol: "",
+        smoke: "",
         explain_medical: "",
         yellow_date: "",
         yellow_place: "",
@@ -191,8 +193,11 @@ const Applicant = () => {
         // document_from_date: "",
         // document_to_date: "",
         // document_Place_issued: "",
-        visa_rejection: ""
         
+        visa_rejection: "",
+        visa_revoked: "",
+        country_deported: "",
+        explain_visa:""
     });
 
     const [documents, setDocuments] = useState([
@@ -219,6 +224,10 @@ const Applicant = () => {
             },
         ]);
     };
+
+    const cancelLastDocument = () => {
+        setDocuments((prevDocuments) => prevDocuments.slice(0, -1));
+    }; 
 
     const handleDocumentChange = (index, field, value) => {
         const updatedDocuments = [...documents];
@@ -250,6 +259,10 @@ const Applicant = () => {
                 },
             ]);
         };
+
+        const cancelLastEducation = () => {
+            setEducation((prevEducation) => prevEducation.slice(0, -1));
+        }; 
 
         const handleEducationChange = (index, field, value) => {
             const updatedEducation = [...education];
@@ -283,6 +296,10 @@ const Applicant = () => {
                 },
             ]);
         };
+
+        const cancelLastPreseaeducation = () => {
+            setPreSeaEducation((prevPreSeaEducation) => prevPreSeaEducation.slice(0, -1));
+        }; 
 
         const handlePreSeaEducationChange = (index, field, value) => {
             const updatedPreSeaEducation = [...preseaeducation];
@@ -335,11 +352,38 @@ const Applicant = () => {
             ]);
         };
 
+        const cancelLastService = () => {
+            setService((prevService) => prevService.slice(0, -1));
+        }; 
+
         const handleServiceChange = (index, field, value) => {
             const updatedService = [...service];
             updatedService[index][field] = value;
+        
+            const fromDate = new Date(updatedService[index].previous_from_date);
+            const toDate = new Date(updatedService[index].previous_to_date);
+        
+            if (
+                fromDate instanceof Date && !isNaN(fromDate) &&
+                toDate instanceof Date && !isNaN(toDate) &&
+                toDate > fromDate
+            ) {
+                let totalMonths = (toDate.getFullYear() - fromDate.getFullYear()) * 12 + (toDate.getMonth() - fromDate.getMonth());
+                let extraDays = toDate.getDate() - fromDate.getDate();
+        
+                if (extraDays < 0) {
+                    totalMonths--;
+                    const prevMonth = new Date(toDate.getFullYear(), toDate.getMonth(), 0);
+                    extraDays += prevMonth.getDate();
+                }
+        
+                updatedService[index].period_months = totalMonths;
+                updatedService[index].period_days = extraDays;
+            }
+        
             setService(updatedService);
         };
+        
 
         // ----------------------------- >
 
@@ -369,6 +413,10 @@ const Applicant = () => {
                 },
             ]);
         };
+
+        const cancelLastCertificate = () => {
+            setCertificate((prevCertificate) => prevCertificate.slice(0, -1));
+        }; 
 
         const handleCertificateChange = (index, field, value) => {
             const updatedCertificate = [...certificate];
@@ -401,6 +449,10 @@ const Applicant = () => {
             ]);
         };
 
+        const cancelLastHkcertificate = () => {
+            setHKCertificate((prevHKCertificate) => prevHKCertificate.slice(0, -1));
+        }; 
+
         const handleHKCertificateChange = (index, field, value) => {
             const updatedHKCertificate = [...hkcertificate];
             updatedHKCertificate[index][field] = value;
@@ -431,6 +483,10 @@ const Applicant = () => {
                 },
             ]);
         };
+
+        const cancelLastCourse = () => {
+            setCourse((prevCourse) => prevCourse.slice(0, -1));
+        }; 
 
         const handleCourseChange = (index, field, value) => {
             const updatedCourse = [...course];
@@ -469,6 +525,10 @@ const Applicant = () => {
             ]);
         };
 
+        const cancelLastFamily = () => {
+            setFamily((prevFamily) => prevFamily.slice(0, -1));
+        };        
+
         const handleFamilyChange = (index, field, value) => {
             const updatedFamily = [...family];
             updatedFamily[index][field] = value;
@@ -494,6 +554,10 @@ const Applicant = () => {
                 },
             ]);
         };
+
+        const cancelLastReference = () => {
+            setReference((prevReference) => prevReference.slice(0, -1));
+        }; 
 
         const handleReferenceChange = (index, field, value) => {
             const updatedReference = [...reference];
@@ -626,6 +690,20 @@ const Applicant = () => {
         }
     };
 
+    const handleCheckboxChange = (e) => {
+        if (e.target.checked) {
+            setApplicantsDetails(prev => ({
+                ...prev,
+                present_address: prev.permanent_address,
+                present_tel: prev.permanent_tel,
+                present_mobile: prev.permanent_mobile,
+                present_email: prev.permanent_email,
+                present_airport: prev.permanent_airport
+            }));
+        }
+    };
+    
+
 
     // const handleUpload = async () => {
     //     if (!photoFile) return alert("No photo selected!");
@@ -697,11 +775,11 @@ const Applicant = () => {
             formData.append('emergency_tel', ApplicantsDetails.emergency_tel);
             formData.append('emergency_email', ApplicantsDetails.emergency_email);
     
-            formData.append('familiar_applications', ApplicantsDetails.familiar_applications);
-            formData.append('PMS', ApplicantsDetails.PMS);
-            formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
-            formData.append('ISPS', ApplicantsDetails.ISPS);
-            formData.append('SSO', ApplicantsDetails.SSO);
+            // formData.append('familiar_applications', ApplicantsDetails.familiar_applications);
+            // formData.append('PMS', ApplicantsDetails.PMS);
+            // formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
+            // formData.append('ISPS', ApplicantsDetails.ISPS);
+            // formData.append('SSO', ApplicantsDetails.SSO);
             // formData.append('explain_familiarity', ApplicantsDetails.explain_familiarity);
     
             formData.append('signed_off', ApplicantsDetails.signed_off);
@@ -711,11 +789,16 @@ const Applicant = () => {
             formData.append('what_medicine', ApplicantsDetails.what_medicine);
             formData.append('carry_medicine', ApplicantsDetails.carry_medicine);
             formData.append('health_disability_problems', ApplicantsDetails.health_disability_problems);
+            formData.append('alcohol', ApplicantsDetails.alcohol);
+            formData.append('smoke', ApplicantsDetails.smoke);
             formData.append('explain_medical', ApplicantsDetails.explain_medical);
             formData.append('yellow_date', ApplicantsDetails.yellow_date);
             formData.append('yellow_place', ApplicantsDetails.yellow_place);
     
             formData.append('visa_rejection', ApplicantsDetails.visa_rejection);
+            formData.append('visa_revoked', ApplicantsDetails.visa_revoked);
+            formData.append('country_deported', ApplicantsDetails.country_deported);
+            formData.append('explain_visa', ApplicantsDetails.explain_visa);
             formData.append('court_inquiry', ApplicantsDetails.court_inquiry);
             formData.append('certificate_suspended', ApplicantsDetails.certificate_suspended);
             formData.append('explain_court', ApplicantsDetails.explain_court);
@@ -806,7 +889,7 @@ return (
                 Go to SEA EXPERIENCE section
             </button>
         </div>
-        <h1 className='application-form text-center text-3xl m-3 py-5'><b>APPLICATION FORM</b></h1>
+        <h1 className='application-form text-center text-3xl m-3 py-5'><b>Application form</b></h1>
         <form onSubmit={handleSubmit}>
             <div className='flex min-h-full flex-col justify-center lg:px-8 py-3'>
                 <div className='info-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
@@ -830,37 +913,60 @@ return (
                                 <label htmlFor="introduction" className="text-sm font-medium text-gray-900">
                                     How were you introduced to Chellaram Shipping?
                                 </label><br />
-                                <ul className="w-full text-sm font-medium text-gray-300 bg-white border border-gray-200 rounded-lg dark:border-gray-300 dark:text-dark">
-                                    <li className="">
-                                        <div className="flex items-center ps-3">
-                                            <input id="Advertisement" name="introduction" type="radio" value="Advertisement" onChange={handleApplicantChange} checked={ApplicantsDetails.introduction === 'Advertisement'} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                                            
-                                            <label htmlFor="Advertisement" className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-900">Advertisement - Seamen's Club / Newspaper / Shipping Publication</label>
-                                        </div>
-                                    </li>
-                                    <li className="">
-                                        <div className="flex items-center ps-3">
-                                            <input id="Internet" name="introduction" type="radio" value="Internet" onChange={handleApplicantChange} checked={ApplicantsDetails.introduction === 'Internet'} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                                            
-                                            <label htmlFor="Internet" className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-900">Internet - Company's website / Other site</label>
-                                        </div>
-                                    </li>
-                                    <li className="">
-                                        <div className="flex items-center ps-3">
-                                            <input id="Friend" name="introduction" type="radio" value="Friend" onChange={handleApplicantChange} checked={ApplicantsDetails.introduction === 'Friend'} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                                            
-                                            <label htmlFor="Friend" className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-900">Friend(s)- in Chellaram Shipping / not in Chellaram Shipping</label>
-                                        </div>
-                                    </li>
-                                    <li className="">
-                                        <div className="flex items-center ps-3">
-                                            <input id="Others" name="introduction" type="radio" value="Others" onChange={handleApplicantChange} checked={ApplicantsDetails.introduction === 'Others'} className="peer w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"/>
-                                            
-                                            <label htmlFor="Others" className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-900">Others</label>
-                                        </div>
+                                <div className="grid sm:grid-cols-2 grid-cols-1 gap-2 w-full text-sm font-medium text-gray-900 bg-white p-2">
+                                    <label htmlFor="Advertisement" className="flex items-center space-x-2 p-2">
+                                        <input
+                                            id="Advertisement"
+                                            name="introduction"
+                                            type="radio"
+                                            value="Advertisement"
+                                            onChange={handleApplicantChange}
+                                            checked={ApplicantsDetails.introduction === 'Advertisement'}
+                                            className="w-4 h-4 text-blue-600"
+                                        />
+                                        <span>Advertisement - Seamen's Club / Newspaper / Shipping Publication</span>
+                                    </label>
 
-                                    </li>
-                                </ul>
+                                    <label htmlFor="Internet" className="flex items-center space-x-2 p-2">
+                                        <input
+                                            id="Internet"
+                                            name="introduction"
+                                            type="radio"
+                                            value="Internet"
+                                            onChange={handleApplicantChange}
+                                            checked={ApplicantsDetails.introduction === 'Internet'}
+                                            className="w-4 h-4 text-blue-600"
+                                        />
+                                        <span>Internet - Company's website / Other site</span>
+                                    </label>
+
+                                    <label htmlFor="Friend" className="flex items-center space-x-2 p-2">
+                                        <input
+                                            id="Friend"
+                                            name="introduction"
+                                            type="radio"
+                                            value="Friend"
+                                            onChange={handleApplicantChange}
+                                            checked={ApplicantsDetails.introduction === 'Friend'}
+                                            className="w-4 h-4 text-blue-600"
+                                        />
+                                        <span>Friend(s) - in Chellaram Shipping / not in Chellaram Shipping</span>
+                                    </label>
+
+                                    <label htmlFor="Others" className="flex items-center space-x-2 p-2">
+                                        <input
+                                            id="Others"
+                                            name="introduction"
+                                            type="radio"
+                                            value="Others"
+                                            onChange={handleApplicantChange}
+                                            checked={ApplicantsDetails.introduction === 'Others'}
+                                            className="w-4 h-4 text-blue-600"
+                                        />
+                                        <span>Others</span>
+                                    </label>
+                                </div>
+
                                     {ApplicantsDetails.introduction === 'Others' && (
                                         <div className="m-2">
                                         <label htmlFor="others_explain" className="text-sm font-medium text-gray-900">
@@ -876,7 +982,6 @@ return (
                                         />
                                         </div>
                                     )}
-
                         </div>
                     </div><br />
                 </div>
@@ -888,13 +993,14 @@ return (
                     <h4 className='personal-particulars bold text-center'><b>Personal Particulars</b></h4>
                     <div className='personal-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                             <div>
-                                    <div className='flexbox items-center'>
+                                <div className='grid sm:grid-cols-3 grid-cols-1 p-2'>
+                                    <div className='col-span-1 flexbox items-center'>
                                         <label htmlFor="indos_no" className="text-sm font-medium text-gray-900">
                                             INDOS No : 
                                         </label>
                                         <input id="indos_no" value={ApplicantsDetails.indos_no} onChange={handleApplicantChange} name="indos_no" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                        
-                                    </div><br />
+                                    </div>
+                                </div><br/>
 
                                     Name (as per passport) : <br />
                                     <div className='grid grid-cols-1 sm:grid-cols-3 gap-2'>
@@ -966,6 +1072,32 @@ return (
                                     </div>
                                 </div>
 
+                                <div className="p-1 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    <label className="text-sm font-medium text-gray-900 whitespace-nowrap">Marital Status:</label>
+                                    <div className="grid grid-cols-3 sm:flex items-center gap-2 sm:gap-4">
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Single" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Single"} />
+                                            <span>Single</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Married" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Married"} />
+                                            <span>Married</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Divorced" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Divorced"} />
+                                            <span>Divorced</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Separated" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Separated"} />
+                                            <span>Separated</span>
+                                        </label>
+                                        <label className="flex items-center space-x-2">
+                                            <input type="radio" name="marital_status" value="Widowed" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Widowed"} />
+                                            <span>Widowed</span>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div className='grid grid-cols-2'>
                                     <div className='flexbox items-center p-2'>
                                         <label htmlFor="nationality" className="text-sm font-medium text-gray-900">
@@ -1022,35 +1154,6 @@ return (
                                         <input id="current_resident" value={ApplicantsDetails.current_resident} onChange={handleApplicantChange} name="current_resident" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                                     </div>
                                 </div>
-
-                                <div className="p-1 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                    <label className="text-sm font-medium text-gray-900 whitespace-nowrap">Marital Status:</label>
-                                    <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-4">
-                                        <label className="flex items-center space-x-2">
-                                            <input type="radio" name="marital_status" value="Single" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Single"} />
-                                            <span>Single</span>
-                                        </label>
-                                        <label className="flex items-center space-x-2">
-                                            <input type="radio" name="marital_status" value="Married" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Married"} />
-                                            <span>Married</span>
-                                        </label>
-                                        <label className="flex items-center space-x-2">
-                                            <input type="radio" name="marital_status" value="Divorced" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Divorced"} />
-                                            <span>Divorced</span>
-                                        </label>
-                                        <label className="flex items-center space-x-2">
-                                            <input type="radio" name="marital_status" value="Separated" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Separated"} />
-                                            <span>Separated</span>
-                                        </label>
-                                        <label className="flex items-center space-x-2">
-                                            <input type="radio" name="marital_status" value="Widowed" onChange={handleApplicantChange} checked={ApplicantsDetails.marital_status === "Widowed"} />
-                                            <span>Widowed</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-
-
                         </div>
 
                         <div className='p-3'>
@@ -1090,7 +1193,19 @@ return (
                                 </label>
                                 <input id="permanent_airport" name="permanent_airport" type="mail"  value={ApplicantsDetails.permanent_airport} onChange={handleApplicantChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
+                        </div><br/><br/>
+
+                        <div className="p-3">
+                            <input
+                                type="checkbox"
+                                id="same_as_permanent"
+                                onChange={handleCheckboxChange}
+                                className="mr-2"/>
+                            <label htmlFor="same_as_permanent" className="text-sm font-medium text-gray-900">
+                                Present Address same as Permanent Address
+                            </label>
                         </div>
+
 
                         <div className='p-3'>
                         <label htmlFor="present_address" className="text-sm font-medium text-gray-900">
@@ -1371,18 +1486,23 @@ return (
                                             <button
                                                 type="button"
                                                 onClick={addFamily}
-                                                className="family-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                                                className="family-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                                                 + Add
                                             </button>
+
+                                            {family.length > 1 && (
+                                                <button
+                                                type="button"
+                                                onClick={cancelLastFamily}
+                                                className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                                                Cancel
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
-                                    
                                 </div>
-                                
                             </div>
-                            
                         </div>
-                        
                 </div>
 
 
@@ -1473,9 +1593,18 @@ return (
                                 <button
                                     type="button"
                                     onClick={addEducation}
-                                    className="education-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                                    className="education-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                                     + Add
                                 </button>
+
+                                {education.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={cancelLastEducation}
+                                        className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                                        Cancel
+                                    </button>
+                                )}
                             </div>
 
                         </div>
@@ -1486,8 +1615,8 @@ return (
                 <h4 className='pre-sea-training bold text-center'><b>Pre-Sea Training</b></h4>
                 <div className='presea-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-                        <p>Deck Officers - if no Pre Sea training done, then state the “Direct” cadet period. <br />
-                        Engineer Officers - to additionally state the name of the workshop attended
+                        <p>Deck Officers - If no Pre Sea training done, then state the “Direct” cadet period. <br />
+                        Engineer Officers - To additionally state the name of the workshop attended
                         </p>
                         {preseaeducation.map((preseaeducation, index) => (
                             <div className='presea-card grid grid-cols-1 sm:grid-cols-3 gap-4 m-3 border border-gray-300 rounded-md p-3 shadow-lg'>
@@ -1581,9 +1710,18 @@ return (
                                 <button
                                     type="button"
                                     onClick={addPreSeaEducation}
-                                    className="presea-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                                    className="presea-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                                     + Add
                                 </button>
+
+                                {preseaeducation.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={cancelLastPreseaeducation}
+                                        className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                                        Cancel
+                                    </button>
+                                )}
                             </div>
                     </div>
                 </div>
@@ -1698,41 +1836,113 @@ return (
     ))}
 
     
-{/* ))} */}
-<div className="flex justify-center my-4">
-    <button
-        type="button"
-        onClick={addDocument}
-        className="document-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
-        + Add
-    </button>
-</div>
+    {/* ))} */}
+    <div className="flex justify-center my-4">
+        <button
+            type="button"
+            onClick={addDocument}
+            className="document-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
+            + Add
+        </button>
 
-<div className='grid grid-cols-2'>
-            <label className='text-sm font-medium text-gray-900 m-3' htmlFor="visa_rejection">
-                Have you ever been rejected for any Visa Applied for? 
+                                
+        {documents.length > 1 && (
+            <button
+                type="button"
+                onClick={cancelLastDocument}
+                className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                Cancel
+            </button>
+        )}
+    </div><br/>
+
+    <div className='grid grid-cols-2'>
+        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="visa_rejection">
+            Have you ever been rejected for any Visa Applied ? 
+        </label>
+        <div>
+            <label>
+                <input type="radio" 
+                    name="visa_rejection" 
+                    onChange={handleApplicantChange}
+                    value="Yes"
+                    checked={ApplicantsDetails.visa_rejection === 'Yes'}/>
+                <span className="ml-2">Yes</span>
+            </label> &nbsp;
+            <label>
+                <input type="radio" 
+                    name="visa_rejection" 
+                    onChange={handleApplicantChange}
+                    value="No"
+                    checked={ApplicantsDetails.visa_rejection === 'No'}/>
+                <span className="ml-2">No</span>
             </label>
-            <div>
-                <label>
-                    <input 
-                        type="radio" 
-                        name="visa_rejection" 
-                        onChange={handleApplicantChange}
-                        value="Yes"
-                        checked={ApplicantsDetails.visa_rejection === 'Yes'}/>
-                    <span className="ml-2">Yes</span>
-                </label> &nbsp;
-                <label>
-                    <input 
-                        type="radio" 
-                        name="visa_rejection" 
-                        onChange={handleApplicantChange}
-                        value="No"
-                        checked={ApplicantsDetails.visa_rejection === 'No'}/>
-                    <span className="ml-2">No</span>
+        </div>
+    </div>
+
+    <div className='grid grid-cols-2'>
+        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="visa_revoked">
+            Has any of your visas ever been revoked ? 
+        </label>
+        <div>
+            <label>
+                <input type="radio" 
+                    name="visa_revoked" 
+                    onChange={handleApplicantChange}
+                    value="Yes"
+                    checked={ApplicantsDetails.visa_revoked === 'Yes'}/>
+                <span className="ml-2">Yes</span>
+            </label> &nbsp;
+            <label>
+                <input type="radio" 
+                    name="visa_revoked" 
+                    onChange={handleApplicantChange}
+                    value="No"
+                    checked={ApplicantsDetails.visa_revoked === 'No'}/>
+                <span className="ml-2">No</span>
+            </label>
+        </div>
+    </div>
+
+    <div className='grid grid-cols-2'>
+        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="country_deported">
+            Have you ever been deported from any country ? 
+        </label>
+        <div>
+            <label>
+                <input type="radio" 
+                    name="country_deported" 
+                    onChange={handleApplicantChange}
+                    value="Yes"
+                    checked={ApplicantsDetails.country_deported === 'Yes'}/>
+                <span className="ml-2">Yes</span>
+            </label> &nbsp;
+            <label>
+                <input type="radio" 
+                    name="country_deported" 
+                    onChange={handleApplicantChange}
+                    value="No"
+                    checked={ApplicantsDetails.country_deported === 'No'}/>
+                <span className="ml-2">No</span>
+            </label>
+        </div>
+    </div>
+
+    {(ApplicantsDetails.visa_rejection === 'Yes' ||
+            ApplicantsDetails.visa_revoked === 'Yes' ||
+              ApplicantsDetails.country_deported === 'Yes') && (
+              <div className="m-2 className='flex items-center'">
+                <label htmlFor="explain_visa" className="text-sm font-medium text-gray-900">
+                  If the answer is "Yes" to any of the above, please provide details: 
                 </label>
-            </div>
-</div>
+                <textarea 
+                  id="explain_visa" 
+                  name="explain_visa" 
+                  value={ApplicantsDetails.explain_visa}
+                  onChange={handleApplicantChange} 
+                  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+              </div>
+        )}
 
 </div>
 
@@ -1814,9 +2024,19 @@ return (
                     <button
                         type="button"
                         onClick={addCertificate}
-                        className="certificate-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                        className="certificate-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                         + Add
                     </button>
+
+                                
+                    {certificate.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={cancelLastCertificate}
+                            className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                            Cancel
+                        </button>
+                    )}
                 </div>
             </div>
         </div><br />
@@ -1838,7 +2058,7 @@ return (
                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm 
                 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
                 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                <option value="Select Certificate">Select Certificate</option>
+                <option value="">Select Certificate</option>
                 <option value="Hong Kong License">Hong Kong License</option>
                 <option value="Authority To Operate(ATP)">Marshall Island Licence</option>
             </select>
@@ -1898,9 +2118,19 @@ return (
             <button
                 type="button"
                 onClick={addHKCertificate}
-                className="hongkong-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                className="hongkong-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                 + Add
             </button>
+
+                                
+            {hkcertificate.length > 1 && (
+                <button
+                    type="button"
+                    onClick={cancelLastHkcertificate}
+                    className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                    Cancel
+                </button>
+            )}
         </div>  
     </div>  
 </div>
@@ -2004,9 +2234,19 @@ return (
         <button
             type="button"
             onClick={addCourse}
-            className="course-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+            className="course-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
             + Add
         </button>
+
+                                
+        {course.length > 1 && (
+            <button
+                type="button"
+                onClick={cancelLastCourse}
+                className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                Cancel
+            </button>
+        )}
     </div>  
 </div>
 </div>
@@ -2238,7 +2478,7 @@ return (
             </div>
           </div>
 
-          <div className='grid grid-cols-2'>
+        <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="health_disability_problems">
               Do you have any health or disability problems now? 
             </label>
@@ -2255,8 +2495,48 @@ return (
                   /> 
                   <span className="ml-2">No</span>
               </label>
-              </div>
-          </div>
+            </div>
+        </div>
+
+        <div className='grid grid-cols-2'>
+            <label className='text-sm font-medium text-gray-900 m-3' htmlFor="alcohol">
+                Do you drink Alcohol ? 
+            </label>
+            <div className='flex items-center'>
+              <label>
+                <input type="radio" name='alcohol'  
+                onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.alcohol === 'Yes'} 
+                  /> 
+                  <span className="ml-2">Yes</span>
+              </label> &nbsp;
+              <label>
+                <input type="radio" name='alcohol'  
+                onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.alcohol === 'No'} 
+                  /> 
+                  <span className="ml-2">No</span>
+              </label>
+            </div>
+        </div>
+
+        <div className='grid grid-cols-2'>
+            <label className='text-sm font-medium text-gray-900 m-3' htmlFor="smoke">
+              Do you smoke ? 
+            </label>
+            <div className='flex items-center'>
+              <label>
+                <input type="radio" name='smoke'  
+                onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.smoke === 'Yes'} 
+                  /> 
+                  <span className="ml-2">Yes</span>
+              </label> &nbsp;
+              <label>
+                <input type="radio" name='smoke'  
+                onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.smoke === 'No'} 
+                  /> 
+                  <span className="ml-2">No</span>
+              </label>
+            </div>
+        </div>
 
 
         {(ApplicantsDetails.signed_off === 'Yes' ||
@@ -2459,9 +2739,19 @@ return (
                         <button
                             type="button"
                             onClick={addReference}
-                            className="reference-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                            className="reference-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                             + Add
                         </button>
+
+                                
+                        {reference.length > 1 && (
+                            <button
+                                type="button"
+                                onClick={cancelLastReference}
+                                className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                                Cancel
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -2472,7 +2762,7 @@ return (
         {/*sea experience */}
         <div ref={seaExperienceRef} className="flex min-h-full flex-col justify-center lg:px-8 py-12">
             <h2 className="sea-experience text-2xl font-bold text-gray-800 text-center mb-6">
-                SEA EXPERIENCE
+                Sea experience
             </h2>
 
             <div className="sea-experience-info rounded-md shadow-lg bg-white sm:mx-auto sm:w-full lg:w-3/4 lg:px-8 py-8">
@@ -2510,7 +2800,7 @@ return (
             </div>
         <br /><br />
 
-        <h4 className='sea-service bold text-center'><b>RECORD OF PREVIOUS SEA SERVICE</b></h4>
+        <h4 className='sea-service bold text-center'><b>Record of previous sea service</b></h4>
             <div className='sea-service-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-12'>
             {service.map((service, index) => (
                 <div key={index} className='sea-service-card border border-gray-300 m-3 rounded-md shadow-lg p-3'>
@@ -2532,13 +2822,42 @@ return (
                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
 
+                        {/* --------------------------- */}
                         <div className='flexbox items-center p-2'>
                             <label htmlFor={`rank${index}`} className="text-sm font-medium text-gray-900">
                                 RANK : 
                             </label>
-                            <input id={`rank${index}`} name="rank" type="text"
-                            value={service.rank} onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
-                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            {/* <input id={`rank${index}`} name="rank" type="text"
+                                value={service.rank} onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/> */}
+                            <select id={`rank${index}`} name="rank" type="text" 
+                                value={service.rank}
+                                onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                <option value="">Select Rank</option>
+                                <option value="MASTER">MASTER </option>
+                                <option value="CHIEF OFFICER">CHIEF OFFICER </option>
+                                <option value="2nd OFFICER ">2nd OFFICER  </option>
+                                <option value="3rd OFFICER">3rd OFFICER </option>
+                                <option value="DECK CADET">DECK CADET </option>
+                                <option value="CHIEF ENGINEER">CHIEF ENGINEER </option>
+                                <option value="2nd ENGINEER">2nd ENGINEER </option>
+                                <option value="3rd ENGINEER">3rd ENGINEER </option>
+                                <option value="4th ENGINEER">4th ENGINEER </option>
+                                <option value="5th ENGINEER">5th ENGINEER </option>
+                                <option value="ELECTRICAL OFFICER">ELECTRICAL OFFICER </option>
+                                <option value="BOSUN">BOSUN </option>
+                                <option value="AB">AB </option>
+                                <option value="OS">OS </option>
+                                <option value="FITTER">FITTER </option>
+                                <option value="OILER">OILER </option>
+                                <option value="WPR">WPR </option>
+                                <option value="CH COOK">CH COOK </option>
+                                <option value="MESSMAN">MESSMAN </option>
+                                <option value="Junior Engineer">Junior Engineer</option>
+                                <option value="Engine Cadet ">Engine Cadet </option>
+                                <option value="Trainee Seaman">Trainee Seaman</option>
+                            </select>
                         </div>
 
                         <div className='flexbox items-center p-2'>
@@ -2560,7 +2879,7 @@ return (
                         </div>
                     </div>
 
-                    <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
+                        <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                             <div className='flexbox items-center p-2'>
                                 <label htmlFor={`period_months${index}`} className="text-sm font-medium text-gray-900">
                                     PERIOD MONTH :
@@ -2585,7 +2904,8 @@ return (
                                 value={service.vessel_type} onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
-
+                        </div>
+                        <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                             <div className='flexbox items-center p-2'>
                                 <label htmlFor={`engine_type${index}`} className="text-sm font-medium text-gray-900">
                                     ENGINE TYPE : 
@@ -2615,7 +2935,7 @@ return (
                                             name={`ums${index}`}
                                             value="UMS"
                                             checked={service.ums === 'UMS'} />
-                                        <span className="ml-2">Yes</span>
+                                        <span className="ml-2">UMS</span>
                                     </label> &nbsp;
                                     <label>
                                         <input type="radio"
@@ -2623,7 +2943,7 @@ return (
                                             name={`ums${index}`} 
                                             value="Non UMS"
                                             checked={service.ums === 'Non UMS'} />
-                                        <span className="ml-2">No</span>
+                                        <span className="ml-2">NON UMS</span>
                                     </label>
                                 </div>
                             </div>
@@ -2672,16 +2992,26 @@ return (
                     <button
                         type="button"
                         onClick={addService}
-                        className="service-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500">
+                        className="service-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                         + Add
                     </button>
+
+                                
+                    {service.length > 1 && (
+                        <button
+                            type="button"
+                            onClick={cancelLastService}
+                            className="cancel-button bg-red-600 text-white py-1 px-3 rounded-md m-2">
+                            Cancel
+                        </button>
+                    )}
                 </div>
             </div>
         </div> 
 
 
         <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
-        <h4 className='rank-experience bold text-center'><b>TOTAL RANK EXPERIENCE IN MONTHS :</b></h4>
+        <h4 className='rank-experience bold text-center'><b>Total rank experience in months :</b></h4>
             <div className='experience-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                 <div className='grid sm:grid-cols-3 grid-cols-2 p-1'>
                     <div className='flexbox items-center p-2'>
