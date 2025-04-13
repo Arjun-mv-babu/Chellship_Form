@@ -3060,14 +3060,14 @@ return (
   </div>
 
   <div>
-    <label htmlFor="booser_dose_two_date" className="block text-sm font-medium text-gray-700 mb-1">
+    <label htmlFor="booster_dose_two_date" className="block text-sm font-medium text-gray-700 mb-1">
       Date Vaccinated
     </label>
     <input
-      id="booser_dose_two_date"
-      value={ApplicantsDetails.booser_dose_two_date}
+      id="booster_dose_two_date"
+      value={ApplicantsDetails.booster_dose_two_date}
       onChange={handleApplicantChange}
-      name="booser_dose_two_date"
+      name="booster_dose_two_date"
       type="date"
       className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
     />
