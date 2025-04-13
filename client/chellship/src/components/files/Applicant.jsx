@@ -125,7 +125,7 @@ const Applicant = () => {
         second_dose_make: "",
         second_dose_date: "",
         booster_dose_one_make: "",
-        booser_dose_one_date: "",
+        booster_dose_one_date: "",
         booster_dose_two_make: "",
         booster_dose_two_date: "",
         yellow_date: "",
@@ -837,7 +837,7 @@ const Applicant = () => {
             formData.append('second_dose_make', ApplicantsDetails.second_dose_make);
             formData.append('second_dose_date', ApplicantsDetails.second_dose_date);
             formData.append('booster_dose_one_make', ApplicantsDetails.booster_dose_one_make);
-            formData.append('booser_dose_one_date', ApplicantsDetails.booser_dose_one_date);
+            formData.append('booster_dose_one_date', ApplicantsDetails.booster_dose_one_date);
             formData.append('booster_dose_two_make', ApplicantsDetails.booster_dose_two_make);
             formData.append('booster_dose_two_date', ApplicantsDetails.booster_dose_two_date);
 
@@ -2929,97 +2929,151 @@ return (
             <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
                     <h4 className='vaccination bold text-center'><b>Vaccinations</b></h4>
                         <div className='vaccination-container border border-gray-300 rounded-md p-63 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+{/* COVID 19 Title Row */}
+<div className='grid  gap-2'>
+  <div className='flex justify-center items-center h-full p-4'>
+    <h5 className="text-base font-semibold text-center">COVID 19</h5>
+  </div>
+  {/* <div className='flex justify-center items-center h-full p-4'>
+    <h5 className="text-base text-center">Make or Manufacturer</h5>
+  </div> */}
+  {/* <div className='flex justify-center items-center h-full p-4'>
+    <h5 className="text-base text-center">Date Vaccinated</h5>
+  </div> */}
+</div>
 
-                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
-                            {/* COVID 19 */}
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base font-semibold text-center">COVID 19</h5>
-                            </div>
+{/* 1st Dose */}
+<div className='p-2 sm:p-4 border rounded-md mb-4'>
+  <h5 className="text-base font-semibold mb-2 text-center">1st Dose</h5>
 
-                            {/* Make or Manufacturer */}
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base text-center">Make or Manufacturer</h5>
-                            </div>
+  <div className='mb-3'>
+    <label htmlFor="first_dose_make" className="block text-sm font-medium text-gray-700 mb-1">
+      Make or Manufacturer
+    </label>
+    <input
+      id="first_dose_make"
+      value={ApplicantsDetails.first_dose_make}
+      onChange={handleApplicantChange}
+      name="first_dose_make"
+      type="text"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
 
-                            {/* Date Vaccinated */}
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base text-center">Date Vaccinated</h5>
-                            </div>
-                        </div>
+  <div>
+    <label htmlFor="first_dose_date" className="block text-sm font-medium text-gray-700 mb-1">
+      Date Vaccinated
+    </label>
+    <input
+      id="first_dose_date"
+      value={ApplicantsDetails.first_dose_date}
+      onChange={handleApplicantChange}
+      name="first_dose_date"
+      type="date"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
+</div>
 
-                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base text-center">1st Dose</h5>
-                            </div>
+{/* 2nd Dose */}
+<div className='p-2 sm:p-4 border rounded-md mb-4'>
+  <h5 className="text-base font-semibold mb-2 text-center">2nd Dose</h5>
 
-                            <div className='flex justify-center items-center w-full h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="first_dose_make" value={ApplicantsDetails.first_dose_make} onChange={handleApplicantChange} name="first_dose_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
+  <div className='mb-3'>
+    <label htmlFor="second_dose_make" className="block text-sm font-medium text-gray-700 mb-1">
+      Make or Manufacturer
+    </label>
+    <input
+      id="second_dose_make"
+      value={ApplicantsDetails.second_dose_make}
+      onChange={handleApplicantChange}
+      name="second_dose_make"
+      type="text"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
 
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="first_dose_date" value={ApplicantsDetails.first_dose_date} onChange={handleApplicantChange} name="first_dose_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
-                        </div>
+  <div>
+    <label htmlFor="second_dose_date" className="block text-sm font-medium text-gray-700 mb-1">
+      Date Vaccinated
+    </label>
+    <input
+      id="second_dose_date"
+      value={ApplicantsDetails.second_dose_date}
+      onChange={handleApplicantChange}
+      name="second_dose_date"
+      type="date"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
+</div>
 
-                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base text-center">2nd Dose</h5>
-                            </div>
+{/* Booster Dose 1 */}
+<div className='p-2 sm:p-4 border rounded-md mb-4'>
+  <h5 className="text-base font-semibold mb-2 text-center">Booster Dose 1</h5>
 
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="second_dose_make" value={ApplicantsDetails.second_dose_make} onChange={handleApplicantChange} name="second_dose_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
+  <div className='mb-3'>
+    <label htmlFor="booster_dose_one_make" className="block text-sm font-medium text-gray-700 mb-1">
+      Make or Manufacturer
+    </label>
+    <input
+      id="booster_dose_one_make"
+      value={ApplicantsDetails.booster_dose_one_make}
+      onChange={handleApplicantChange}
+      name="booster_dose_one_make"
+      type="text"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
 
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="second_dose_date" value={ApplicantsDetails.second_dose_date} onChange={handleApplicantChange} name="second_dose_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
-                        </div>
+  <div>
+    <label htmlFor="booster_dose_one_date" className="block text-sm font-medium text-gray-700 mb-1">
+      Date Vaccinated
+    </label>
+    <input
+      id="booster_dose_one_date"
+      value={ApplicantsDetails.booster_dose_one_date}
+      onChange={handleApplicantChange}
+      name="booster_dose_one_date"
+      type="date"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
+</div>
 
-                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base text-center">Booster Dose 1</h5>
-                            </div>
+{/* Booster Dose 2 */}
+<div className='p-2 sm:p-4 border rounded-md mb-4'>
+  <h5 className="text-base font-semibold mb-2 text-center">Booster Dose 2</h5>
 
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="booster_dose_one_make" value={ApplicantsDetails.booster_dose_one_make} onChange={handleApplicantChange} name="booster_dose_one_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
+  <div className='mb-3'>
+    <label htmlFor="booster_dose_two_make" className="block text-sm font-medium text-gray-700 mb-1">
+      Make or Manufacturer
+    </label>
+    <input
+      id="booster_dose_two_make"
+      value={ApplicantsDetails.booster_dose_two_make}
+      onChange={handleApplicantChange}
+      name="booster_dose_two_make"
+      type="text"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
 
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="booser_dose_one_date" value={ApplicantsDetails.booser_dose_one_date} onChange={handleApplicantChange} name="booser_dose_one_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
-                        </div>
+  <div>
+    <label htmlFor="booser_dose_two_date" className="block text-sm font-medium text-gray-700 mb-1">
+      Date Vaccinated
+    </label>
+    <input
+      id="booser_dose_two_date"
+      value={ApplicantsDetails.booser_dose_two_date}
+      onChange={handleApplicantChange}
+      name="booser_dose_two_date"
+      type="date"
+      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+    />
+  </div>
+</div>
 
-                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <h5 className="text-base text-center">Booster Dose 2</h5>
-                            </div>
-
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="booster_dose_two_make" value={ApplicantsDetails.booster_dose_two_make} onChange={handleApplicantChange} name="booster_dose_two_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
-
-                            <div className='flex justify-center items-center h-full p-4'>
-                                <div className='col-span-1 flexbox items-center'>
-                                    <input id="booster_dose_two_date" value={ApplicantsDetails.booster_dose_two_date} onChange={handleApplicantChange} name="booster_dose_two_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                                </div>
-                            </div>
-                        </div>
-                        <br/>
-                        <br/>
 
 
 
