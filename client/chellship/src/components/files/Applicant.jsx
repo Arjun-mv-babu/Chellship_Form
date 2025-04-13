@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Header from './Header';
-import Footer from './Footer';
 import { useRef } from "react";
-import '../styles/styles.css';
+import '../styles/styles.css'
 
 const Applicant = () => {
 
@@ -108,15 +106,28 @@ const Applicant = () => {
         // explain_familiarity:"",
 
         signed_off: "",
+        explain_signed_off: "",
         surgery: "",
+        explain_surgery: "",
         illness: "",
+        explain_illness: "",
         regular_medicine: "",
         what_medicine: "",
         carry_medicine: "",
         health_disability_problems: "",
+        explain_health_disability_problems: "",
         alcohol: "",
         smoke: "",
-        explain_medical: "",
+        // explain_medical: "",
+
+        first_dose_make: "",
+        first_dose_date: "",
+        second_dose_make: "",
+        second_dose_date: "",
+        booster_dose_one_make: "",
+        booser_dose_one_date: "",
+        booster_dose_two_make: "",
+        booster_dose_two_date: "",
         yellow_date: "",
         yellow_place: "",
 
@@ -141,8 +152,12 @@ const Applicant = () => {
         // yellow_fever_place: "",
 
         court_inquiry: "",
-        certificate_suspended: "",
         explain_court: "",
+        certificate_suspended: "",
+        explain_certificate: "",
+        covid_infected: "",
+        explain_covid: "",
+
 
         // past_company: "",
         // past_company_manager_name_designation: "",
@@ -186,6 +201,10 @@ const Applicant = () => {
         wpr: "",
         ch_cook: "",
         messman: "",
+        ecdis: "",
+        geared: "",
+        grab: "",
+        
 
         // document_type: "",
         // document_country: "",
@@ -195,9 +214,12 @@ const Applicant = () => {
         // document_Place_issued: "",
         
         visa_rejection: "",
+        explain_visa_rejection: "",
         visa_revoked: "",
+        explain_visa_revoked: "",
         country_deported: "",
-        explain_visa:""
+        explain_country_deported:""
+        // explain_visa:""
     });
 
     const [documents, setDocuments] = useState([
@@ -232,9 +254,22 @@ const Applicant = () => {
     const handleDocumentChange = (index, field, value) => {
         const updatedDocuments = [...documents];
         updatedDocuments[index][field] = value;
+    
+        // Auto-set or reset country based on selected document type
+        if (field === "document_type") {
+            if (value === "Indian CDC") {
+                updatedDocuments[index].document_country = "India";
+            } else if (value === "US C1/D Visa") {
+                updatedDocuments[index].document_country = "United States of America";
+            } else {
+                // Reset to default (empty)
+                updatedDocuments[index].document_country = "";
+            }
+        }
+    
         setDocuments(updatedDocuments);
     };
-
+    
         // ----------------------------- >
     
         const [education, setEducation] = useState([
@@ -783,26 +818,47 @@ const Applicant = () => {
             // formData.append('explain_familiarity', ApplicantsDetails.explain_familiarity);
     
             formData.append('signed_off', ApplicantsDetails.signed_off);
+            formData.append('explain_signed_off', ApplicantsDetails.explain_signed_off);
             formData.append('surgery', ApplicantsDetails.surgery);
+            formData.append('explain_surgery', ApplicantsDetails.explain_surgery);
             formData.append('illness', ApplicantsDetails.illness);
+            formData.append('explain_illness', ApplicantsDetails.explain_illness);
             formData.append('regular_medicine', ApplicantsDetails.regular_medicine);
             formData.append('what_medicine', ApplicantsDetails.what_medicine);
             formData.append('carry_medicine', ApplicantsDetails.carry_medicine);
             formData.append('health_disability_problems', ApplicantsDetails.health_disability_problems);
+            formData.append('explain_health_disability_problems', ApplicantsDetails.explain_health_disability_problems);
             formData.append('alcohol', ApplicantsDetails.alcohol);
             formData.append('smoke', ApplicantsDetails.smoke);
-            formData.append('explain_medical', ApplicantsDetails.explain_medical);
+            // formData.append('explain_medical', ApplicantsDetails.explain_medical);
+
+            formData.append('first_dose_make', ApplicantsDetails.first_dose_make);
+            formData.append('first_dose_date', ApplicantsDetails.first_dose_date);
+            formData.append('second_dose_make', ApplicantsDetails.second_dose_make);
+            formData.append('second_dose_date', ApplicantsDetails.second_dose_date);
+            formData.append('booster_dose_one_make', ApplicantsDetails.booster_dose_one_make);
+            formData.append('booser_dose_one_date', ApplicantsDetails.booser_dose_one_date);
+            formData.append('booster_dose_two_make', ApplicantsDetails.booster_dose_two_make);
+            formData.append('booster_dose_two_date', ApplicantsDetails.booster_dose_two_date);
+
             formData.append('yellow_date', ApplicantsDetails.yellow_date);
             formData.append('yellow_place', ApplicantsDetails.yellow_place);
     
             formData.append('visa_rejection', ApplicantsDetails.visa_rejection);
+            formData.append('explain_visa_rejection', ApplicantsDetails.explain_visa_rejection);
             formData.append('visa_revoked', ApplicantsDetails.visa_revoked);
+            formData.append('explain_visa_revoked', ApplicantsDetails.explain_visa_revoked);
             formData.append('country_deported', ApplicantsDetails.country_deported);
-            formData.append('explain_visa', ApplicantsDetails.explain_visa);
+            formData.append('explain_country_deported', ApplicantsDetails.explain_country_deported);
+            // formData.append('explain_visa', ApplicantsDetails.explain_visa);
+            
             formData.append('court_inquiry', ApplicantsDetails.court_inquiry);
-            formData.append('certificate_suspended', ApplicantsDetails.certificate_suspended);
             formData.append('explain_court', ApplicantsDetails.explain_court);
-    
+            formData.append('certificate_suspended', ApplicantsDetails.certificate_suspended);
+            formData.append('explain_certificate', ApplicantsDetails.explain_certificate);
+            formData.append('covid_infected', ApplicantsDetails.covid_infected);
+            formData.append('explain_covid', ApplicantsDetails.explain_covid);
+
             formData.append('future_vacancies', ApplicantsDetails.future_vacancies);
             formData.append('declaration_date', ApplicantsDetails.declaration_date);
     
@@ -825,6 +881,9 @@ const Applicant = () => {
             formData.append('wpr', ApplicantsDetails.wpr);
             formData.append('ch_cook', ApplicantsDetails.ch_cook);
             formData.append('messman', ApplicantsDetails.messman);
+            formData.append('ecdis', ApplicantsDetails.ecdis);
+            formData.append('geared', ApplicantsDetails.geared);
+            formData.append('grab', ApplicantsDetails.grab);
     
             // Append JSON objects
             formData.append("documents", JSON.stringify(documents));
@@ -991,8 +1050,7 @@ return (
 
                 <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
                     <h4 className='personal-particulars bold text-center'><b>Personal Particulars</b></h4>
-                    <div className='personal-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                            <div>
+                        <div className='personal-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                                 <div className='grid sm:grid-cols-3 grid-cols-1 p-2'>
                                     <div className='col-span-1 flexbox items-center'>
                                         <label htmlFor="indos_no" className="text-sm font-medium text-gray-900">
@@ -1099,18 +1157,80 @@ return (
                                 </div>
 
                                 <div className='grid grid-cols-2'>
-                                    <div className='flexbox items-center p-2'>
-                                        <label htmlFor="nationality" className="text-sm font-medium text-gray-900">
-                                            Nationality : 
+                                    <div className='flex flex-col p-2'>
+                                        <label htmlFor="nationality" className="text-sm font-medium text-gray-900 mb-1">
+                                            Nationality:
                                         </label>
-                                        <input id="nationality" value={ApplicantsDetails.nationality} onChange={handleApplicantChange} name="nationality" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        <select
+                                            id="nationality"
+                                            name="nationality"
+                                            value={ApplicantsDetails.nationality}
+                                            onChange={handleApplicantChange}
+                                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                            <option value="">Select Nationality</option>
+                                            {[
+                                                "India", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina",
+                                                "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
+                                                "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina",
+                                                "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia",
+                                                "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros",
+                                                "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
+                                                "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+                                                "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini",
+                                                "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana",
+                                                "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras",
+                                                "Hungary", "Iceland", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
+                                                "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait",
+                                                "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein",
+                                                "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta",
+                                                "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco",
+                                                "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal",
+                                                "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia",
+                                                "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay",
+                                                "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+                                                "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+                                                "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone",
+                                                "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa",
+                                                "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland",
+                                                "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga",
+                                                "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine",
+                                                "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan",
+                                                "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+                                            ].map((country) => (
+                                                <option key={country} value={country}>
+                                                    {country}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
 
-                                    <div className='flexbox items-center p-2'>
-                                        <label htmlFor="religion" className="text-sm font-medium text-gray-900">
-                                            Religion :
+                                    <div className='flex flex-col p-2'>
+                                        <label htmlFor="religion" className="text-sm font-medium text-gray-900 mb-1">
+                                            Religion:
                                         </label>
-                                        <input id="religion"  value={ApplicantsDetails.religion} onChange={handleApplicantChange} name="religion" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                        <select
+                                            id="religion"
+                                            name="religion"
+                                            value={ApplicantsDetails.religion}
+                                            onChange={handleApplicantChange}
+                                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                            <option value="">Select Religion</option>
+                                            {[
+                                                "Hinduism",
+                                                "Islam",
+                                                "Christianity",
+                                                "Sikhism",
+                                                "Buddhism",
+                                                "Jainism",
+                                                "Judaism",
+                                                "Zoroastrianism",
+                                                "Other"
+                                            ].map((religion) => (
+                                                <option key={religion} value={religion}>
+                                                    {religion}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
 
@@ -1154,7 +1274,6 @@ return (
                                         <input id="current_resident" value={ApplicantsDetails.current_resident} onChange={handleApplicantChange} name="current_resident" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                                     </div>
                                 </div>
-                        </div>
 
                         <div className='p-3'>
                             <label htmlFor="permanent_address" className="text-sm font-medium text-gray-900">
@@ -1306,7 +1425,7 @@ return (
                             <div className='family-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
 
                                 <div>
-                                    <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
+                                    <div className='grid sm:grid-cols-3 grid-cols-1 gap-2 items-center'>
                                         <div className='flexbox items-center p-4'>
                                             <h5>Emergency Contact :</h5>
                                         </div>
@@ -1480,8 +1599,11 @@ return (
                                         </div>
                                     ))}
                                                
-                                        
-
+                                               {family.length === 1 && (
+                                                <p className="text-sm text-gray-600 mb-2 text-center">
+                                                    If you have multiple family members to enter, click the <b>"Add"</b> button to include more.
+                                                </p>
+                                            )}
                                         <div className="flex justify-center my-4">
                                             <button
                                                 type="button"
@@ -1589,6 +1711,11 @@ return (
                                 </div>
                             </div>
                         ))}
+                            {education.length === 1 && (
+                                <p className="text-sm text-gray-600 mb-2 text-center">
+                                    If you have multiple Educational Backgrounds, click the <b>"Add"</b> button to add more.
+                                </p>
+                            )}
                             <div className="flex justify-center my-4">
                                 <button
                                     type="button"
@@ -1706,6 +1833,12 @@ return (
                             </div>
                             ))}
 
+                            {preseaeducation.length === 1 && (
+                                <p className="text-sm text-gray-600 mb-2 text-center">
+                                    If you have multiple Pre-Sea Trainings completed, click the <b>"Add"</b> button to add more.
+                                </p>
+                            )}
+
                             <div className="flex justify-center my-4">
                                 <button
                                     type="button"
@@ -1760,18 +1893,55 @@ return (
 
             {/* Document Country */}
             <div className="flex flex-col items-start p-2">
-                <label htmlFor={`document_country_${index}`} className="text-sm font-medium text-gray-900">
-                    Country:
-                </label>
-                <input
-                    id={`document_country_${index}`}
-                    name="document_country"
-                    type="text"
-                    value={document.document_country}
-                    onChange={(e) => handleDocumentChange(index, "document_country", e.target.value)}
-                    className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300"
-                />
-            </div>
+            <label htmlFor={`document_country_${index}`} className="text-sm font-medium text-gray-900">
+                Country:
+            </label>
+            <select
+                id={`document_country_${index}`}
+                name="document_country"
+                value={document.document_country}
+                onChange={(e) => handleDocumentChange(index, "document_country", e.target.value)}
+                disabled={
+                    document.document_type === "Indian CDC" || document.document_type === "US C1/D Visa"
+                }
+                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
+                <option value="">Select Country</option>
+                {[
+                    "India", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina",
+                    "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
+                    "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina",
+                    "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia",
+                    "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros",
+                    "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
+                    "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+                    "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini",
+                    "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana",
+                    "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras",
+                    "Hungary", "Iceland", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
+                    "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait",
+                    "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein",
+                    "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta",
+                    "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco",
+                    "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal",
+                    "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia",
+                    "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay",
+                    "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+                    "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+                    "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone",
+                    "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa",
+                    "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland",
+                    "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga",
+                    "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine",
+                    "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan",
+                    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+                ].map((country) => (
+                    <option key={country} value={country}>
+                        {country}
+                    </option>
+                ))}
+            </select>
+        </div>
+
 
             {/* Document Number */}
             <div className="flex flex-col items-start p-2">
@@ -1835,7 +2005,11 @@ return (
         </div>
     ))}
 
-    
+    {documents.length === 1 && (
+        <p className="text-sm text-gray-600 mb-2 text-center">
+            If you have multiple documents, click the <b>"Add"</b> button to add more.
+        </p>
+    )}
     {/* ))} */}
     <div className="flex justify-center my-4">
         <button
@@ -1880,6 +2054,23 @@ return (
         </div>
     </div>
 
+        {ApplicantsDetails.visa_rejection === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_visa_rejection">
+                If the answer is "Yes", please provide details:
+                </label>
+                <div>
+                <textarea
+                    id="explain_visa_rejection"
+                    name="explain_visa_rejection"
+                    value={ApplicantsDetails.explain_visa_rejection}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+        )}
+
     <div className='grid grid-cols-2'>
         <label className='text-sm font-medium text-gray-900 m-3' htmlFor="visa_revoked">
             Has any of your visas ever been revoked ? 
@@ -1903,6 +2094,23 @@ return (
             </label>
         </div>
     </div>
+
+        {ApplicantsDetails.visa_revoked === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_visa_revoked">
+                If the answer is "Yes", please provide details:
+                </label>
+                <div>
+                <textarea
+                    id="explain_visa_revoked"
+                    name="explain_visa_revoked"
+                    value={ApplicantsDetails.explain_visa_revoked}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+        )}
 
     <div className='grid grid-cols-2'>
         <label className='text-sm font-medium text-gray-900 m-3' htmlFor="country_deported">
@@ -1928,22 +2136,22 @@ return (
         </div>
     </div>
 
-    {(ApplicantsDetails.visa_rejection === 'Yes' ||
-            ApplicantsDetails.visa_revoked === 'Yes' ||
-              ApplicantsDetails.country_deported === 'Yes') && (
-              <div className="m-2 className='flex items-center'">
-                <label htmlFor="explain_visa" className="text-sm font-medium text-gray-900">
-                  If the answer is "Yes" to any of the above, please provide details: 
+        {ApplicantsDetails.country_deported === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_country_deported">
+                If the answer is "Yes", please provide details:
                 </label>
-                <textarea 
-                  id="explain_visa" 
-                  name="explain_visa" 
-                  value={ApplicantsDetails.explain_visa}
-                  onChange={handleApplicantChange} 
-                  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
-              </div>
+                <div>
+                <textarea
+                    id="explain_country_deported"
+                    name="explain_country_deported"
+                    value={ApplicantsDetails.explain_country_deported}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
         )}
-
 </div>
 
 
@@ -2020,11 +2228,16 @@ return (
                 </div>
                 </div>
                 ))}
+                {certificate.length === 1 && (
+                    <p className="text-sm text-gray-600 mb-2 text-center">
+                        If you have multiple certificates to enter, click the <b>"Add"</b> button to add more.
+                    </p>
+                )}
                 <div className="flex justify-center my-4">
                     <button
                         type="button"
                         onClick={addCertificate}
-                        className="certificate-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
+                        className="certificate-add-button  text-white py-1 px-1 rounded-md  m-2">
                         + Add
                     </button>
 
@@ -2114,6 +2327,11 @@ return (
         </div>
         </div>
     ))}
+    {hkcertificate.length === 1 && (
+        <p className="text-sm text-gray-600 mb-2 text-center">
+            If you have multiple certificates to enter, click the <b>"Add"</b> button to enter more.
+        </p>
+    )}
         <div className="flex justify-center my-4">
             <button
                 type="button"
@@ -2156,17 +2374,18 @@ return (
             focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
             <option value="">Select Course</option>
             <option value="Elementary First Aid">Elementary First Aid</option>
+            <option value="Personal Survival Techniques">Personal Survival Techniques</option>
+            <option value="Fire Fighting & Fire Prevention">Fire Fighting & Fire Prevention</option>
+            <option value="PSSR">PSSR</option>
+            <option value="PSC - RB">PSC - RB</option>
+            <option value="AMOS-4W Course">SSO</option>
+            <option value="AMOS-4W Course">STSDSD</option>
+            <option value="Advance Fire Fighting">Advance Fire Fighting</option>
             <option value="Medical First Aid">Medical First Aid</option>
             <option value="Ship Master's Medicare">Ship Master's Medicare</option>
-            <option value="Personal Survival Techniques">Personal Survival Techniques</option>
-            <option value="PSC - RB">PSC - RB</option>
-            <option value="Fire Fighting & Fire Prevention">Fire Fighting & Fire Prevention</option>
-            <option value="Advance Fire Fighting">Advance Fire Fighting</option>
-            <option value="PSSR">PSSR</option>
             {/* <option value="ARPA">ARPA</option> */}
             {/* <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option> */}
             {/* <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option> */}
-            <option value="ECDIS">ECDIS</option>
             {/* <option value="GMDSS">GMDSS</option> */}
             <option value="GMDSS">GMDSS GOC</option>
             {/* <option value="STCW Endorsement">STCW Endorsement</option> */}
@@ -2175,8 +2394,7 @@ return (
             {/* <option value="Bridge Team Management">Bridge Team Management</option> */}
             {/* <option value="Bridge Resource Management">Bridge Resource Management</option> */}
             {/* <option value="AMOS-4W Course">AMOS-4W Course</option> */}
-            <option value="AMOS-4W Course">SSO</option>
-            <option value="AMOS-4W Course">STSDSD</option>
+            <option value="ECDIS">ECDIS</option>
         </select>
     </div>
 
@@ -2230,6 +2448,12 @@ return (
 </div>
 </div>
     ))}
+
+{course.length === 1 && (
+        <p className="text-sm text-gray-600 mb-2 text-center">
+            If you have completed multiple courses, click the <b>"Add"</b> button to enter more.
+        </p>
+    )}
 <div className="flex justify-center my-4">
         <button
             type="button"
@@ -2391,8 +2615,26 @@ return (
               </label>
             </div>
           </div>
+          {ApplicantsDetails.signed_off === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_signed_off">
+                If the answer is "Yes", please provide details:
+                </label>
+                <div>
+                <textarea
+                    id="explain_signed_off"
+                    name="explain_signed_off"
+                    value={ApplicantsDetails.explain_signed_off}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+            )}
 
-          <div className='grid grid-cols-2'>
+
+
+        <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
               Have you undergone any operation / surgery in the past? 
             </label>
@@ -2410,7 +2652,23 @@ return (
                   <span className="ml-2">No</span>
               </label>
             </div>
-          </div>
+        </div>
+          {ApplicantsDetails.surgery === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_surgery">
+                If the answer is "Yes", please provide details:
+                </label>
+                <div>
+                <textarea
+                    id="explain_surgery"
+                    name="explain_surgery"
+                    value={ApplicantsDetails.explain_surgery}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+            )}
 
           <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
@@ -2431,6 +2689,22 @@ return (
               </label>
             </div>
           </div>
+          {ApplicantsDetails.illness === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_illness">
+                If the answer is "Yes", please provide details:
+                </label>
+                <div>
+                <textarea
+                    id="explain_illness"
+                    name="explain_illness"
+                    value={ApplicantsDetails.explain_illness}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+            )}
 
           <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
@@ -2451,8 +2725,41 @@ return (
               </label>
             </div>
           </div>
+          {ApplicantsDetails.regular_medicine === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="what_medicine">
+                If Yes, What are the medicines ?
+                </label>
+                <div>
+                <textarea
+                    id="what_medicine"
+                    name="what_medicine"
+                    value={ApplicantsDetails.what_medicine}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+            )}
 
-          <div className='grid grid-cols-2'>
+          {ApplicantsDetails.regular_medicine === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="carry_medicine">
+                    Which medicines do you have to carry with you on board ?
+                </label>
+                <div>
+                <textarea
+                    id="carry_medicine"
+                    name="carry_medicine"
+                    value={ApplicantsDetails.carry_medicine}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+            )}
+
+          {/* <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="what_medicine">
               If Yes, then what are these medicines?
             </label>
@@ -2460,12 +2767,12 @@ return (
               <label>
                 <input id="what_medicine" name="what_medicine" type="text"  
                 value={ApplicantsDetails.what_medicine} onChange={handleApplicantChange} 
-                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm"/>
               </label>
             </div>
-          </div>
+          </div> */}
 
-          <div className='grid grid-cols-2'>
+          {/* <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="carry_medicine">
               Which medicines do you have to carry with you on board?
             </label>
@@ -2473,10 +2780,10 @@ return (
               <label>
                 <input id="carry_medicine" name="carry_medicine" type="text" 
                 value={ApplicantsDetails.carry_medicine} onChange={handleApplicantChange} 
-                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm"/>
               </label>
             </div>
-          </div>
+          </div> */}
 
         <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="health_disability_problems">
@@ -2497,6 +2804,23 @@ return (
               </label>
             </div>
         </div>
+
+        {ApplicantsDetails.health_disability_problems === 'Yes' && (
+            <div className='grid grid-cols-2 gap-4 mt-4'>
+                <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_health_disability_problems">
+                If the answer is "Yes", please provide details:
+                </label>
+                <div>
+                <textarea
+                    id="explain_health_disability_problems"
+                    name="explain_health_disability_problems"
+                    value={ApplicantsDetails.explain_health_disability_problems}
+                    onChange={handleApplicantChange}
+                    className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                />
+                </div>
+            </div>
+        )}
 
         <div className='grid grid-cols-2'>
             <label className='text-sm font-medium text-gray-900 m-3' htmlFor="alcohol">
@@ -2539,7 +2863,7 @@ return (
         </div>
 
 
-        {(ApplicantsDetails.signed_off === 'Yes' ||
+        {/* {(ApplicantsDetails.signed_off === 'Yes' ||
             ApplicantsDetails.surgery === 'Yes' ||
             ApplicantsDetails.illness === 'Yes' ||
             ApplicantsDetails.regular_medicine === 'Yes' || 
@@ -2555,40 +2879,9 @@ return (
                   name="explain_medical" 
                   value={ApplicantsDetails.explain_medical}
                   onChange={handleApplicantChange} 
-                  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+                  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm" />
               </div>
-        )}
-
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-        <div className='flex flex-col items-start p-2'>
-            <label htmlFor="yellow_date" className="text-sm font-medium text-gray-900">
-                Yellow Fever Vaccination Date: 
-            </label>
-            <input
-                id="yellow_date"
-            
-                name="yellow_date"
-                type="date"
-                value={ApplicantsDetails.yellow_date}
-                onChange={handleApplicantChange}
-                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-            />
-        </div>
-
-        <div className='flex flex-col items-start p-2'>
-            <label htmlFor="yellow_place" className="text-sm font-medium text-gray-900">
-                Yellow Fever Vaccination Place:
-            </label>
-            <input
-                id="yellow_place"
-                name="yellow_place"
-                type="text"
-                value={ApplicantsDetails.yellow_place}
-                onChange={handleApplicantChange}
-                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-            />
-        </div>
-    </div>
+        )} */}
 
         </div>
       </div> 
@@ -2596,9 +2889,139 @@ return (
         </div>
 
 
-
-
         <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
+            <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
+                    <h4 className='vaccination bold text-center'><b>Vaccinations</b></h4>
+                        <div className='vaccination-container border border-gray-300 rounded-md p-63 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
+
+                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
+                            {/* COVID 19 */}
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base font-semibold text-center">COVID 19</h5>
+                            </div>
+
+                            {/* Make or Manufacturer */}
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base text-center">Make or Manufacturer</h5>
+                            </div>
+
+                            {/* Date Vaccinated */}
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base text-center">Date Vaccinated</h5>
+                            </div>
+                        </div>
+
+                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base text-center">1st Dose</h5>
+                            </div>
+
+                            <div className='flex justify-center items-center w-full h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="first_dose_make" value={ApplicantsDetails.first_dose_make} onChange={handleApplicantChange} name="first_dose_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="first_dose_date" value={ApplicantsDetails.first_dose_date} onChange={handleApplicantChange} name="first_dose_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base text-center">2nd Dose</h5>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="second_dose_make" value={ApplicantsDetails.second_dose_make} onChange={handleApplicantChange} name="second_dose_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="second_dose_date" value={ApplicantsDetails.second_dose_date} onChange={handleApplicantChange} name="second_dose_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base text-center">Booster Dose 1</h5>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="booster_dose_one_make" value={ApplicantsDetails.booster_dose_one_make} onChange={handleApplicantChange} name="booster_dose_one_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="booser_dose_one_date" value={ApplicantsDetails.booser_dose_one_date} onChange={handleApplicantChange} name="booser_dose_one_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='grid sm:grid-cols-3 grid-cols-1 gap-2'>
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <h5 className="text-base text-center">Booster Dose 2</h5>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="booster_dose_two_make" value={ApplicantsDetails.booster_dose_two_make} onChange={handleApplicantChange} name="booster_dose_two_make" type="text" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+
+                            <div className='flex justify-center items-center h-full p-4'>
+                                <div className='col-span-1 flexbox items-center'>
+                                    <input id="booster_dose_two_date" value={ApplicantsDetails.booster_dose_two_date} onChange={handleApplicantChange} name="booster_dose_two_date" type="date" className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+
+
+
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 m-2'>
+                                <div className='flex flex-col items-center p-2'>
+                                    <label htmlFor="yellow_date" className="text-sm font-medium text-gray-900">
+                                        Yellow Fever Vaccination Date : 
+                                    </label>
+                                    <input
+                                        id="yellow_date"
+                                    
+                                        name="yellow_date"
+                                        type="date"
+                                        value={ApplicantsDetails.yellow_date}
+                                        onChange={handleApplicantChange}
+                                        className="block w-2/3 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm"
+                                    />
+                                </div>
+
+                                <div className='flex flex-col items-center p-2'>
+                                    <label htmlFor="yellow_place" className="text-sm font-medium text-gray-900">
+                                        Yellow Fever Vaccination Place :
+                                    </label>
+                                    <input
+                                        id="yellow_place"
+                                        name="yellow_place"
+                                        type="text"
+                                        value={ApplicantsDetails.yellow_place}
+                                        onChange={handleApplicantChange}
+                                        className="block w-2/3 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+            </div>
+        </div>
+
+                <div className='flex min-h-full flex-col justify-center lg:px-3/4'>
                     <div className='flex min-h-full flex-col justify-center lg:px-4 py-6'>
                     <h4 className='general bold text-center'><b>General</b></h4>
                         <div className='general-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
@@ -2621,6 +3044,24 @@ return (
                                         </label>
                                     </div>
                                 </div>
+
+                                {ApplicantsDetails.court_inquiry === 'Yes' && (
+                                    <div className='grid grid-cols-2 gap-4 mt-4'>
+                                        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_court">
+                                        If the answer is "Yes", please provide details:
+                                        </label>
+                                        <div>
+                                        <textarea
+                                            id="explain_court"
+                                            name="explain_court"
+                                            value={ApplicantsDetails.explain_court}
+                                            onChange={handleApplicantChange}
+                                            className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                                        />
+                                        </div>
+                                    </div>
+                                )}
+
                                 <div className='grid grid-cols-2'>
                                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="certificate_suspended">
                                         Have you ever had your Certificate of Competency suspended or revoked? 
@@ -2640,40 +3081,58 @@ return (
                                         </label>
                                     </div>
                                 </div>
-                                {/* <div className='grid grid-cols-2'>
+
+                                {ApplicantsDetails.certificate_suspended === 'Yes' && (
+                                    <div className='grid grid-cols-2 gap-4 mt-4'>
+                                        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_certificate">
+                                        If the answer is "Yes", please provide details:
+                                        </label>
+                                        <div>
+                                        <textarea
+                                            id="explain_certificate"
+                                            name="explain_certificate"
+                                            value={ApplicantsDetails.explain_certificate}
+                                            onChange={handleApplicantChange}
+                                            className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                                        />
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className='grid grid-cols-2'>
                                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="covid_infected">
-                                        Have you ever been infected with Covid-19 in the past? If Yes, please mention date below: 
+                                        Have you ever been infected with Covid-19 in the past?
                                     </label>
                                     <div>
                                         <label>
                                             <input type="radio" name='covid_infected' 
-                                            //  onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.covid_infected === 'Yes'}
+                                             onChange={handleApplicantChange} value='Yes' checked={ApplicantsDetails.covid_infected === 'Yes'}
                                              /> 
                                             <span className="ml-2">Yes</span>
                                         </label> &nbsp;
                                         <label>
                                             <input type="radio" name='covid_infected'  
-                                            // onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.covid_infected === 'No'} 
+                                            onChange={handleApplicantChange} value='No' checked={ApplicantsDetails.covid_infected === 'No'} 
                                               /> 
                                             <span className="ml-2">No</span>
                                         </label>
                                     </div>
-                                </div> */}
+                                </div>
 
-                                {(
-                                    ApplicantsDetails.court_inquiry === 'Yes' || 
-                                    ApplicantsDetails.certificate_suspended === 'Yes' ) && (
-                                    // ApplicantsDetails.covid_infected === 'Yes'
-                                    <div className="m-2">
-                                        <label htmlFor="explain_court" className="text-sm font-medium text-gray-900">
-                                        If the answer is "Yes" to any of the above, please provide details: 
+                                {ApplicantsDetails.covid_infected === 'Yes' && (
+                                    <div className='grid grid-cols-2 gap-4 mt-4'>
+                                        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="explain_covid">
+                                        If the answer is "Yes", please provide details:
                                         </label>
-                                        <textarea 
-                                        id="explain_court" 
-                                        name="explain_court" 
-                                        value={ApplicantsDetails.explain_court}
-                                        onChange={handleApplicantChange} 
-                                        className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+                                        <div>
+                                        <textarea
+                                            id="explain_covid"
+                                            name="explain_covid"
+                                            value={ApplicantsDetails.explain_covid}
+                                            onChange={handleApplicantChange}
+                                            className="w-full h-20 rounded-md border border-gray-300 p-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-gray-600 focus:outline-none sm:text-sm resize-none"
+                                        />
+                                        </div>
                                     </div>
                                 )}
 
@@ -2735,6 +3194,12 @@ return (
                         </div>
                     </div>
                     ))}
+
+                    {reference.length === 1 && (
+                            <p className="text-sm text-gray-600 mb-2 text-center">
+                                If you have multiple details, click the <b>"Add"</b> button to enter more.
+                            </p>
+                        )}
                     <div className="flex justify-center my-4">
                         <button
                             type="button"
@@ -2762,10 +3227,10 @@ return (
         {/*sea experience */}
         <div ref={seaExperienceRef} className="flex min-h-full flex-col justify-center lg:px-8 py-12">
             <h2 className="sea-experience text-2xl font-bold text-gray-800 text-center mb-6">
-                Sea experience
+                Sea experience (Record of previous sea service)
             </h2>
 
-            <div className="sea-experience-info rounded-md shadow-lg bg-white sm:mx-auto sm:w-full lg:w-3/4 lg:px-8 py-8">
+            {/* <div className="sea-experience-info rounded-md shadow-lg bg-white sm:mx-auto sm:w-full lg:w-3/4 lg:px-8 py-8">
                 <p className="text-center text-gray-700 mb-4">
                 Enter from descending order, i.e., latest ship first
                 </p>
@@ -2798,9 +3263,9 @@ return (
                 </div>
                 </div>
             </div>
-        <br /><br />
+        <br /><br /> */}
 
-        <h4 className='sea-service bold text-center'><b>Record of previous sea service</b></h4>
+        {/* <h4 className='sea-service bold text-center'><b>Record of previous sea service</b></h4> */}
             <div className='sea-service-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-12'>
             {service.map((service, index) => (
                 <div key={index} className='sea-service-card border border-gray-300 m-3 rounded-md shadow-lg p-3'>
@@ -2813,13 +3278,39 @@ return (
                             value={service.company_name} onChange={(e) => handleServiceChange(index, "company_name", e.target.value)}
                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
-                        <div className='flexbox items-center p-2'>
+                        {/* <div className='flexbox items-center p-2'>
                             <label htmlFor={`vessel_name${index}`} className="text-sm font-medium text-gray-900">
                                 VESSEL : 
                             </label>
                             <input id={`vessel_name${index}`} name="vessel_name" type="text"
                             value={service.vessel_name} onChange={(e) => handleServiceChange(index, "vessel_name", e.target.value)} 
                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div> */}
+                        <div className='flexbox items-center p-2'>
+                            <label htmlFor={`vessel_name${index}`} className="text-sm font-medium text-gray-900">
+                                VESSEL : 
+                            </label>
+                            <select id={`vessel_name${index}`} name="vessel_name" type="text" 
+                                value={service.vessel_name}
+                                onChange={(e) => handleServiceChange(index, "vessel_name", e.target.value)}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                <option value="">Select Vessel</option>
+                                <option value="General Cargo">General Cargo</option>
+                                <option value="Bulk Carrier">Bulk Carrier</option>
+                                <option value="Tankers">Tankers</option>
+                                <option value="Multi-Purpose">Multi-Purpose</option>
+                                <option value="Passenger">Passenger</option>
+                                <option value="Product">Product</option>
+                                <option value="Container">Container</option>
+                                <option value="Dredger">Dredger</option>
+                                <option value="LPG/LNG">LPG/LNG</option>
+                                <option value="Ore/Bulk/Oil">Ore/Bulk/Oil</option>
+                                <option value="Pure Car Carrier">Pure Car Carrier</option>
+                                <option value="Chemical Tanker">Chemical Tanker</option>
+                                <option value="RO/RO">RO/RO</option>
+                                <option value="Heavy Unit">Heavy Unit</option>
+                                <option value="Off-shore">Off-shore</option>
+                            </select>
                         </div>
 
                         {/* --------------------------- */}
@@ -2835,27 +3326,27 @@ return (
                                 onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                                 <option value="">Select Rank</option>
-                                <option value="MASTER">MASTER </option>
-                                <option value="CHIEF OFFICER">CHIEF OFFICER </option>
-                                <option value="2nd OFFICER ">2nd OFFICER  </option>
-                                <option value="3rd OFFICER">3rd OFFICER </option>
-                                <option value="DECK CADET">DECK CADET </option>
-                                <option value="CHIEF ENGINEER">CHIEF ENGINEER </option>
-                                <option value="2nd ENGINEER">2nd ENGINEER </option>
-                                <option value="3rd ENGINEER">3rd ENGINEER </option>
-                                <option value="4th ENGINEER">4th ENGINEER </option>
-                                <option value="5th ENGINEER">5th ENGINEER </option>
-                                <option value="ELECTRICAL OFFICER">ELECTRICAL OFFICER </option>
-                                <option value="BOSUN">BOSUN </option>
+                                <option value="Master">Master </option>
+                                <option value="Chief Officer">Chief Officer</option>
+                                <option value="2nd Officer ">2nd Officer</option>
+                                <option value="3rd Officer">3rd Officer</option>
+                                <option value="Deck Cadet">Deck Cadet</option>
+                                <option value="Chief Engineer">Chief Engineer</option>
+                                <option value="2nd Engineer">2nd Engineer</option>
+                                <option value="3rd Engineer">3rd Engineer</option>
+                                <option value="4th Engineer">4th Engineer</option>
+                                <option value="5th Engineer">5th Engineer</option>
+                                <option value="Electrical Officer">Electrical Officer </option>
+                                <option value="Bosun">Bosun </option>
                                 <option value="AB">AB </option>
                                 <option value="OS">OS </option>
-                                <option value="FITTER">FITTER </option>
-                                <option value="OILER">OILER </option>
+                                <option value="Fitter">Fitter </option>
+                                <option value="Oiler">Oiler </option>
                                 <option value="WPR">WPR </option>
-                                <option value="CH COOK">CH COOK </option>
-                                <option value="MESSMAN">MESSMAN </option>
+                                <option value="CH Cook">CH Cook </option>
+                                <option value="Messman">Messman </option>
                                 <option value="Junior Engineer">Junior Engineer</option>
-                                <option value="Engine Cadet ">Engine Cadet </option>
+                                <option value="Engine CADET">Engine CADET</option>
                                 <option value="Trainee Seaman">Trainee Seaman</option>
                             </select>
                         </div>
@@ -2928,7 +3419,7 @@ return (
                                 <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`ums${index}`}>
                                     UMS / NON-UMS
                                 </label>
-                                <div>
+                                <div className='flex justify-center items-center'>
                                     <label>
                                         <input type="radio"
                                             onChange={(e) => handleServiceChange(index, "ums", e.target.value)} 
@@ -2965,16 +3456,74 @@ return (
                                 <input id={`year_built${index}`} name="year_built" type="number" 
                                 value={service.year_built} onChange={(e) => handleServiceChange(index, "year_built", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
+                            <div className='flexbox items-center p-2'>
+                                <label htmlFor={`drydock_done${index}`} className="text-sm font-medium text-gray-900">
+                                    DRYDOCK DONE :
+                                </label>
+                                <input id={`drydock_done${index}`} name="drydock_done" type="text" 
+                                value={service.drydock_done} onChange={(e) => handleServiceChange(index, "drydock_done", e.target.value)} 
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
+
+                            <div className='flexbox items-center p-2'>
+                                <label htmlFor={`ecdis${index}`}  className="text-sm font-medium text-gray-900">
+                                    ECDIS Make :
+                                </label>
+                                <input id={`ecdis${index}`}  name="ecdis" type="text"
+                                value={service.ecdis} onChange={(e) => handleServiceChange(index, "ecdis", e.target.value)} 
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
+
+                            <div className='items-center p-2'>
+                                <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`geared${index}`}>
+                                    Geared / Non - Geared :
+                                </label>
+                                <div className='flex justify-center items-center'>
+                                    <label>
+                                        <input type="radio"
+                                            onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
+                                            name={`geared${index}`}
+                                            value="Yes"
+                                            checked={service.Geared === 'Geared'} />
+                                        <span className="ml-2">Geared</span>
+                                    </label> &nbsp;
+                                    <label>
+                                        <input type="radio"
+                                            onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
+                                            name={`geared${index}`} 
+                                            value="Non-Geared"
+                                            checked={service.geared === 'Non-Geared'} />
+                                        <span className="ml-2">Non-Geared</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className='items-center p-2'>
+                                <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`grab${index}`}>
+                                    Grab Experience :
+                                </label>
+                                <div className='flex justify-center items-center'>
+                                    <label>
+                                        <input type="radio"
+                                            onChange={(e) => handleServiceChange(index, "grab", e.target.value)} 
+                                            name={`grab${index}`}
+                                            value="Yes"
+                                            checked={service.grab === 'Yes'} />
+                                        <span className="ml-2">Yes</span>
+                                    </label> &nbsp;
+                                    <label>
+                                        <input type="radio"
+                                            onChange={(e) => handleServiceChange(index, "grab", e.target.value)} 
+                                            name={`grab${index}`} 
+                                            value="No"
+                                            checked={service.grab === 'No'} />
+                                        <span className="ml-2">No</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                        <div className='flexbox items-center p-2'>
-                            <label htmlFor={`drydock_done${index}`} className="text-sm font-medium text-gray-900">
-                                DRYDOCK DONE :
-                            </label>
-                            <input id={`drydock_done${index}`} name="drydock_done" type="text" 
-                            value={service.drydock_done} onChange={(e) => handleServiceChange(index, "drydock_done", e.target.value)} 
-                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                        </div>
-                    </div>
+
+
 
                     <div className='p-1'>
                         <div className='flexbox items-center p-2'>
@@ -2988,6 +3537,13 @@ return (
                     </div>
                 </div>
             ))}
+
+
+                {service.length === 1 && (
+                        <p className="text-sm text-gray-600 mb-2 text-center">
+                            If you have multiple sea experiences, click the <b>"Add"</b> button to enter more .
+                        </p>
+                    )}
                 <div className="flex justify-center my-4">
                     <button
                         type="button"
@@ -3010,7 +3566,7 @@ return (
         </div> 
 
 
-        <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
+        {/* <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
         <h4 className='rank-experience bold text-center'><b>Total rank experience in months :</b></h4>
             <div className='experience-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                 <div className='grid sm:grid-cols-3 grid-cols-2 p-1'>
@@ -3186,14 +3742,9 @@ return (
                         value={ApplicantsDetails.messman} onChange={handleApplicantChange}
                          className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                     </div>
-
-
                 </div>
-
-                </div>
-
-                
             </div>
+        </div> */}
 
             {/* Declaration */}
             <div className='flex min-h-full flex-col justify-center lg:px-3/4'>

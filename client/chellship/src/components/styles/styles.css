@@ -9,6 +9,7 @@
 .sea-service-container label,
 .reference-container label,
 .general-container label,
+.vaccination-container label,
 .medical-container  label,
 .literacy-container label,
 .certificate-card label,
@@ -48,6 +49,7 @@
 .declaration-container input,
 .experience-container input,
 .sea-service-container  input,
+.vaccination-container input,
 .sea-service-container  textarea,
 .sea-service-container  select,
 .reference-container input,
@@ -65,6 +67,7 @@
 .family-multiple-container select,
 .info-container input,
 .personal-container input,
+.personal-container select,
 .family-container input,
 .family-container textarea,
 .personal-container textarea{
@@ -88,7 +91,8 @@
 
 .rank-experience,
 .sea-service,
-.references, 
+.references,
+.vaccination, 
 .general,
 .medical-history,
 .computer-literacy,
@@ -107,7 +111,7 @@
 }
 
 
-.personal-container b,
+.personal-container ,
 .education-background {
     font-family: 'Montserrat';
     font-weight: 300;
@@ -143,6 +147,10 @@
 }
 
 .sea-service-container button:hover,
+.competency-container button:hover,
+.family-container button:hover,
+.education-container button:hover,
+.presea-container button:hover,
 .reference-container button:hover,
 .certificate-container button:hover,
 .hongkong-container button:hover,
