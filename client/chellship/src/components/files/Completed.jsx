@@ -12,8 +12,8 @@ const CompletePage = () => {
         if (isDownloading) return;
         setIsDownloading(true);
 
-        axios.get(`https://njs.solminds.com/chellship/api/impex/download/${applicant_id}`, {
-        // axios.get(`http://localhost:3001/impex/download/${applicant_id}`, {
+        // axios.get(`https://njs.solminds.com/chellship/api/impex/download/${applicant_id}`, {
+        axios.get(`http://localhost:3001/impex/download/${applicant_id}`, {
             responseType: 'blob'
         })
         .then((response) => {

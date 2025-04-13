@@ -907,8 +907,8 @@ const Applicant = () => {
 
             console.log("This is Response:", formData);
     
-            // const response = await axios.post(`http://localhost:3001/applicants/create`, formData,{
-            const response = await axios.post(`https://njs.solminds.com/chellship/api/applicants/create`, formData,{
+            const response = await axios.post(`http://localhost:3001/applicants/create`, formData,{
+            // const response = await axios.post(`https://njs.solminds.com/chellship/api/applicants/create`, formData,{
                 headers: { 
                     'Accept': 'application/json',
                     'Content-Type': 'multipart/form-data' 
@@ -921,8 +921,8 @@ const Applicant = () => {
             const applicant_id = response.data.applicant.applicant_id;
             console.log("responsedata",response)
             if (applicant_id) {
-                // await axios.get(`http://localhost:3001/impex/export/${applicant_id}`);
-                await axios.get(`https://njs.solminds.com/chellship/api/impex/export/${applicant_id}`);
+                await axios.get(`http://localhost:3001/impex/export/${applicant_id}`);
+                // await axios.get(`https://njs.solminds.com/chellship/api/impex/export/${applicant_id}`);
                 navigate('/complete', { state: { applicant_id } });
             } else {
                 console.error('Error: Missing applicant_id in response');
@@ -2183,12 +2183,48 @@ return (
 
                     <div className='flex flex-col p-2'>
                         <label htmlFor={`highest_certificate_issue_country${index}`} className="text-sm font-medium text-gray-900">
-                            Issuing Country : 
+                            Issuing Country:
                         </label>
-                        <input id={`highest_certificate_issue_country${index}`} name="highest_certificate_issue_country" type="text"
-                         value={certificate.highest_certificate_issue_country} onChange={(e) => handleCertificateChange(index, "highest_certificate_issue_country", e.target.value)}
-                          className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        <select
+                            id={`highest_certificate_issue_country${index}`}
+                            name="highest_certificate_issue_country"
+                            value={certificate.highest_certificate_issue_country}
+                            onChange={(e) => handleCertificateChange(index, "highest_certificate_issue_country", e.target.value)}
+                            className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                            <option value="">Select Country</option>
+                            {[
+                                "India", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina",
+                                "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
+                                "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana",
+                                "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada",
+                                "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)",
+                                "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark",
+                                "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea",
+                                "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia",
+                                "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti",
+                                "Honduras", "Hungary", "Iceland", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast",
+                                "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia",
+                                "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar",
+                                "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
+                                "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia",
+                                "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea",
+                                "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea",
+                                "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+                                "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino",
+                                "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore",
+                                "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain",
+                                "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania",
+                                "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan",
+                                "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America",
+                                "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+                            ].map((country) => (
+                                <option key={country} value={country}>
+                                    {country}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+
 
                     <div className='flex flex-col p-2'>
                         <label htmlFor={`highest_certificate_number${index}`} className="text-sm font-medium text-gray-900">
