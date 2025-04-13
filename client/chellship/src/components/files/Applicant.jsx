@@ -907,8 +907,8 @@ const Applicant = () => {
 
             console.log("This is Response:", formData);
     
-            const response = await axios.post(`http://localhost:3001/applicants/create`, formData,{
-            // const response = await axios.post(`https://njs.solminds.com/chellship/api/applicants/create`, formData,{
+            // const response = await axios.post(`http://localhost:3001/applicants/create`, formData,{
+            const response = await axios.post(`https://njs.solminds.com/chellship/api/applicants/create`, formData,{
                 headers: { 
                     'Accept': 'application/json',
                     'Content-Type': 'multipart/form-data' 
@@ -921,8 +921,8 @@ const Applicant = () => {
             const applicant_id = response.data.applicant.applicant_id;
             console.log("responsedata",response)
             if (applicant_id) {
-                await axios.get(`http://localhost:3001/impex/export/${applicant_id}`);
-                // await axios.get(`https://njs.solminds.com/chellship/api/impex/export/${applicant_id}`);
+                // await axios.get(`http://localhost:3001/impex/export/${applicant_id}`);
+                await axios.get(`https://njs.solminds.com/chellship/api/impex/export/${applicant_id}`);
                 navigate('/complete', { state: { applicant_id } });
             } else {
                 console.error('Error: Missing applicant_id in response');
