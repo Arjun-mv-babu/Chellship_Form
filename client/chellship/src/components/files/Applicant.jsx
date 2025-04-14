@@ -3574,8 +3574,8 @@ return (
                                         <input type="radio"
                                             onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
                                             name={`geared${index}`}
-                                            value="Yes"
-                                            checked={service.Geared === 'Geared'} />
+                                            value="Geared"
+                                            checked={service.geared === 'Geared'} />
                                         <span className="ml-2">Geared</span>
                                     </label> &nbsp;
                                     <label>
