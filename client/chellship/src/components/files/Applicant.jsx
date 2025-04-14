@@ -201,9 +201,6 @@ const Applicant = () => {
         wpr: "",
         ch_cook: "",
         messman: "",
-        ecdis: "",
-        geared: "",
-        grab: "",
         
 
         // document_type: "",
@@ -360,6 +357,9 @@ const Applicant = () => {
                 grt: "",
                 year_built: "",
                 drydock_done: "",
+                ecdis: "",
+                geared: "",
+                grab: "",
                 reason_for_leaving: "",
             },
         ]);
@@ -382,6 +382,9 @@ const Applicant = () => {
                     grt: "",
                     year_built: "",
                     drydock_done: "",
+                    ecdis: "",
+                    geared: "",
+                    grab: "",
                     reason_for_leaving: "",
                 },
             ]);
@@ -881,9 +884,6 @@ const Applicant = () => {
             formData.append('wpr', ApplicantsDetails.wpr);
             formData.append('ch_cook', ApplicantsDetails.ch_cook);
             formData.append('messman', ApplicantsDetails.messman);
-            formData.append('ecdis', ApplicantsDetails.ecdis);
-            formData.append('geared', ApplicantsDetails.geared);
-            formData.append('grab', ApplicantsDetails.grab);
     
             // Append JSON objects
             formData.append("documents", JSON.stringify(documents));
