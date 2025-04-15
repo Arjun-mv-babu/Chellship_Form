@@ -2309,7 +2309,7 @@ return (
                 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                 <option value="">Select Certificate</option>
                 <option value="Hong Kong License">Hong Kong License</option>
-                <option value="Authority To Operate(ATP)">Marshall Island Licence</option>
+                <option value="Marshall Island Licence">Marshall Island Licence</option>
             </select>
         </div>
 
@@ -2414,8 +2414,8 @@ return (
             <option value="Fire Fighting & Fire Prevention">Fire Fighting & Fire Prevention</option>
             <option value="PSSR">PSSR</option>
             <option value="PSC - RB">PSC - RB</option>
-            <option value="AMOS-4W Course">SSO</option>
-            <option value="AMOS-4W Course">STSDSD</option>
+            <option value="SSO">SSO</option>
+            <option value="STSDSD">STSDSD</option>
             <option value="Advance Fire Fighting">Advance Fire Fighting</option>
             <option value="Medical First Aid">Medical First Aid</option>
             <option value="Ship Master's Medicare">Ship Master's Medicare</option>
@@ -2423,9 +2423,9 @@ return (
             {/* <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option> */}
             {/* <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option> */}
             {/* <option value="GMDSS">GMDSS</option> */}
-            <option value="GMDSS">GMDSS GOC</option>
+            <option value="GMDSS GOC">GMDSS GOC</option>
             {/* <option value="STCW Endorsement">STCW Endorsement</option> */}
-            <option value="STCW Endorsement">GMDSS Endorsement</option>
+            <option value="GMDSS Endorsement">GMDSS Endorsement</option>
             {/* <option value="ISO / ISM Auditor Course">ISO / ISM Auditor Course</option> */}
             {/* <option value="Bridge Team Management">Bridge Team Management</option> */}
             {/* <option value="Bridge Resource Management">Bridge Resource Management</option> */}
