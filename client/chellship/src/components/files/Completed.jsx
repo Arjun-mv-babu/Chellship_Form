@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { FaRegFile } from "react-icons/fa";
 import axios from 'axios';
 import { useState } from 'react';
+import { API_BASE_URL } from '../api/Api'
 
 const CompletePage = () => {
     const location = useLocation();
@@ -12,8 +13,7 @@ const CompletePage = () => {
         if (isDownloading) return;
         setIsDownloading(true);
 
-        axios.get(`https://njs.solminds.com/chellship/api/impex/download/${applicant_id}`, {
-        // axios.get(`http://localhost:3001/impex/download/${applicant_id}`, {
+        axios.get(`${API_BASE_URL}/impex/download/${applicant_id}`, {
             responseType: 'blob'
         })
         .then((response) => {

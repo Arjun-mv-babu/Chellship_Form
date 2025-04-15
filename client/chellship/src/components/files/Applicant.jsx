@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from "react";
 import '../styles/styles.css'
+import { API_BASE_URL } from '../api/Api'
 
 const Applicant = () => {
 
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [vessels, setVessels] = useState([]);
+    useEffect(() => {
+        axios.get(`${API_BASE_URL}/master/vessel`)
+          .then(res => setVessels(res.data))
+          .catch(err => console.error("Failed to load vessels", err));
+      }, []);
+
+    const [ranks, setRanks] = useState([]);
+    useEffect(() => {
+        axios.get(`${API_BASE_URL}/master/rank`)
+          .then(res => setRanks(res.data))
+          .catch(err => console.error("Failed to load ranks", err));
+      }, []);
+
+    const [courses, setCourses] = useState([]);
+    useEffect(() => {
+        axios.get(`${API_BASE_URL}/master/course`)
+          .then(res => setCourses(res.data))
+          .catch(err => console.error("Failed to load courses", err));
+      }, []);
 
     const seaExperienceRef = useRef(null);
 
@@ -907,8 +929,7 @@ const Applicant = () => {
 
             console.log("This is Response:", formData);
     
-            // const response = await axios.post(`http://localhost:3001/applicants/create`, formData,{
-            const response = await axios.post(`https://njs.solminds.com/chellship/api/applicants/create`, formData,{
+            const response = await axios.post(`${API_BASE_URL}/applicants/create`, formData,{
                 headers: { 
                     'Accept': 'application/json',
                     'Content-Type': 'multipart/form-data' 
@@ -921,8 +942,7 @@ const Applicant = () => {
             const applicant_id = response.data.applicant.applicant_id;
             console.log("responsedata",response)
             if (applicant_id) {
-                // await axios.get(`http://localhost:3001/impex/export/${applicant_id}`);
-                await axios.get(`https://njs.solminds.com/chellship/api/impex/export/${applicant_id}`);
+                await axios.get(`${API_BASE_URL}/impex/export/${applicant_id}`);
                 navigate('/complete', { state: { applicant_id } });
             } else {
                 console.error('Error: Missing applicant_id in response');
@@ -2408,29 +2428,23 @@ return (
             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm 
             ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
             focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-            <option value="">Select Course</option>
-            <option value="Elementary First Aid">Elementary First Aid</option>
-            <option value="Personal Survival Techniques">Personal Survival Techniques</option>
-            <option value="Fire Fighting & Fire Prevention">Fire Fighting & Fire Prevention</option>
-            <option value="PSSR">PSSR</option>
-            <option value="PSC - RB">PSC - RB</option>
-            <option value="AMOS-4W Course">SSO</option>
-            <option value="AMOS-4W Course">STSDSD</option>
-            <option value="Advance Fire Fighting">Advance Fire Fighting</option>
-            <option value="Medical First Aid">Medical First Aid</option>
-            <option value="Ship Master's Medicare">Ship Master's Medicare</option>
+            <option value="" disabled hidden>
+                Select Course
+            </option>
+            {courses.map((c) => (
+            <option key={c.id} value={c.course_name}>
+            {c.course_name}
+            </option>
+            ))}
             {/* <option value="ARPA">ARPA</option> */}
             {/* <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option> */}
             {/* <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option> */}
             {/* <option value="GMDSS">GMDSS</option> */}
-            <option value="GMDSS">GMDSS GOC</option>
             {/* <option value="STCW Endorsement">STCW Endorsement</option> */}
-            <option value="STCW Endorsement">GMDSS Endorsement</option>
             {/* <option value="ISO / ISM Auditor Course">ISO / ISM Auditor Course</option> */}
             {/* <option value="Bridge Team Management">Bridge Team Management</option> */}
             {/* <option value="Bridge Resource Management">Bridge Resource Management</option> */}
             {/* <option value="AMOS-4W Course">AMOS-4W Course</option> */}
-            <option value="ECDIS">ECDIS</option>
         </select>
     </div>
 
@@ -2944,75 +2958,77 @@ return (
 
 {/* 1st Dose */}
 <div className='p-2 sm:p-4 border rounded-md mb-4'>
-  <h5 className="text-base font-semibold mb-2 text-center">1st Dose</h5>
+    <h5 className="text-base font-semibold mb-4 text-center">1st Dose</h5>
+    <div className='flex flex-col sm:flex-row gap-4'>
+        <div className='w-full sm:w-1/2'>
+            <label htmlFor="first_dose_make" className="block text-sm font-medium text-gray-700 mb-1">
+            Make or Manufacturer
+            </label>
+            <input
+            id="first_dose_make"
+            value={ApplicantsDetails.first_dose_make}
+            onChange={handleApplicantChange}
+            name="first_dose_make"
+            type="text"
+            className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+            />
+        </div>
 
-  <div className='mb-3'>
-    <label htmlFor="first_dose_make" className="block text-sm font-medium text-gray-700 mb-1">
-      Make or Manufacturer
-    </label>
-    <input
-      id="first_dose_make"
-      value={ApplicantsDetails.first_dose_make}
-      onChange={handleApplicantChange}
-      name="first_dose_make"
-      type="text"
-      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
-    />
-  </div>
-
-  <div>
-    <label htmlFor="first_dose_date" className="block text-sm font-medium text-gray-700 mb-1">
-      Date Vaccinated
-    </label>
-    <input
-      id="first_dose_date"
-      value={ApplicantsDetails.first_dose_date}
-      onChange={handleApplicantChange}
-      name="first_dose_date"
-      type="date"
-      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
-    />
-  </div>
+        <div className='w-full sm:w-1/2'>
+            <label htmlFor="first_dose_date" className="block text-sm font-medium text-gray-700 mb-1">
+            Date Vaccinated
+            </label>
+            <input
+            id="first_dose_date"
+            value={ApplicantsDetails.first_dose_date}
+            onChange={handleApplicantChange}
+            name="first_dose_date"
+            type="date"
+            className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+            />
+        </div>
+    </div>
 </div>
 
 {/* 2nd Dose */}
 <div className='p-2 sm:p-4 border rounded-md mb-4'>
-  <h5 className="text-base font-semibold mb-2 text-center">2nd Dose</h5>
+    <h5 className="text-base font-semibold mb-4 text-center">2nd Dose</h5>
+    <div className='flex flex-col sm:flex-row gap-4'>
+        <div className='w-full sm:w-1/2'>
+            <label htmlFor="second_dose_make" className="block text-sm font-medium text-gray-700 mb-1">
+            Make or Manufacturer
+            </label>
+            <input
+            id="second_dose_make"
+            value={ApplicantsDetails.second_dose_make}
+            onChange={handleApplicantChange}
+            name="second_dose_make"
+            type="text"
+            className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+            />
+        </div>
 
-  <div className='mb-3'>
-    <label htmlFor="second_dose_make" className="block text-sm font-medium text-gray-700 mb-1">
-      Make or Manufacturer
-    </label>
-    <input
-      id="second_dose_make"
-      value={ApplicantsDetails.second_dose_make}
-      onChange={handleApplicantChange}
-      name="second_dose_make"
-      type="text"
-      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
-    />
-  </div>
-
-  <div>
-    <label htmlFor="second_dose_date" className="block text-sm font-medium text-gray-700 mb-1">
-      Date Vaccinated
-    </label>
-    <input
-      id="second_dose_date"
-      value={ApplicantsDetails.second_dose_date}
-      onChange={handleApplicantChange}
-      name="second_dose_date"
-      type="date"
-      className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
-    />
-  </div>
+        <div className='w-full sm:w-1/2'>
+            <label htmlFor="second_dose_date" className="block text-sm font-medium text-gray-700 mb-1">
+            Date Vaccinated
+            </label>
+            <input
+            id="second_dose_date"
+            value={ApplicantsDetails.second_dose_date}
+            onChange={handleApplicantChange}
+            name="second_dose_date"
+            type="date"
+            className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
+            />
+        </div>
+    </div>
 </div>
 
 {/* Booster Dose 1 */}
 <div className='p-2 sm:p-4 border rounded-md mb-4'>
-  <h5 className="text-base font-semibold mb-2 text-center">Booster Dose 1</h5>
-
-  <div className='mb-3'>
+  <h5 className="text-base font-semibold mb-4 text-center">Booster Dose 1</h5>
+  <div className='flex flex-col sm:flex-row gap-4'>
+  <div className='w-full sm:w-1/2'>
     <label htmlFor="booster_dose_one_make" className="block text-sm font-medium text-gray-700 mb-1">
       Make or Manufacturer
     </label>
@@ -3026,7 +3042,7 @@ return (
     />
   </div>
 
-  <div>
+  <div className='w-full sm:w-1/2'>
     <label htmlFor="booster_dose_one_date" className="block text-sm font-medium text-gray-700 mb-1">
       Date Vaccinated
     </label>
@@ -3039,13 +3055,14 @@ return (
       className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
     />
   </div>
+  </div>
 </div>
 
 {/* Booster Dose 2 */}
 <div className='p-2 sm:p-4 border rounded-md mb-4'>
-  <h5 className="text-base font-semibold mb-2 text-center">Booster Dose 2</h5>
-
-  <div className='mb-3'>
+  <h5 className="text-base font-semibold mb-4 text-center">Booster Dose 2</h5>
+  <div className='flex flex-col sm:flex-row gap-4'>
+  <div className='w-full sm:w-1/2'>
     <label htmlFor="booster_dose_two_make" className="block text-sm font-medium text-gray-700 mb-1">
       Make or Manufacturer
     </label>
@@ -3059,7 +3076,7 @@ return (
     />
   </div>
 
-  <div>
+  <div className='w-full sm:w-1/2'>
     <label htmlFor="booster_dose_two_date" className="block text-sm font-medium text-gray-700 mb-1">
       Date Vaccinated
     </label>
@@ -3071,6 +3088,7 @@ return (
       type="date"
       className="block w-full rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 text-sm"
     />
+  </div>
   </div>
 </div>
 
@@ -3384,22 +3402,14 @@ return (
                                 value={service.vessel_name}
                                 onChange={(e) => handleServiceChange(index, "vessel_name", e.target.value)}
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                                <option value="">Select Vessel</option>
-                                <option value="General Cargo">General Cargo</option>
-                                <option value="Bulk Carrier">Bulk Carrier</option>
-                                <option value="Tankers">Tankers</option>
-                                <option value="Multi-Purpose">Multi-Purpose</option>
-                                <option value="Passenger">Passenger</option>
-                                <option value="Product">Product</option>
-                                <option value="Container">Container</option>
-                                <option value="Dredger">Dredger</option>
-                                <option value="LPG/LNG">LPG/LNG</option>
-                                <option value="Ore/Bulk/Oil">Ore/Bulk/Oil</option>
-                                <option value="Pure Car Carrier">Pure Car Carrier</option>
-                                <option value="Chemical Tanker">Chemical Tanker</option>
-                                <option value="RO/RO">RO/RO</option>
-                                <option value="Heavy Unit">Heavy Unit</option>
-                                <option value="Off-shore">Off-shore</option>
+                                <option value="" disabled hidden>
+                                Select Vessel
+                                </option>
+                                {vessels.map((v) => (
+                                <option key={v.id} value={v.vessel_name}>
+                                    {v.vessel_name}
+                                </option>
+                                ))}
                             </select>
                         </div>
 
@@ -3415,29 +3425,14 @@ return (
                                 value={service.rank}
                                 onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                                <option value="">Select Rank</option>
-                                <option value="Master">Master </option>
-                                <option value="Chief Officer">Chief Officer</option>
-                                <option value="2nd Officer ">2nd Officer</option>
-                                <option value="3rd Officer">3rd Officer</option>
-                                <option value="Deck Cadet">Deck Cadet</option>
-                                <option value="Chief Engineer">Chief Engineer</option>
-                                <option value="2nd Engineer">2nd Engineer</option>
-                                <option value="3rd Engineer">3rd Engineer</option>
-                                <option value="4th Engineer">4th Engineer</option>
-                                <option value="5th Engineer">5th Engineer</option>
-                                <option value="Electrical Officer">Electrical Officer </option>
-                                <option value="Bosun">Bosun </option>
-                                <option value="AB">AB </option>
-                                <option value="OS">OS </option>
-                                <option value="Fitter">Fitter </option>
-                                <option value="Oiler">Oiler </option>
-                                <option value="WPR">WPR </option>
-                                <option value="CH Cook">CH Cook </option>
-                                <option value="Messman">Messman </option>
-                                <option value="Junior Engineer">Junior Engineer</option>
-                                <option value="Engine CADET">Engine CADET</option>
-                                <option value="Trainee Seaman">Trainee Seaman</option>
+                                <option value="" disabled hidden>
+                                Select Rank
+                                </option>
+                                {ranks.map((r) => (
+                                <option key={r.id} value={r.rank_name}>
+                                    {r.rank_name}
+                                </option>
+                                ))}
                             </select>
                         </div>
 
