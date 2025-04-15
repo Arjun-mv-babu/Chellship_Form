@@ -1,7 +1,10 @@
+const nodemailer = require('nodemailer');
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
+require('dotenv').config();
+
 
 const generatePDF = async (export_data) => {
     try {
@@ -728,11 +731,52 @@ ${future_vacancies}
         console.log(`PDF generated successfully at: ${pdfPath}`);
         await browser.close();
 
+        // return pdfPath;
+
+        await sendEmailWithPDF(pdfPath);
+
         return pdfPath;
 
     } catch (error) {
-        console.log('Error generating PDF:', error);
+        console.error("Error generating PDF:", error);
+    }
+};
+
+const sendEmailWithPDF = async (pdfPath) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
+        
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: process.env.EMAIL_RECEIVER,
+            subject: 'Chellship Application Form',
+            text: 'Please find attached chellshipapplication form.',
+            attachments: [
+                {
+                    filename: 'ApplicationForm.pdf',
+                    path: pdfPath
+                }
+            ]
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully');
+    } catch (error) {
+        console.log('Error sending email:', error);
     }
 }
+
+
+
 
 module.exports = { generatePDF };

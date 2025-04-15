@@ -223,9 +223,6 @@ const Applicant = () => {
         wpr: "",
         ch_cook: "",
         messman: "",
-        ecdis: "",
-        geared: "",
-        grab: "",
         
 
         // document_type: "",
@@ -382,6 +379,9 @@ const Applicant = () => {
                 grt: "",
                 year_built: "",
                 drydock_done: "",
+                ecdis: "",
+                geared: "",
+                grab: "",
                 reason_for_leaving: "",
             },
         ]);
@@ -404,6 +404,9 @@ const Applicant = () => {
                     grt: "",
                     year_built: "",
                     drydock_done: "",
+                    ecdis: "",
+                    geared: "",
+                    grab: "",
                     reason_for_leaving: "",
                 },
             ]);
@@ -903,9 +906,6 @@ const Applicant = () => {
             formData.append('wpr', ApplicantsDetails.wpr);
             formData.append('ch_cook', ApplicantsDetails.ch_cook);
             formData.append('messman', ApplicantsDetails.messman);
-            formData.append('ecdis', ApplicantsDetails.ecdis);
-            formData.append('geared', ApplicantsDetails.geared);
-            formData.append('grab', ApplicantsDetails.grab);
     
             // Append JSON objects
             formData.append("documents", JSON.stringify(documents));
@@ -2329,7 +2329,7 @@ return (
                 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                 <option value="">Select Certificate</option>
                 <option value="Hong Kong License">Hong Kong License</option>
-                <option value="Authority To Operate(ATP)">Marshall Island Licence</option>
+                <option value="Marshall Island Licence">Marshall Island Licence</option>
             </select>
         </div>
 
@@ -2440,6 +2440,7 @@ return (
             {/* <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option> */}
             {/* <option value="Ship/ Engine Simulator">Ship/ Engine Simulator</option> */}
             {/* <option value="GMDSS">GMDSS</option> */}
+            {/* <option value="STCW Endorsement">STCW Endorsement</option> */}
             {/* <option value="STCW Endorsement">STCW Endorsement</option> */}
             {/* <option value="ISO / ISM Auditor Course">ISO / ISM Auditor Course</option> */}
             {/* <option value="Bridge Team Management">Bridge Team Management</option> */}
@@ -3569,8 +3570,8 @@ return (
                                         <input type="radio"
                                             onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
                                             name={`geared${index}`}
-                                            value="Yes"
-                                            checked={service.Geared === 'Geared'} />
+                                            value="Geared"
+                                            checked={service.geared === 'Geared'} />
                                         <span className="ml-2">Geared</span>
                                     </label> &nbsp;
                                     <label>

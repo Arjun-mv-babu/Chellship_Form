@@ -296,8 +296,6 @@ const createApplicants = async (req, res) => {
 
         const services = await Experience.bulkCreate(serviceData);
         
-        
-
         res.status(200).json({
             message: "All datas created successfully",
             success: true,
@@ -321,7 +319,6 @@ const createApplicants = async (req, res) => {
         res.status(500).json({
             message: "Error creating records",
             success: false,
-
             error
         });
     }

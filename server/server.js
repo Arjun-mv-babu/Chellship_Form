@@ -28,7 +28,7 @@ app.get('/test', (req, res) => {
   res.status(200).send('<h1>Node.js MySQL</h1>');
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3009;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
