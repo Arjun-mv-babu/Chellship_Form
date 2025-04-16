@@ -688,26 +688,61 @@ const Applicant = () => {
         const { name, value } = e.target;
     
         let updatedDetails = { ...ApplicantsDetails, [name]: value };
-    
-        // Auto-clear explain_medical fields when certain fields are "No"
-        if (
-            (name === 'signed_off' && value === 'No') ||
-            (name === 'surgery' && value === 'No') ||
-            (name === 'illness' && value === 'No') ||
-            (name === 'regular_medicine' && value === 'No') ||
-            (name === 'health_disability_problems' && value === 'No') ||
-            (name === 'alcohol' && value === 'No') ||
-            (name === 'smoke' && value === 'No')
-        ) {
-            updatedDetails.explain_medical = "";
+
+        if (name === "signed_off" && value === "No") {
+            updatedDetails.explain_signed_off = "";
+        }
+
+        if (name === "surgery" && value === "No") {
+            updatedDetails.explain_surgery = "";
+        }
+
+        if (name === "illness" && value === "No") {
+            updatedDetails.explain_illness = "";
+        }
+
+        if (name === "regular_medicine" && value === "No") {
+            updatedDetails.what_medicine = "";
+        }
+
+        if (name === "regular_medicine" && value === "No") {
+            updatedDetails.carry_medicine = "";
+        }
+
+        if (name === "health_disability_problems" && value === "No") {
+            updatedDetails.explain_health_disability_problems = "";
+        }
+
+    // -----------------------------------------------------------
+
+        if (name === "visa_rejection" && value === "No") {
+            updatedDetails.explain_visa_rejection = "";
+        }
+
+        if (name === "visa_revoked" && value === "No") {
+            updatedDetails.explain_visa_revoked = "";
+        }
+
+        if (name === "country_deported" && value === "No") {
+            updatedDetails.explain_country_deported = "";
         }
     
-        // Auto-clear explain_court fields when certain fields are "No"
-        if (
-            (name === 'court_inquiry' && value === 'No') ||
-            (name === 'certificate_suspended' && value === 'No')
-        ) {
+        if (name === "country_deported" && value === "No") {
+            updatedDetails.explain_country_deported = "";
+        }
+    
+        // --------------------------------------
+
+        if (name === "court_inquiry" && value === "No") {
             updatedDetails.explain_court = "";
+        }
+
+        if (name === "certificate_suspended" && value === "No") {
+            updatedDetails.explain_certificate = "";
+        }
+
+        if (name === "covid_infected" && value === "No") {
+            updatedDetails.explain_covid = "";
         }
     
         // Auto-calculate age from date_of_birth
