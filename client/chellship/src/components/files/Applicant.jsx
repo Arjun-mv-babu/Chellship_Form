@@ -689,6 +689,10 @@ const Applicant = () => {
     
         let updatedDetails = { ...ApplicantsDetails, [name]: value };
 
+        if (name === "introduction" && value !== "Others") {
+            updatedDetails.others_explain = "";
+        }        
+
         if (name === "signed_off" && value === "No") {
             updatedDetails.explain_signed_off = "";
         }
@@ -1185,7 +1189,7 @@ return (
                                     </div>
                                 </div>
 
-                                <div className="p-1 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <div className="p-1 flex flex-col sm:flex-row items-start sm:items-center gap-4 m-status">
                                     <label className="text-sm font-medium text-gray-900 whitespace-nowrap">Marital Status:</label>
                                     <div className="grid grid-cols-3 sm:flex items-center gap-2 sm:gap-4">
                                         <label className="flex items-center space-x-2">
