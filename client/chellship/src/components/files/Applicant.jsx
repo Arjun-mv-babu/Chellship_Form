@@ -3434,7 +3434,7 @@ return (
                             value={service.vessel_name} onChange={(e) => handleServiceChange(index, "vessel_name", e.target.value)} 
                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div> */}
-                        <div className='flexbox items-center p-2'>
+                        {/* <div className='flexbox items-center p-2'>
                             <label htmlFor={`vessel_name${index}`} className="text-sm font-medium text-gray-900">
                                 VESSEL : 
                             </label>
@@ -3451,7 +3451,15 @@ return (
                                 </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
+                        <div className='flexbox items-center p-2'>
+                                <label htmlFor={`vessel_name${index}`} className="text-sm font-medium text-gray-900">
+                                    VESSEL : 
+                                </label>
+                                <input id={`vessel_name${index}`} name="vessel_name" type="text" 
+                                value={service.vessel_name} onChange={(e) => handleServiceChange(index, "vessel_name", e.target.value)} 
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
 
                         {/* --------------------------- */}
                         <div className='flexbox items-center p-2'>
@@ -3512,14 +3520,34 @@ return (
                                 value={service.period_days} onChange={(e) => handleServiceChange(index, "period_days", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
-                            <div className='flexbox items-center p-2'>
+                            {/* <div className='flexbox items-center p-2'>
                                 <label htmlFor={`vessel_type${index}`} className="text-sm font-medium text-gray-900">
                                     VESSEL TYPE : 
                                 </label>
                                 <input id={`vessel_type${index}`} name="vessel_type" type="text" 
                                 value={service.vessel_type} onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                            </div>
+                            </div> */}
+
+                            <div className='flexbox items-center p-2'>
+                            <label htmlFor={`vessel_type${index}`} className="text-sm font-medium text-gray-900">
+                                VESSEL TYPE : 
+                            </label>
+                            <select id={`vessel_type${index}`} name="vessel_type" type="text" 
+                                value={service.vessel_type}
+                                onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                <option value="" disabled hidden>
+                                Select Vessel
+                                </option>
+                                {vessels.map((v) => (
+                                <option key={v.id} value={v.vessel_name}>
+                                    {v.vessel_name}
+                                </option>
+                                ))}
+                            </select>
+                        </div>
+
                         </div>
                         <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                             <div className='flexbox items-center p-2'>

@@ -288,7 +288,6 @@ form .col-span-2:last-child button {
     box-shadow: none;
 }
 
-// Radio Button 
 input[type="radio"]:checked::-ms-check {
     border: 2px solid #aaa;
     color: #aaa;
@@ -296,15 +295,12 @@ input[type="radio"]:checked::-ms-check {
     font-size: larger;
 }
 input[type="radio"] {
-    /* remove standard background appearance */
     -webkit-appearance: none;
     -moz-appearance: none;
-    /* create custom radiobutton appearance */
     display: inline-block;
     width: 22px;
     height: 22px;
     padding: 4px;
-    /* background-color only for content */
     background-clip: content-box;
     border: 2px solid #000000;
     opacity: 0.4;   
@@ -312,7 +308,6 @@ input[type="radio"] {
     border-radius:50%;
 }
 
-/* appearance for checked Radio button */
 input[type="radio"]:checked , input[type="radio"]:disabled:checked{
     background-color: #e88f2e;
     border: 2px solid #898080;
