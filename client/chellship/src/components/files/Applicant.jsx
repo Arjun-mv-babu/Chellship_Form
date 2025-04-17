@@ -37,9 +37,9 @@ const Applicant = () => {
         seaExperienceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
-
     const [ApplicantsDetails, setApplicantsDetails] = useState({
         position_applied_for: "",
+        current_position: "",
         date_available: "",
         introduction:"",
         others_explain:"",
@@ -441,7 +441,7 @@ const Applicant = () => {
                 updatedService[index].period_days = extraDays;
             }
         
-            setService(updatedService);
+            setService(updatedService); 
         };
         
 
@@ -771,7 +771,13 @@ const Applicant = () => {
             const bmi = weight / ((height / 100) ** 2);
             updatedDetails.bmi = bmi.toFixed(2);
         }
-    
+
+        if (name === "current_position") {
+            const selectedRank = ranks.find((r) => r.rank_name === value);
+            updatedDetails[name] = value;
+            updatedDetails.category_id = selectedRank?.category_id || "";
+        }
+        
         setApplicantsDetails(updatedDetails);
     };
     
@@ -836,6 +842,7 @@ const Applicant = () => {
             const formData = new FormData();
     
             formData.append('position_applied_for', ApplicantsDetails.position_applied_for);
+            formData.append('current_position', ApplicantsDetails.current_position);
             formData.append('date_available', ApplicantsDetails.date_available);
             formData.append('introduction', ApplicantsDetails.introduction);
             formData.append('others_explain', ApplicantsDetails.others_explain || "No additional details");
@@ -1011,12 +1018,39 @@ return (
         <form onSubmit={handleSubmit}>
             <div className='flex min-h-full flex-col justify-center lg:px-8 py-3'>
                 <div className='info-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                    <div className='grid grid-cols-2'>
+                    <div className='grid grid-cols-3 gap-4'>
+                        
                         <div className='flexbox items-center p-4'>
                             <label htmlFor="position_applied_for" className="text-sm font-medium text-gray-900">
                                 Position Applied for : 
                             </label>
                             <input id="position_applied_for" name="position_applied_for" value={ApplicantsDetails.position_applied_for} type="text" onChange={handleApplicantChange} required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div>
+
+                        {/* <div className='flexbox items-center p-4'>
+                            <label htmlFor="current_position" className="text-sm font-medium text-gray-900">
+                                Current Position : 
+                            </label>
+                            <input id="current_position" name="current_position" value={ApplicantsDetails.current_position} type="text" onChange={handleApplicantChange} required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div> */}
+
+                        <div className='flexbox items-center p-4'>
+                            <label htmlFor="current_position" className="text-sm font-medium text-gray-900">
+                                Current Position : 
+                            </label>
+                            <select id="current_position" name="current_position" type="text" 
+                                value={ApplicantsDetails.current_position}
+                                onChange={handleApplicantChange}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                <option value="" disabled hidden>
+                                Select Position
+                                </option>
+                                {ranks.map((r) => (
+                                <option key={r.id} value={r.rank_name}>
+                                    {r.rank_name}
+                                </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className='flexbox items-center p-4'>
@@ -1031,7 +1065,7 @@ return (
                                 <label htmlFor="introduction" className="text-sm font-medium text-gray-900">
                                     How were you introduced to Chellaram Shipping?
                                 </label><br />
-                                <div className="grid sm:grid-cols-2 grid-cols-1 gap-2 w-full text-sm font-medium text-gray-900 bg-white p-2">
+                                <div className="grid sm:grid-cols-2 grid-cols-1 w-full text-sm font-medium text-gray-900 bg-white p-2">
                                     <label htmlFor="Advertisement" className="flex items-center space-x-2 p-2">
                                         <input
                                             id="Advertisement"
@@ -3426,6 +3460,33 @@ return (
                             value={service.company_name} onChange={(e) => handleServiceChange(index, "company_name", e.target.value)}
                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
+
+                        {/* --------------------------- */}
+                        <div className='flexbox items-center p-2'>
+                            <label htmlFor={`rank${index}`} className="text-sm font-medium text-gray-900">
+                                RANK : 
+                            </label>
+                            {/* <input id={`rank${index}`} name="rank" type="text"
+                                value={service.rank} onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/> */}
+                            <select id={`rank${index}`} name="rank" type="text" 
+                                value={service.rank}
+                                onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                <option value="" disabled hidden>
+                                Select Rank
+                                </option>
+                                {ranks
+    .filter((r) => r.category_id === ApplicantsDetails.category_id)
+    .map((r) => (
+        <option key={r.id} value={r.rank_name}>
+            {r.rank_name}
+        </option>
+))}
+
+                            </select>
+                        </div>
+
                         {/* <div className='flexbox items-center p-2'>
                             <label htmlFor={`vessel_name${index}`} className="text-sm font-medium text-gray-900">
                                 VESSEL : 
@@ -3461,24 +3522,29 @@ return (
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
 
-                        {/* --------------------------- */}
+                                                    {/* <div className='flexbox items-center p-2'>
+                                <label htmlFor={`vessel_type${index}`} className="text-sm font-medium text-gray-900">
+                                    VESSEL TYPE : 
+                                </label>
+                                <input id={`vessel_type${index}`} name="vessel_type" type="text" 
+                                value={service.vessel_type} onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)} 
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div> */}
+
                         <div className='flexbox items-center p-2'>
-                            <label htmlFor={`rank${index}`} className="text-sm font-medium text-gray-900">
-                                RANK : 
+                            <label htmlFor={`vessel_type${index}`} className="text-sm font-medium text-gray-900">
+                                VESSEL TYPE : 
                             </label>
-                            {/* <input id={`rank${index}`} name="rank" type="text"
-                                value={service.rank} onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/> */}
-                            <select id={`rank${index}`} name="rank" type="text" 
-                                value={service.rank}
-                                onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
+                            <select id={`vessel_type${index}`} name="vessel_type" type="text" 
+                                value={service.vessel_type}
+                                onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)}
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                                 <option value="" disabled hidden>
-                                Select Rank
+                                Select Vessel
                                 </option>
-                                {ranks.map((r) => (
-                                <option key={r.id} value={r.rank_name}>
-                                    {r.rank_name}
+                                {vessels.map((v) => (
+                                <option key={v.id} value={v.vessel_name}>
+                                    {v.vessel_name}
                                 </option>
                                 ))}
                             </select>
@@ -3520,33 +3586,7 @@ return (
                                 value={service.period_days} onChange={(e) => handleServiceChange(index, "period_days", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
-                            {/* <div className='flexbox items-center p-2'>
-                                <label htmlFor={`vessel_type${index}`} className="text-sm font-medium text-gray-900">
-                                    VESSEL TYPE : 
-                                </label>
-                                <input id={`vessel_type${index}`} name="vessel_type" type="text" 
-                                value={service.vessel_type} onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)} 
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                            </div> */}
 
-                            <div className='flexbox items-center p-2'>
-                            <label htmlFor={`vessel_type${index}`} className="text-sm font-medium text-gray-900">
-                                VESSEL TYPE : 
-                            </label>
-                            <select id={`vessel_type${index}`} name="vessel_type" type="text" 
-                                value={service.vessel_type}
-                                onChange={(e) => handleServiceChange(index, "vessel_type", e.target.value)}
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                                <option value="" disabled hidden>
-                                Select Vessel
-                                </option>
-                                {vessels.map((v) => (
-                                <option key={v.id} value={v.vessel_name}>
-                                    {v.vessel_name}
-                                </option>
-                                ))}
-                            </select>
-                        </div>
 
                         </div>
                         <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
