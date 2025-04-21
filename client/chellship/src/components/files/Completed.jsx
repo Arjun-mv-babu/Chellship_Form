@@ -2,8 +2,7 @@
 // import { FaRegFile } from "react-icons/fa";
 // import axios from 'axios';
 // import { useState } from 'react';
-// import { API_BASE_URL } from '../api/Api'
-
+// import { API_BASE_URL } from '../url/Url'
 // const CompletePage = () => {
 //     const location = useLocation();
 //     const applicant_id = location.state?.applicant_id || '';
@@ -67,6 +66,7 @@ import { useLocation } from 'react-router-dom';
 import { FaRegFile } from "react-icons/fa";
 import axios from 'axios';
 import { useState } from 'react';
+import { API_BASE_URL } from '../url/Url'
 
 const CompletePage = () => {
     const location = useLocation();
@@ -77,7 +77,7 @@ const CompletePage = () => {
         if (isDownloading) return; // Prevent multiple clicks while downloading
         setIsDownloading(true);
 
-        axios.get(`http://localhost:3001/impex/download/${applicant_id}`, {
+        axios.get(`${API_BASE_URL}/impex/download/${applicant_id}`, {
             responseType: 'blob'
         })
         .then((response) => {
