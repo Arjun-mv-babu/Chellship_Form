@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useRef } from "react";
 import '../styles/styles.css'
-import { API_BASE_URL } from '../api/Api'
+import { API_BASE_URL } from '../url/Url'
 
 const Applicant = () => {
 
@@ -382,6 +382,8 @@ const Applicant = () => {
                 ecdis: "",
                 geared: "",
                 grab: "",
+                dead_weight: "",
+                crane_make: "",
                 reason_for_leaving: "",
             },
         ]);
@@ -407,6 +409,8 @@ const Applicant = () => {
                     ecdis: "",
                     geared: "",
                     grab: "",
+                    dead_weight: "",
+                    crane_make: "",
                     reason_for_leaving: "",
                 },
             ]);
@@ -3474,15 +3478,16 @@ return (
                                 onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                                 <option value="" disabled hidden>
-                                Select Rank
+                                    Select Rank
                                 </option>
                                 {ranks
-    .filter((r) => r.category_id === ApplicantsDetails.category_id)
-    .map((r) => (
-        <option key={r.id} value={r.rank_name}>
-            {r.rank_name}
-        </option>
-))}
+                                .filter((r) => r.category_id === ApplicantsDetails.category_id)
+                                    .map((r) => (
+                                        <option key={r.id} value={r.rank_name}>
+                                            {r.rank_name}
+                                        </option>
+                                    ))
+                                }
 
                             </select>
                         </div>
@@ -3586,9 +3591,98 @@ return (
                                 value={service.period_days} onChange={(e) => handleServiceChange(index, "period_days", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
-
-
                         </div>
+
+                        {ApplicantsDetails.category_id === 1 && (   
+                            <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
+                                <div className='flexbox items-center p-2'>
+                                    <label htmlFor={`ecdis${index}`}  className="text-sm font-medium text-gray-900">
+                                        ECDIS MAKE :
+                                    </label>
+                                    <input id={`ecdis${index}`}  name="ecdis" type="text"
+                                    value={service.ecdis} onChange={(e) => handleServiceChange(index, "ecdis", e.target.value)} 
+                                    className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+
+                                <div className='items-center p-2'>
+                                    <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`geared${index}`}>
+                                        GEARED / NON - GEARED :
+                                    </label>
+                                    <div className='flex justify-center items-center'>
+                                        <label>
+                                            <input type="radio"
+                                                onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
+                                                name={`geared${index}`}
+                                                value="Geared"
+                                                checked={service.geared === 'Geared'} />
+                                            <span className="ml-2">Geared</span>
+                                        </label> &nbsp;
+                                        <label>
+                                            <input type="radio"
+                                                onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
+                                                name={`geared${index}`} 
+                                                value="Non-Geared"
+                                                checked={service.geared === 'Non-Geared'} />
+                                            <span className="ml-2">Non-Geared</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div className='items-center p-2'>
+                                    <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`grab${index}`}>
+                                        GRAB EXPERIENCE :
+                                    </label>
+                                    <div className='flex justify-center items-center'>
+                                        <label>
+                                            <input type="radio"
+                                                onChange={(e) => handleServiceChange(index, "grab", e.target.value)} 
+                                                name={`grab${index}`}
+                                                value="Yes"
+                                                checked={service.grab === 'Yes'} />
+                                            <span className="ml-2">Yes</span>
+                                        </label> &nbsp;
+                                        <label>
+                                            <input type="radio"
+                                                onChange={(e) => handleServiceChange(index, "grab", e.target.value)} 
+                                                name={`grab${index}`} 
+                                                value="No"
+                                                checked={service.grab === 'No'} />
+                                            <span className="ml-2">No</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className='flexbox items-center p-2'>
+                                    <label htmlFor={`dead_weight${index}`}  className="text-sm font-medium text-gray-900">
+                                        DEAD WEIGHT (DWT) :
+                                    </label>
+                                    <input id={`dead_weight${index}`}  name="dead_weight" type="text"
+                                    value={service.dead_weight} onChange={(e) => handleServiceChange(index, "dead_weight", e.target.value)} 
+                                    className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+
+                                <div className='flexbox items-center p-2'>
+                                    <label htmlFor={`year_built${index}`} className="text-sm font-medium text-gray-900">
+                                        YEAR BUILT :
+                                    </label>
+                                    <input id={`year_built${index}`} name="year_built" type="number" 
+                                    value={service.year_built} onChange={(e) => handleServiceChange(index, "year_built", e.target.value)} 
+                                    className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+
+                                <div className='flexbox items-center p-2'>
+                                    <label htmlFor={`drydock_done${index}`} className="text-sm font-medium text-gray-900">
+                                        DRYDOCK DONE :
+                                    </label>
+                                    <input id={`drydock_done${index}`} name="drydock_done" type="text" 
+                                    value={service.drydock_done} onChange={(e) => handleServiceChange(index, "drydock_done", e.target.value)} 
+                                    className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                </div>
+
+                            </div>
+                        )}
+
+                    {ApplicantsDetails.category_id === 2 && (
+
                         <div className='grid sm:grid-cols-3 grid-cols-1 p-1'>
                             <div className='flexbox items-center p-2'>
                                 <label htmlFor={`engine_type${index}`} className="text-sm font-medium text-gray-900">
@@ -3632,68 +3726,27 @@ return (
                                 </div>
                             </div>
 
-
                             <div className='flexbox items-center p-2'>
-                                <label htmlFor={`grt${index}`}  className="text-sm font-medium text-gray-900">
-                                    GRT :
+                                <label htmlFor={`dead_weight${index}`}  className="text-sm font-medium text-gray-900">
+                                    DEAD WEIGHT (DWT) :
                                 </label>
-                                <input id={`grt${index}`}  name="grt" type="text"
-                                value={service.grt} onChange={(e) => handleServiceChange(index, "grt", e.target.value)} 
+                                <input id={`dead_weight${index}`}  name="dead_weight" type="text"
+                                value={service.dead_weight} onChange={(e) => handleServiceChange(index, "dead_weight", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
 
                             <div className='flexbox items-center p-2'>
-                                <label htmlFor={`year_built${index}`} className="text-sm font-medium text-gray-900">
-                                    YEAR BUILT :
+                                <label htmlFor={`crane_make${index}`}  className="text-sm font-medium text-gray-900">
+                                    CRANE MAKE :
                                 </label>
-                                <input id={`year_built${index}`} name="year_built" type="number" 
-                                value={service.year_built} onChange={(e) => handleServiceChange(index, "year_built", e.target.value)} 
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                            </div>
-                            <div className='flexbox items-center p-2'>
-                                <label htmlFor={`drydock_done${index}`} className="text-sm font-medium text-gray-900">
-                                    DRYDOCK DONE :
-                                </label>
-                                <input id={`drydock_done${index}`} name="drydock_done" type="text" 
-                                value={service.drydock_done} onChange={(e) => handleServiceChange(index, "drydock_done", e.target.value)} 
+                                <input id={`crane_make${index}`}  name="crane_make" type="text"
+                                value={service.crane_make} onChange={(e) => handleServiceChange(index, "crane_make", e.target.value)} 
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
 
-                            <div className='flexbox items-center p-2'>
-                                <label htmlFor={`ecdis${index}`}  className="text-sm font-medium text-gray-900">
-                                    ECDIS Make :
-                                </label>
-                                <input id={`ecdis${index}`}  name="ecdis" type="text"
-                                value={service.ecdis} onChange={(e) => handleServiceChange(index, "ecdis", e.target.value)} 
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                            </div>
-
-                            <div className='items-center p-2'>
-                                <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`geared${index}`}>
-                                    Geared / Non - Geared :
-                                </label>
-                                <div className='flex justify-center items-center'>
-                                    <label>
-                                        <input type="radio"
-                                            onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
-                                            name={`geared${index}`}
-                                            value="Geared"
-                                            checked={service.geared === 'Geared'} />
-                                        <span className="ml-2">Geared</span>
-                                    </label> &nbsp;
-                                    <label>
-                                        <input type="radio"
-                                            onChange={(e) => handleServiceChange(index, "geared", e.target.value)} 
-                                            name={`geared${index}`} 
-                                            value="Non-Geared"
-                                            checked={service.geared === 'Non-Geared'} />
-                                        <span className="ml-2">Non-Geared</span>
-                                    </label>
-                                </div>
-                            </div>
                             <div className='items-center p-2'>
                                 <label className='text-sm font-medium text-gray-900 m-3' htmlFor={`grab${index}`}>
-                                    Grab Experience :
+                                    GRAB EXPERIENCE :
                                 </label>
                                 <div className='flex justify-center items-center'>
                                     <label>
@@ -3714,9 +3767,26 @@ return (
                                     </label>
                                 </div>
                             </div>
+
+                            <div className='flexbox items-center p-2'>
+                                <label htmlFor={`year_built${index}`} className="text-sm font-medium text-gray-900">
+                                    YEAR BUILT :
+                                </label>
+                                <input id={`year_built${index}`} name="year_built" type="number" 
+                                value={service.year_built} onChange={(e) => handleServiceChange(index, "year_built", e.target.value)} 
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
+
+                            <div className='flexbox items-center p-2'>
+                                <label htmlFor={`drydock_done${index}`} className="text-sm font-medium text-gray-900">
+                                    DRYDOCK DONE :
+                                </label>
+                                <input id={`drydock_done${index}`} name="drydock_done" type="text" 
+                                value={service.drydock_done} onChange={(e) => handleServiceChange(index, "drydock_done", e.target.value)} 
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            </div>
                         </div>
-
-
+                    )}
 
                     <div className='p-1'>
                         <div className='flexbox items-center p-2'>
