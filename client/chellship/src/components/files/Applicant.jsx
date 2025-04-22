@@ -4056,8 +4056,8 @@ return (
                         </ul>
                     </div>
                         
-                    <div className='grid grid-cols-5'>
-                        <label className='text-sm font-medium text-gray-900 m-3 col-span-4 flex items-center' htmlFor="">
+                    <div className='grid grid-cols-4'>
+                        <label className='text-sm font-medium text-gray-900 m-3 col-span-3 flex items-center' htmlFor="">
                             If immediate employment is not available do you wish to be considered for future vacancies? 
                         </label>
                         <div className='flex items-center'>
@@ -4087,7 +4087,7 @@ return (
                             <input 
                                 id="declaration_date" name="declaration_date" type="date" 
                                 value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   
-                                className="block w-32 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                className="block w-40 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
                     </div>
 
