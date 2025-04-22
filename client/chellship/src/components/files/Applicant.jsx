@@ -31,7 +31,21 @@ const Applicant = () => {
           .catch(err => console.error("Failed to load courses", err));
       }, []);
 
+      useEffect(() => {
+        const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+        setApplicantsDetails((prevDetails) => ({
+          ...prevDetails,
+          declaration_date: today,
+        }));
+      }, []);
+
     const seaExperienceRef = useRef(null);
+
+    const [tooltipVisibleIndex, setTooltipVisibleIndex] = useState(null);
+
+    const toggleTooltip = (index) => {
+        setTooltipVisibleIndex(prev => (prev === index ? null : index));
+      };
 
     const scrollToSeaExperience = () => {
         seaExperienceRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1028,7 +1042,19 @@ return (
                             <label htmlFor="position_applied_for" className="text-sm font-medium text-gray-900">
                                 Position Applied for : 
                             </label>
-                            <input id="position_applied_for" name="position_applied_for" value={ApplicantsDetails.position_applied_for} type="text" onChange={handleApplicantChange} required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            <select id="position_applied_for" name="position_applied_for" type="text" 
+                                value={ApplicantsDetails.position_applied_for}
+                                onChange={handleApplicantChange}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                <option value="" disabled hidden>
+                                Select Position Applied for
+                                </option>
+                                {ranks.map((r) => (
+                                <option key={r.id} value={r.rank_name}>
+                                    {r.rank_name}
+                                </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className='flex flex-col items-left p-4'>
@@ -1040,7 +1066,7 @@ return (
                                 onChange={handleApplicantChange}
                                 className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                                 <option value="" disabled hidden>
-                                Select Position
+                                Select Current Position
                                 </option>
                                 {ranks.map((r) => (
                                 <option key={r.id} value={r.rank_name}>
@@ -3459,31 +3485,46 @@ return (
                         </div>
 
                         {/* --------------------------- */}
-                        <div className='flexbox items-center p-2'>
+                        <div className='flexbox items-center p-2 relative group'>
                             <label htmlFor={`rank${index}`} className="text-sm font-medium text-gray-900">
-                                RANK : 
+                                RANK :
                             </label>
-                            {/* <input id={`rank${index}`} name="rank" type="text"
-                                value={service.rank} onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/> */}
-                            <select id={`rank${index}`} name="rank" type="text" 
+
+                            <select
+                                id={`rank${index}`}
+                                name="rank"
+                                type="text"
                                 value={service.rank}
                                 onChange={(e) => handleServiceChange(index, "rank", e.target.value)}
-                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                                disabled={!ApplicantsDetails.category_id}
+                                className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                                onClick={() => {
+                                if (!ApplicantsDetails.category_id) toggleTooltip(index);
+                                }}
+                            >
                                 <option value="" disabled hidden>
-                                    Select Rank
+                                Select Rank
                                 </option>
                                 {ranks
                                 .filter((r) => r.category_id === ApplicantsDetails.category_id)
-                                    .map((r) => (
-                                        <option key={r.id} value={r.rank_name}>
-                                            {r.rank_name}
-                                        </option>
-                                    ))
-                                }
-
+                                .map((r) => (
+                                    <option key={r.id} value={r.rank_name}>
+                                    {r.rank_name}
+                                    </option>
+                                ))}
                             </select>
-                        </div>
+
+                            {!ApplicantsDetails.category_id && (
+                                <div
+                                className={`
+                                    absolute -top-10 left-0 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow-lg z-10
+                                    ${tooltipVisibleIndex === index ? 'opacity-100' : 'opacity-0'}
+                                    group-hover:opacity-100 transition-opacity duration-300
+                                `}>
+                                Please fill "Current Position" field first
+                                </div>
+                            )}
+                            </div>
 
                         {/* <div className='flexbox items-center p-2'>
                             <label htmlFor={`vessel_name${index}`} className="text-sm font-medium text-gray-900">
@@ -4014,10 +4055,9 @@ return (
                             <li>I do hereby pledge that I have never abused any drugs in the past.</li>
                         </ul>
                     </div>
-
                         
-                    <div className='grid grid-cols-2'>
-                        <label className='text-sm font-medium text-gray-900 m-3' htmlFor="">
+                    <div className='grid grid-cols-5'>
+                        <label className='text-sm font-medium text-gray-900 m-3 col-span-4 flex items-center' htmlFor="">
                             If immediate employment is not available do you wish to be considered for future vacancies? 
                         </label>
                         <div className='flex items-center'>
@@ -4032,7 +4072,6 @@ return (
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-2'>
                         {/* <div className='flexbox items-center p-2'>
                             <label htmlFor="signature" className="text-sm font-medium text-gray-900">
                                 Signature : 
@@ -4040,29 +4079,31 @@ return (
                             <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div> */}
 
+                    <div className='grid grid-cols-2'>
                         <div className='flexbox items-center p-2'>
                             <label htmlFor="declaration_date" className="text-sm font-medium text-gray-900">
                                 Declaration Date : 
                             </label>
-                            <input id="declaration_date" name="declaration_date" type="date" value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   className="block w-32 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            <input 
+                                id="declaration_date" name="declaration_date" type="date" 
+                                value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   
+                                className="block w-32 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
                     </div>
-                    </div>
+
                 </div>
             </div>
+        </div>
 
             <div className="col-span-2 flex justify-center">
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`m-4 w-40 px-8 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 ${
-                    isSubmitting
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-indigo-600 hover:bg-indigo-500 hover:scale-105"}`}>
+                    className={`m-4 w-40 px-8 py-3 text-lg font-bold text-white rounded-lg shadow-lg transition-all duration-300 
+                    ${isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-500 hover:scale-105"}`}>
                     {isSubmitting ? "Submitting..." : "Submit"}
                 </button>
             </div>
-
 
         </form>
     {/* <Footer/> */}
