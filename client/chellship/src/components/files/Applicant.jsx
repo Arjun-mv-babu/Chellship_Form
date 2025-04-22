@@ -1022,23 +1022,16 @@ return (
         <form onSubmit={handleSubmit}>
             <div className='flex min-h-full flex-col justify-center lg:px-8 py-3'>
                 <div className='info-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-                    <div className='grid grid-cols-3 gap-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
                         
-                        <div className='flexbox items-center p-4'>
+                        <div className='flex flex-col items-left p-4'>
                             <label htmlFor="position_applied_for" className="text-sm font-medium text-gray-900">
                                 Position Applied for : 
                             </label>
                             <input id="position_applied_for" name="position_applied_for" value={ApplicantsDetails.position_applied_for} type="text" onChange={handleApplicantChange} required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                         </div>
 
-                        {/* <div className='flexbox items-center p-4'>
-                            <label htmlFor="current_position" className="text-sm font-medium text-gray-900">
-                                Current Position : 
-                            </label>
-                            <input id="current_position" name="current_position" value={ApplicantsDetails.current_position} type="text" onChange={handleApplicantChange} required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                        </div> */}
-
-                        <div className='flexbox items-center p-4'>
+                        <div className='flex flex-col items-left p-4'>
                             <label htmlFor="current_position" className="text-sm font-medium text-gray-900">
                                 Current Position : 
                             </label>
@@ -1057,7 +1050,7 @@ return (
                             </select>
                         </div>
 
-                        <div className='flexbox items-center p-4'>
+                        <div className='flex flex-col items-left p-4'>
                             <label htmlFor="date_available" className="text-sm font-medium text-gray-900">
                                 Date Available to join : 
                             </label>
