@@ -10,6 +10,8 @@ const Applicant = () => {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const familyMemberOptions = ["Wife", "Child-1", "Child-2", "Child-3"];
+
     const [vessels, setVessels] = useState([]);
     useEffect(() => {
         axios.get(`${API_BASE_URL}/master/vessel`)
@@ -1585,7 +1587,7 @@ return (
                                     </div>
 
                                     <div className='family-multiple-container border border-gray-300 m-3 rounded-md shadow-lg py-3'>
-                                        {family.map((family, index) => (
+                                        {family.map((member, index) => (
                                             <div key={index} className='family-member-card border border-gray-300 m-3 rounded-md shadow-lg py-3'>
                                                 <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-4">
                                                     <div className="flex flex-col space-y-2 p-4">
@@ -1595,14 +1597,19 @@ return (
                                                         <select
                                                             id={`family_member${index}`}
                                                             name="family_member"
-                                                            value={family.family_member}  
-                                                            onChange={(e) => handleFamilyChange(index, "family_member", e.target.value)} 
+                                                            value={member.family_member}
+                                                            onChange={(e) => handleFamilyChange(index, "family_member", e.target.value)}
                                                             className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
-                                                            <option value="">Select Family Member</option>
-                                                            <option value="Wife">Wife</option>
-                                                            <option value="Child-1">Child - 1</option>
-                                                            <option value="Child-2">Child - 2</option>
-                                                            <option value="Child-3">Child - 3</option>
+                                                            <option disabled hidden value="">Select Family Member</option>
+                                                            {familyMemberOptions
+                                                            .filter(option =>
+                                                                !family.some((f, i) => f.family_member === option && i !== index)
+                                                            )
+                                                            .map(option => (
+                                                                <option key={option} value={option}>
+                                                                {option.replace('-', ' ')}
+                                                                </option>
+                                                            ))}
                                                         </select>
                                                     </div>
 
@@ -1615,7 +1622,7 @@ return (
                                                     name="family_member_name"
                                                     type="text"
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
-                                                    value={family.family_member_name} onChange={(e) => handleFamilyChange(index, "family_member_name", e.target.value)}/>
+                                                    value={member.family_member_name} onChange={(e) => handleFamilyChange(index, "family_member_name", e.target.value)}/>
                                             </div>
 
                                             <div className="flex flex-col space-y-2 p-4">
@@ -1626,7 +1633,7 @@ return (
                                                     id={`sex${index}`}
                                                     name="sex"
                                                     onChange={(e) => handleFamilyChange(index, "sex", e.target.value)}
-                                                    value={family.sex}
+                                                    value={member.sex}
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
                                                     <option value="">Select Sex</option>
                                                     <option value="Male">Male</option>
@@ -1643,7 +1650,7 @@ return (
                                                     name="family_date_of_birth"
                                                     type="date"
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
-                                                    value={family.family_date_of_birth} onChange={(e) => handleFamilyChange(index, "family_date_of_birth", e.target.value)}/>
+                                                    value={member.family_date_of_birth} onChange={(e) => handleFamilyChange(index, "family_date_of_birth", e.target.value)}/>
                                             </div>
 
                                             <div className="flex flex-col space-y-2 p-4">
@@ -1655,7 +1662,7 @@ return (
                                                     name="passport_number"
                                                     type="text"
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
-                                                    value={family.passport_number} onChange={(e) => handleFamilyChange(index, "passport_number", e.target.value)}
+                                                    value={member.passport_number} onChange={(e) => handleFamilyChange(index, "passport_number", e.target.value)}
                                                     />
                                             </div>
 
@@ -1669,7 +1676,7 @@ return (
                                                             type="radio"
                                                             name={`ECNR${index}`}
                                                             value="Yes"
-                                                            checked={family.ECNR === 'Yes'}
+                                                            checked={member.ECNR === 'Yes'}
                                                             onChange={(e) => handleFamilyChange(index, "ECNR", e.target.value)}
                                                         />
                                                         <span className="ml-2">Yes</span>
@@ -1679,7 +1686,7 @@ return (
                                                             type="radio"
                                                             name={`ECNR${index}`}
                                                             value="No"
-                                                            checked={family.ECNR === 'No'}
+                                                            checked={member.ECNR === 'No'}
                                                             onChange={(e) => handleFamilyChange(index, "ECNR", e.target.value)}
                                                         />
                                                         <span className="ml-2">No</span>
@@ -1695,7 +1702,7 @@ return (
                                                     id={`date_issued${index}`}
                                                     name="date_issued"
                                                     type="date"
-                                                    value={family.date_issued} onChange={(e) => handleFamilyChange(index, "date_issued", e.target.value)}
+                                                    value={member.date_issued} onChange={(e) => handleFamilyChange(index, "date_issued", e.target.value)}
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
                                                 />
                                             </div>
@@ -1708,7 +1715,7 @@ return (
                                                     id={`place_issued${index}`}
                                                     name="place_issued"
                                                     type="text"
-                                                    value={family.place_issued} onChange={(e) => handleFamilyChange(index, "place_issued", e.target.value)}
+                                                    value={member.place_issued} onChange={(e) => handleFamilyChange(index, "place_issued", e.target.value)}
                                                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm"/>
                                             </div> 
                                         </div>
@@ -1724,6 +1731,7 @@ return (
                                             <button
                                                 type="button"
                                                 onClick={addFamily}
+                                                disabled={family.length >= 4}
                                                 className="family-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                                                 + Add
                                             </button>
