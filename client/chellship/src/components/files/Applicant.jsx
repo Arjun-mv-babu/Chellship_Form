@@ -11,6 +11,8 @@ const Applicant = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const familyMemberOptions = ["Wife", "Child-1", "Child-2", "Child-3"];
+    const identityDocumentsOptions = ["Passport", "Indian CDC", "Seafarers ID", "Seaman Book", "US C1/D Visa","Valid Visa"];
+    const HKCertificatesOptions = ["Hong Kong License", "Marshall Island Licence"];
 
     const [vessels, setVessels] = useState([]);
     useEffect(() => {
@@ -137,8 +139,8 @@ const Applicant = () => {
         // attended_course_to_date: "",
         
         // familiar_applications: "",
-        // PMS: "",
-        // AMOS4W: "",
+        PMS: "",
+        AMOS4W: "",
         // ISPS: "",
         // SSO: "",
         // explain_familiarity:"",
@@ -506,7 +508,7 @@ const Applicant = () => {
 
         // ----------------------------- >
 
-        const [hkcertificate, setHKCertificate] = useState([
+        const [hkcertificates, setHKCertificate] = useState([
             {
                 hong_kong_certificate: "",
                 hong_kong_certificate_number: "",
@@ -518,7 +520,7 @@ const Applicant = () => {
     
         const addHKCertificate = () => {
             setHKCertificate([
-                ...hkcertificate,
+                ...hkcertificates,
                 {
                     hong_kong_certificate: "",
                     hong_kong_certificate_number: "",
@@ -534,14 +536,14 @@ const Applicant = () => {
         }; 
 
         const handleHKCertificateChange = (index, field, value) => {
-            const updatedHKCertificate = [...hkcertificate];
+            const updatedHKCertificate = [...hkcertificates];
             updatedHKCertificate[index][field] = value;
             setHKCertificate(updatedHKCertificate);
         };
 
         // ----------------------------- >
 
-        const [course, setCourse] = useState([
+        const [Course, setCourse] = useState([
             {
                 attended_course: "",
                 attended_course_institute: "",
@@ -553,7 +555,7 @@ const Applicant = () => {
     
         const addCourse = () => {
             setCourse([
-                ...course,
+                ...Course,
                 {
                     attended_course: "",
                     attended_course_institute: "",
@@ -569,7 +571,7 @@ const Applicant = () => {
         }; 
 
         const handleCourseChange = (index, field, value) => {
-            const updatedCourse = [...course];
+            const updatedCourse = [...Course];
             updatedCourse[index][field] = value;
             setCourse(updatedCourse);
         };
@@ -902,8 +904,8 @@ const Applicant = () => {
             formData.append('emergency_email', ApplicantsDetails.emergency_email);
     
             // formData.append('familiar_applications', ApplicantsDetails.familiar_applications);
-            // formData.append('PMS', ApplicantsDetails.PMS);
-            // formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
+            formData.append('PMS', ApplicantsDetails.PMS);
+            formData.append('AMOS4W', ApplicantsDetails.AMOS4W);
             // formData.append('ISPS', ApplicantsDetails.ISPS);
             // formData.append('SSO', ApplicantsDetails.SSO);
             // formData.append('explain_familiarity', ApplicantsDetails.explain_familiarity);
@@ -979,8 +981,8 @@ const Applicant = () => {
             formData.append("preseaeducation", JSON.stringify(preseaeducation));
             formData.append("service", JSON.stringify(service));
             formData.append("certificate", JSON.stringify(certificate));
-            formData.append("hkcertificate", JSON.stringify(hkcertificate));
-            formData.append("course", JSON.stringify(course));
+            formData.append("hkcertificate", JSON.stringify(hkcertificates));
+            formData.append("course", JSON.stringify(Course));
             formData.append("family", JSON.stringify(family));
             formData.append("reference", JSON.stringify(reference));
     
@@ -2005,13 +2007,15 @@ return (
                     onChange={(e) => handleDocumentChange(index, "document_type", e.target.value)}
                     className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300">
                     <option value="">Select Document</option>
-                    <option value="passport">Passport</option>
-                    <option value="Indian CDC">Indian CDC</option>
-                    <option value="Seafarers ID">Seafarers ID</option>
-                    <option value="Seaman Book">Seaman Book</option>
-                    <option value="US C1/D Visa">US C1/D Visa</option>
-                    <option value="Valid Visa">Valid Visa</option>
-                    <option value="other">Other</option>
+                    {identityDocumentsOptions
+                    .filter(option =>
+                        !documents.some((d, i) => d.document_type === option && i !== index)
+                    )
+                    .map(option => (
+                        <option key={option} value={option}>
+                        {option.replace('-', ' ')}
+                        </option>
+                    ))}
                 </select>
             </div>
 
@@ -2139,6 +2143,7 @@ return (
         <button
             type="button"
             onClick={addDocument}
+            disabled={documents.length >= 6}
             className="document-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
             + Add
         </button>
@@ -2418,7 +2423,7 @@ return (
     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
     <h4 className='hongkong-certificate bold text-center'><b>Certificate of Equivalent Competency</b></h4>
     <div className='hongkong-container border border-gray-300 rounded-md p-3 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6 '>
-    {hkcertificate.map((hkcertificate, index) => (
+    {hkcertificates.map((hkcertificate, index) => (
     <div className='hongkong-card border border-gray-300 m-3 rounded-md shadow-lg py-3'>
     <div key={index} className='grid sm:grid-cols-3 lg:grid-cols-5 gap-4'>
         <div className='flex flex-col  p-2'>
@@ -2432,8 +2437,15 @@ return (
                 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 
                 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
                 <option value="">Select Certificate</option>
-                <option value="Hong Kong License">Hong Kong License</option>
-                <option value="Marshall Island Licence">Marshall Island Licence</option>
+                {HKCertificatesOptions
+                    .filter(option =>
+                        !hkcertificates.some((c, i) => c.hong_kong_certificate === option && i !== index)
+                    )
+                    .map(option => (
+                        <option key={option} value={option}>
+                        {option.replace('-', ' ')}
+                        </option>
+                    ))}
             </select>
         </div>
 
@@ -2487,7 +2499,7 @@ return (
         </div>
         </div>
     ))}
-    {hkcertificate.length === 1 && (
+    {hkcertificates.length === 1 && (
         <p className="text-sm text-gray-600 mb-2 text-center">
             If you have multiple certificates to enter, click the <b>"Add"</b> button to enter more.
         </p>
@@ -2496,12 +2508,13 @@ return (
             <button
                 type="button"
                 onClick={addHKCertificate}
+                disabled={hkcertificates.length >= 2}
                 className="hongkong-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                 + Add
             </button>
 
                                 
-            {hkcertificate.length > 1 && (
+            {hkcertificates.length > 1 && (
                 <button
                     type="button"
                     onClick={cancelLastHkcertificate}
@@ -2517,7 +2530,7 @@ return (
 <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
     <h4 className='course-certificate bold text-center'><b>Courses attended and Certificates obtained</b></h4>
     <div className='certificate-container border border-gray-300 rounded-md p-6 shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
-    {course.map((course, index) => (
+    {Course.map((course, index) => (
     <div className='certificate-card border border-gray-300 m-3 rounded-md shadow-lg py-3~'>
     <div key={index} className='grid sm:grid-cols-3 lg:grid-cols-5 gap-4'>
     
@@ -2535,10 +2548,16 @@ return (
             <option value="" disabled hidden>
                 Select Course
             </option>
-            {courses.map((c) => (
-            <option key={c.id} value={c.course_name}>
-            {c.course_name}
-            </option>
+            {courses
+              .filter(c =>
+                !Course.some((selected, i) => 
+                    selected.attended_course === c.course_name && i !== index
+                )
+            )
+            .map((c) => (
+                <option key={c.id} value={c.course_name}>
+                    {c.course_name}
+                </option>
             ))}
             {/* <option value="ARPA">ARPA</option> */}
             {/* <option value="Radar Simulator/ RANSCO">Radar Simulator/ RANSCO</option> */}
@@ -2604,7 +2623,7 @@ return (
 </div>
     ))}
 
-{course.length === 1 && (
+{Course.length === 1 && (
         <p className="text-sm text-gray-600 mb-2 text-center">
             If you have completed multiple courses, click the <b>"Add"</b> button to enter more.
         </p>
@@ -2613,12 +2632,13 @@ return (
         <button
             type="button"
             onClick={addCourse}
+            disabled={Course.length >= courses.length}
             className="course-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
             + Add
         </button>
 
                                 
-        {course.length > 1 && (
+        {Course.length > 1 && (
             <button
                 type="button"
                 onClick={cancelLastCourse}
@@ -2631,8 +2651,8 @@ return (
 </div>
 
 
-            {/* <h4 className='computer-literacy bold text-center'><b>Computer Literacy</b></h4> */}
-            {/* <div className='literacy-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'> */}
+            <h4 className='computer-literacy bold text-center'><b>Computer Literacy</b></h4>
+            <div className='literacy-container border border-gray-300 rounded-md p-63shadow-lg sm:mx-auto sm:w-full lg:w-3/4 px-6 py-6'>
                 {/* <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="PMS">
                         Applications familiar (Word, Excel, etc,): 
@@ -2653,7 +2673,7 @@ return (
                     </div>
                 </div> */}
                 
-                {/* <div className='grid grid-cols-2'>
+                <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="PMS">
                         Planned Maintenance System (PMS): 
                     </label>
@@ -2671,8 +2691,8 @@ return (
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
-                </div> */}
-                {/* <div className='grid grid-cols-2'>
+                </div>
+                <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
                         Training Undergone for AMOS4W: 
                     </label>
@@ -2690,7 +2710,7 @@ return (
                                 <span className="ml-2">No</span>
                         </label>
                     </div>
-                </div> */}
+                </div>
 
                 {/* <div className='grid grid-cols-2'>
                     <label className='text-sm font-medium text-gray-900 m-3' htmlFor="AMOS4W">
@@ -2746,7 +2766,7 @@ return (
                         </div>
                     )} */}
                 {/* </div> */}
-            {/* </div> */}
+            </div>
     <div className='flex min-h-full flex-col justify-center lg:px-8 py-12'>
       <div className='flex min-h-full flex-col justify-center lg:px-3/4 py-12'>
         <h4 className='medical-history bold text-center'><b>Medical History</b></h4>
