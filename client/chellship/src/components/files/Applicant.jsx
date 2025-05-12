@@ -12,7 +12,7 @@ const Applicant = () => {
 
     const familyMemberOptions = ["Wife", "Child-1", "Child-2", "Child-3"];
     const identityDocumentsOptions = ["Passport", "Indian CDC", "Seafarers ID", "Seaman Book", "US C1/D Visa","Valid Visa"];
-    const HKCertificatesOptions = ["Hong Kong License", "Marshall Island Licence"];
+    const HKCertificatesOptions = ["Hong Kong License", "Marshall Island Licence","Gibraltar COE"];
 
     const [vessels, setVessels] = useState([]);
     useEffect(() => {
@@ -2508,7 +2508,7 @@ return (
             <button
                 type="button"
                 onClick={addHKCertificate}
-                disabled={hkcertificates.length >= 2}
+                disabled={hkcertificates.length >= 3}
                 className="hongkong-add-button bg-indigo-600 text-white py-1 px-1 rounded-md hover:bg-indigo-500 m-2">
                 + Add
             </button>
@@ -4100,15 +4100,15 @@ return (
                         </div>
                     </div>
 
-                        {/* <div className='flexbox items-center p-2'>
+                    <div className='grid grid-cols-2'>
+                        <div className='flexbox items-center p-2'>
                             <label htmlFor="signature" className="text-sm font-medium text-gray-900">
                                 Signature : 
                             </label>
-                            <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
-                        </div> */}
+                            <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-45 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                        </div>
 
-                    <div className='grid grid-cols-2'>
-                        <div className='flexbox items-center p-2'>
+                        <div className='flex justify-end items-center p-2'>
                             <label htmlFor="declaration_date" className="text-sm font-medium text-gray-900">
                                 Declaration Date : 
                             </label>
