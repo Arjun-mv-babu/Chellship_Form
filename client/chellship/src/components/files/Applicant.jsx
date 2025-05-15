@@ -655,6 +655,7 @@ const Applicant = () => {
     const [cameraOn, setCameraOn] = useState(false);
     const [signature, setSignature] = useState(null);
     const [photoFile, setPhotoFile] = useState(null);
+    const [signFile, setSignFile] = useState(null);
 
     // Start Camera
     const startCamera = () => {
@@ -812,6 +813,20 @@ const Applicant = () => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPhoto(reader.result);
+            };
+            reader.readAsDataURL(files[0]);
+        }
+    };
+    
+    const handleSignChange = (e) => {
+        const { files } = e.target;
+        if (files.length > 0) {
+            setSignFile(files[0]);
+
+            // Preview Image
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSignature(reader.result);
             };
             reader.readAsDataURL(files[0]);
         }
@@ -990,6 +1005,7 @@ const Applicant = () => {
             if (photo) formData.append('photo', photo);
             if (signature) formData.append('signature', signature);
             if (photoFile) formData.append('photo', photoFile);
+            if (signFile) formData.append('signature', signFile);
 
             // formData.append('photo', photoFile);
                 //     const formData = new FormData();
@@ -1421,7 +1437,7 @@ return (
                                 <label htmlFor="permanent_email" className="text-sm font-medium text-gray-900">
                                     Email : 
                                 </label>
-                                <input id="permanent_email" name="permanent_email" type="mail"  value={ApplicantsDetails.permanent_email} onChange={handleApplicantChange}  className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                <input id="permanent_email" name="permanent_email" type="mail"  value={ApplicantsDetails.permanent_email} onChange={handleApplicantChange}  required className="block w-full rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
                             </div>
                         </div>
 
@@ -4100,24 +4116,33 @@ return (
                         </div>
                     </div>
 
-                    <div className='grid grid-cols-2'>
-                        <div className='flexbox items-center p-2'>
-                            <label htmlFor="signature" className="text-sm font-medium text-gray-900">
-                                Signature : 
+                    <div className='grid sm:grid-cols-2 grid-cols-1 p-5'>
+                        <div className="flex flex-col items-center p-6">
+                            <label htmlFor="signature" className="text-sm font-medium text-gray-900 mb-1">
+                                Signature:
                             </label>
-                            <input id="signature" name="signature" type="file" onChange={handleFileChange}   className="block w-45 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                            <input 
+                                id="signature"
+                                name="signature"
+                                type="file"
+                                onChange={handleSignChange}
+                                className="block w-[250px] rounded-md border py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm"
+                            />
+                            <p className="text-xs text-gray-500 mt-1 text-center">Please upload a clear scanned copy of your signature in JPG, JPEG, or PNG format (max 512KB) with a dark (black or blue) signature on a plain white background, recommended image size: 150×100 pixels, and avoid any shadows or colored paper.</p>
                         </div>
 
-                        <div className='flex justify-end items-center p-2'>
+                        <div className='flex flex-col items-center p-6'>
                             <label htmlFor="declaration_date" className="text-sm font-medium text-gray-900">
-                                Declaration Date : 
+                                Declaration Date: 
                             </label>
                             <input 
                                 id="declaration_date" name="declaration_date" type="date" 
                                 value={ApplicantsDetails.declaration_date} onChange={handleApplicantChange}   
-                                className="block w-40 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"/>
+                                className="block w-40 rounded-md border py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+                            />
                         </div>
                     </div>
+
 
                 </div>
             </div>
